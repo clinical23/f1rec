@@ -26,6 +26,89 @@ type PageProps = {
   params: Promise<{ slug: string }>
 }
 
+type ResultRow = Record<string, unknown>
+
+function numPosition(row: ResultRow): number | null {
+  const p = row.position
+  if (typeof p === 'number' && Number.isFinite(p)) return p
+  if (typeof p === 'string' && p.trim() !== '') {
+    const n = Number.parseInt(p, 10)
+    return Number.isFinite(n) ? n : null
+  }
+  return null
+}
+
+function numPoints(row: ResultRow): number {
+  const p = row.points
+  if (typeof p === 'number' && Number.isFinite(p)) return p
+  if (typeof p === 'string' && p.trim() !== '') {
+    const n = Number.parseFloat(p)
+    return Number.isFinite(n) ? n : 0
+  }
+  return 0
+}
+
+function modeString(values: string[]): string | null {
+  const counts = new Map<string, number>()
+  for (const v of values) {
+    if (!v) continue
+    counts.set(v, (counts.get(v) ?? 0) + 1)
+  }
+  let best: string | null = null
+  let bestN = 0
+  for (const [v, n] of counts) {
+    if (n > bestN) {
+      best = v
+      bestN = n
+    }
+  }
+  return best
+}
+
+function deriveStatus(row: ResultRow, finish: number | null): 'WIN' | 'FIN' | 'DNF' {
+  if (finish === 1) return 'WIN'
+  const s = String(row.status ?? '').toLowerCase()
+  if (
+    s.includes('dnf') ||
+    s.includes('dns') ||
+    s.includes('dsq') ||
+    s.includes('disqualified') ||
+    s.includes('not classified')
+  ) {
+    return 'DNF'
+  }
+  if (finish === null && (s.includes('lap') || s.includes('finished') || s === '')) {
+    return 'FIN'
+  }
+  if (finish === null) return 'DNF'
+  return 'FIN'
+}
+
+async function fetchAllDriverResults(supabase: ReturnType<typeof createServerClient>, driverSlug: string) {
+  const pageSize = 1000
+  const all: ResultRow[] = []
+  let from = 0
+  for (;;) {
+    const { data, error } = await supabase
+      .from('results')
+      .select('*')
+      .eq('driver_slug', driverSlug)
+      .order('season_year', { ascending: true })
+      .order('round', { ascending: true })
+      .range(from, from + pageSize - 1)
+
+    if (error) {
+      throw new Error(`Failed to load results: ${error.message}`)
+    }
+
+    const chunk = data ?? []
+    all.push(...chunk)
+    if (chunk.length < pageSize) break
+    from += pageSize
+  }
+  return all
+}
+
 export default async function DriverPage({ params }: PageProps) {
   const { slug } = await params
   const supabase = createServerClient()
@@ -52,6 +135,22 @@ export default async function DriverPage({ params }: PageProps) {
   const fullName = `${driverData.first_name} ${driverData.last_name}`
   const displayDob = driverData.date_of_birth ? new Date(driverData.date_of_birth).toLocaleDateString('en-GB') : 'N/A'
 
+  let resultRows: ResultRow[] = []
+  try {
+    resultRows = await fetchAllDriverResults(supabase, slug)
+  } catch {
+    resultRows = []
+  }
+
+  const totalRaces = resultRows.length
+  const totalWins = resultRows.filter((r) => numPosition(r) === 1).length
+  const totalPodiums = resultRows.filter((r) => {
+    const pos = numPosition(r)
+    return pos !== null && pos >= 1 && pos <= 3
+  }).length
+  const totalPoints = resultRows.reduce((sum, r) => sum + numPoints(r), 0)
+  const pointsFormatted = Number.isInteger(totalPoints) ? String(totalPoints) : totalPoints.toFixed(1)
+
   const driver = {
     firstName: String(driverData.first_name ?? '').toUpperCase(),
     lastName: String(driverData.last_name ?? '').toUpperCase(),
@@ -64,80 +163,117 @@ export default async function DriverPage({ params }: PageProps) {
   }
 
   const careerStats = [
-    { label: 'Wins', value: String(driverData.career_wins ?? 0) },
+    { label: 'Wins', value: String(totalWins) },
     { label: 'Poles', value: String(driverData.career_poles ?? 0) },
-    { label: 'Podiums', value: String(driverData.career_podiums ?? 0) },
+    { label: 'Podiums', value: String(totalPodiums) },
     { label: 'Titles', value: String(driverData.championships ?? 0) },
-    { label: 'Points', value: String(driverData.career_points ?? 0) },
-    { label: 'Starts', value: String(driverData.career_starts ?? 0) },
+    { label: 'Points', value: pointsFormatted },
+    { label: 'Starts', value: String(totalRaces) },
   ] as const
 
   const tabs = ['Race Results', 'Season by Season', 'Head-to-Head', 'Lap Records'] as const
 
-  const raceRows = [
-    {
-      season: '2024',
-      race: 'British Grand Prix',
-      flag: '🇬🇧',
-      grid: 5,
-      finish: 1,
-      status: 'WIN' as const,
-      points: '25',
-      team: 'Mercedes',
-    },
-    {
-      season: '2023',
-      race: 'Monaco Grand Prix',
-      flag: '🇲🇨',
-      grid: 2,
-      finish: 2,
-      status: 'FIN' as const,
-      points: '18',
-      team: 'Mercedes',
-    },
-    {
-      season: '2022',
-      race: 'Belgian Grand Prix',
-      flag: '🇧🇪',
-      grid: 4,
-      finish: 3,
-      status: 'FIN' as const,
-      points: '15',
-      team: 'Mercedes',
-    },
-    {
-      season: '2021',
-      race: 'Italian Grand Prix',
-      flag: '🇮🇹',
-      grid: 1,
-      finish: null as number | null,
-      status: 'DNF' as const,
-      points: '0',
-      team: 'Mercedes',
-    },
-    {
-      season: '2020',
-      race: 'Turkish Grand Prix',
-      flag: '🇹🇷',
-      grid: 6,
-      finish: 1,
-      status: 'WIN' as const,
-      points: '25',
-      team: 'Mercedes',
-    },
-  ]
+  const raceRows = [...resultRows]
+    .sort((a, b) => {
+      const ya = typeof a.season_year === 'number' ? a.season_year : Number.parseInt(String(a.season_year), 10)
+      const yb = typeof b.season_year === 'number' ? b.season_year : Number.parseInt(String(b.season_year), 10)
+      if (yb !== ya) return yb - ya
+      const ra = typeof a.round === 'number' ? a.round : Number.parseInt(String(a.round), 10)
+      const rb = typeof b.round === 'number' ? b.round : Number.parseInt(String(b.round), 10)
+      return rb - ra
+    })
+    .map((row, idx) => {
+      const finish = numPosition(row)
+      const status = deriveStatus(row, finish)
+      const gridVal = row.grid
+      const grid =
+        typeof gridVal === 'number' && Number.isFinite(gridVal)
+          ? gridVal
+          : typeof gridVal === 'string'
+            ? Number.parseInt(gridVal, 10)
+            : null
+      const season =
+        typeof row.season_year === 'number' ? String(row.season_year) : String(row.season_year ?? '')
+      const race = String(row.race_name ?? row.race_slug ?? 'Grand Prix')
+      const team = String(row.constructor_name ?? row.constructor_slug ?? '—')
+      const pts = numPoints(row)
+      const ptsStr = Number.isInteger(pts) ? String(pts) : pts.toFixed(1)
+      return {
+        key: typeof row.slug === 'string' && row.slug.length > 0 ? row.slug : `race-${season}-${String(row.round)}-${idx}`,
+        season,
+        race,
+        flag: '🏁',
+        grid: Number.isFinite(grid) ? grid : '—',
+        finish,
+        status,
+        points: ptsStr,
+        team,
+      }
+    })
 
-  const seasonRows = [
-    { season: '2020', team: 'Mercedes', pos: 1, pts: '347', wins: 11, poles: 10, podiums: 14, champion: true },
-    { season: '2019', team: 'Mercedes', pos: 1, pts: '413', wins: 11, poles: 5, podiums: 17, champion: true },
-    { season: '2018', team: 'Mercedes', pos: 1, pts: '408', wins: 11, poles: 11, podiums: 17, champion: true },
-  ]
+  const bySeason = new Map<number, ResultRow[]>()
+  for (const row of resultRows) {
+    const y = typeof row.season_year === 'number' ? row.season_year : Number.parseInt(String(row.season_year), 10)
+    if (!Number.isFinite(y)) continue
+    if (!bySeason.has(y)) bySeason.set(y, [])
+    bySeason.get(y)!.push(row)
+  }
 
-  const circuitWins = [
-    { name: 'Silverstone', wins: 9, max: 9 },
-    { name: 'Hungaroring', wins: 9, max: 9 },
-    { name: 'Montreal', wins: 7, max: 9 },
-  ]
+  const seasonRows = [...bySeason.entries()]
+    .sort((a, b) => b[0] - a[0])
+    .map(([yearNum, rows]) => {
+      const pts = rows.reduce((sum, r) => sum + numPoints(r), 0)
+      const wins = rows.filter((r) => numPosition(r) === 1).length
+      const podiums = rows.filter((r) => {
+        const pos = numPosition(r)
+        return pos !== null && pos >= 1 && pos <= 3
+      }).length
+      const team =
+        modeString(rows.map((r) => String(r.constructor_name ?? '')).filter(Boolean)) ??
+        modeString(rows.map((r) => String(r.constructor_slug ?? '')).filter(Boolean)) ??
+        '—'
+      const ptsStr = Number.isInteger(pts) ? String(pts) : pts.toFixed(1)
+      return {
+        season: String(yearNum),
+        team,
+        pos: '—' as const,
+        pts: ptsStr,
+        wins,
+        poles: 0,
+        podiums,
+        champion: false,
+      }
+    })
+
+  const bestSeasonPts = seasonRows.length > 0 ? Math.max(...seasonRows.map((s) => Number.parseFloat(s.pts) || 0)) : 0
+  const seasonRowsWithHighlight = seasonRows.map((row) => ({
+    ...row,
+    champion: bestSeasonPts > 0 && Number.parseFloat(row.pts) === bestSeasonPts,
+  }))
+
+  const winsByEvent = new Map<string, number>()
+  for (const row of resultRows) {
+    if (numPosition(row) !== 1) continue
+    const name = String(row.race_name ?? 'Unknown')
+    winsByEvent.set(name, (winsByEvent.get(name) ?? 0) + 1)
+  }
+  const topCircuits = [...winsByEvent.entries()].sort((a, b) => b[1] - a[1]).slice(0, 3)
+  const maxCircuitWins = topCircuits.length > 0 ? Math.max(...topCircuits.map(([, w]) => w), 1) : 1
+  const circuitWins =
+    topCircuits.length > 0
+      ? topCircuits.map(([name, wins]) => ({ name, wins, max: maxCircuitWins }))
+      : [{ name: 'No wins yet', wins: 0, max: 1 }]
+
+  const seasonOptions = [...new Set(resultRows.map((r) => String(r.season_year ?? '')).filter(Boolean))].sort(
+    (a, b) => Number.parseInt(b, 10) - Number.parseInt(a, 10)
+  )
+  const teamOptions = [
+    ...new Set(
+      resultRows
+        .map((r) => String(r.constructor_name ?? r.constructor_slug ?? ''))
+        .filter((t) => t.length > 0)
+    ),
+  ].sort()
 
   function finishBadgeStyle(pos: number | null) {
     if (pos === null) {
@@ -515,6 +651,11 @@ export default async function DriverPage({ params }: PageProps) {
                   }}
                 >
                   <option value="all">All Seasons</option>
+                  {seasonOptions.map((y) => (
+                    <option key={y} value={y}>
+                      {y}
+                    </option>
+                  ))}
                 </select>
               </label>
               <label style={{ display: 'flex', flexDirection: 'column', gap: '6px', flex: '1', minWidth: '160px' }}>
@@ -534,6 +675,11 @@ export default async function DriverPage({ params }: PageProps) {
                   }}
                 >
                   <option value="all">All Teams</option>
+                  {teamOptions.map((t) => (
+                    <option key={t} value={t}>
+                      {t}
+                    </option>
+                  ))}
                 </select>
               </label>
             </div>
@@ -578,8 +724,8 @@ export default async function DriverPage({ params }: PageProps) {
                   </tr>
                 </thead>
                 <tbody>
-                  {raceRows.map((row, idx) => (
-                    <tr key={idx} style={{ borderBottom: `1px solid ${tokens.border}` }}>
+                  {raceRows.map((row) => (
+                    <tr key={row.key} style={{ borderBottom: `1px solid ${tokens.border}` }}>
                       <td style={{ padding: '10px 12px', fontFamily: font.mono, fontSize: '13px', textAlign: 'center' }}>{row.season}</td>
                       <td style={{ padding: '10px 12px' }}>
                         <span style={{ marginRight: '8px' }}>{row.flag}</span>
@@ -668,8 +814,8 @@ export default async function DriverPage({ params }: PageProps) {
                   </tr>
                 </thead>
                 <tbody>
-                  {seasonRows.map((row) => {
-                    const highlight = row.season === '2020'
+                  {seasonRowsWithHighlight.map((row) => {
+                    const highlight = row.champion
                     return (
                       <tr
                         key={row.season}
@@ -734,11 +880,11 @@ export default async function DriverPage({ params }: PageProps) {
                   ['Date of birth', displayDob],
                   ['Code', driverData.code ?? 'N/A'],
                   ['Car number', `#${driverData.number ?? 0}`],
-                  ['Career wins', String(driverData.career_wins ?? 0)],
+                  ['Career wins', String(totalWins)],
                   ['Career poles', String(driverData.career_poles ?? 0)],
-                  ['Career podiums', String(driverData.career_podiums ?? 0)],
-                  ['Career points', String(driverData.career_points ?? 0)],
-                  ['Career starts', String(driverData.career_starts ?? 0)],
+                  ['Career podiums', String(totalPodiums)],
+                  ['Career points', pointsFormatted],
+                  ['Career starts', String(totalRaces)],
                   ['Championships', String(driverData.championships ?? 0)],
                 ].map(([k, v]) => (
                   <div
