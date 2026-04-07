@@ -128,8 +128,12 @@ async function run() {
         const laps = Number.parseInt(result.laps ?? '', 10)
         const driverName = `${result.Driver.givenName ?? ''} ${result.Driver.familyName ?? ''}`.trim()
 
+        const positionKey = Number.isFinite(position)
+          ? String(position)
+          : [result.positionText, result.grid, result.status].filter(Boolean).join('-').replace(/\s+/g, '_') || 'np'
+
         rows.push({
-          slug: `${raceSlug}-${driverId}`,
+          slug: `${raceSlug}-${driverId}-${positionKey}`,
           race_slug: raceSlug,
           season_year: Number.isFinite(seasonYear) ? seasonYear : year,
           round: Number.isFinite(round) ? round : 0,
@@ -157,11 +161,23 @@ async function run() {
       continue
     }
 
-    const { error } = await supabase.from('results').upsert(rows, { onConflict: 'slug' })
+    const bySlug = new Map<string, (typeof rows)[number]>()
+    for (const row of rows) {
+      const key = row.slug as string
+      if (!bySlug.has(key)) {
+        bySlug.set(key, row)
+      }
+    }
+    const dedupedRows = Array.from(bySlug.values())
+    if (dedupedRows.length < rows.length) {
+      console.warn(`Deduplicated ${rows.length - dedupedRows.length} duplicate slug(s) in batch for ${year}`)
+    }
+
+    const { error } = await supabase.from('results').upsert(dedupedRows, { onConflict: 'slug' })
     if (error) {
       console.error(`Failed results upsert for ${year}: ${error.message}`)
     } else {
-      console.log(`Upserted ${rows.length} results for ${year}`)
+      console.log(`Upserted ${dedupedRows.length} results for ${year}`)
     }
   }
 
