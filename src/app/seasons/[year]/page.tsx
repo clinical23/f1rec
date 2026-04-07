@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { createServerClient } from '@/lib/supabase/server'
 
 const tokens = {
   bg: '#0a0a0f',
@@ -35,113 +36,87 @@ function posBadgeStyle(pos: number) {
 
 export default async function SeasonPage({ params }: PageProps) {
   const { year } = await params
+  const seasonYear = Number.parseInt(year, 10)
+  const supabase = createServerClient()
 
-  const driverStandings = [
-    {
-      pos: 1,
-      code: 'VER',
-      name: 'Max Verstappen',
-      flag: '🇳🇱',
+  const { data: seasonData } = await supabase.from('seasons').select('*').eq('year', seasonYear).maybeSingle()
+
+  if (!seasonData) {
+    return (
+      <main
+        style={{
+          fontFamily: font.body,
+          background: tokens.bg,
+          color: tokens.text,
+          minHeight: '100vh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        Season not found
+      </main>
+    )
+  }
+
+  const { data: racesData } = await supabase.from('races').select('*').eq('season_year', seasonYear).order('round', { ascending: true })
+
+  const races = racesData ?? []
+  const getWinner = (race: Record<string, unknown>) => {
+    const raw =
+      race.winner ??
+      race.winner_name ??
+      race.winner_driver ??
+      race.winner_full_name ??
+      race.winning_driver
+    return typeof raw === 'string' && raw.trim().length > 0 ? raw : 'TBD'
+  }
+
+  const winnerWins = new Map<string, number>()
+  for (const race of races) {
+    const winner = getWinner(race as Record<string, unknown>)
+    if (winner === 'TBD') continue
+    winnerWins.set(winner, (winnerWins.get(winner) ?? 0) + 1)
+  }
+
+  const winnerList = Array.from(winnerWins.entries()).sort((a, b) => b[1] - a[1])
+  const championName = winnerList[0]?.[0] ?? 'TBD'
+  const constructorChampion = 'TBD'
+  const raceWinnersCount = winnerList.length
+
+  const raceCalendar = races.map((race, index) => ({
+    round: typeof race.round === 'number' ? race.round : index + 1,
+    flag: '🏁',
+    name: (race.name as string | null) ?? (race.full_name as string | null) ?? 'Grand Prix',
+    date:
+      typeof race.race_date === 'string'
+        ? new Date(race.race_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
+        : 'TBD',
+    winner: getWinner(race as Record<string, unknown>),
+  }))
+
+  const driverStandings = winnerList.slice(0, 6).map(([driverName, wins], idx) => {
+    const parts = driverName.split(' ')
+    const code = parts.map((p) => p[0]).join('').toUpperCase().slice(0, 3) || 'DRV'
+    return {
+      pos: idx + 1,
+      code,
+      name: driverName,
+      flag: '🏁',
       avatar: '#3671c6',
-      team: 'Red Bull Racing',
+      team: 'Unknown',
       teamColor: '#3671c6',
-      pts: 437,
-      wins: 9,
-      podiums: 14,
-      poles: 9,
-      gap: null as string | null,
-    },
-    {
-      pos: 2,
-      code: 'NOR',
-      name: 'Lando Norris',
-      flag: '🇬🇧',
-      avatar: '#ff8700',
-      team: 'McLaren',
-      teamColor: '#ff8700',
-      pts: 374,
-      wins: 4,
-      podiums: 15,
-      poles: 3,
-      gap: '-63',
-    },
-    {
-      pos: 3,
-      code: 'LEC',
-      name: 'Charles Leclerc',
-      flag: '🇲🇨',
-      avatar: '#e8002d',
-      team: 'Ferrari',
-      teamColor: '#e8002d',
-      pts: 356,
-      wins: 3,
-      podiums: 12,
-      poles: 3,
-      gap: '-81',
-    },
-    {
-      pos: 4,
-      code: 'PIA',
-      name: 'Oscar Piastri',
-      flag: '🇦🇺',
-      avatar: '#ff8700',
-      team: 'McLaren',
-      teamColor: '#ff8700',
-      pts: 292,
-      wins: 2,
-      podiums: 8,
-      poles: 2,
-      gap: '-145',
-    },
-    {
-      pos: 5,
-      code: 'SAI',
-      name: 'Carlos Sainz',
-      flag: '🇪🇸',
-      avatar: '#e8002d',
-      team: 'Ferrari',
-      teamColor: '#e8002d',
-      pts: 290,
-      wins: 1,
-      podiums: 9,
+      pts: wins * 25,
+      wins,
+      podiums: wins,
       poles: 0,
-      gap: '-147',
-    },
-    {
-      pos: 6,
-      code: 'HAM',
-      name: 'Lewis Hamilton',
-      flag: '🇬🇧',
-      avatar: '#27f4d2',
-      team: 'Mercedes',
-      teamColor: '#27f4d2',
-      pts: 285,
-      wins: 0,
-      podiums: 6,
-      poles: 2,
-      gap: '-152',
-    },
-  ]
+      gap: idx === 0 ? null : `-${(winnerList[0]?.[1] ?? wins) - wins}`,
+    }
+  })
 
-  const constructorTop = [
-    { name: 'McLaren', pts: 666, color: '#ff8700' },
-    { name: 'Ferrari', pts: 652, color: '#e8002d' },
-    { name: 'Red Bull Racing', pts: 589, color: '#3671c6' },
-    { name: 'Mercedes', pts: 468, color: '#27f4d2' },
-  ]
+  const constructorTop = [{ name: 'No constructor data', pts: 0, color: '#6b7280' }]
 
-  const maxConstructorPts = 666
-
-  const races2024 = [
-    { round: 1, flag: '🇧🇭', name: 'Bahrain Grand Prix', date: '2 Mar 2024', winner: 'Max Verstappen' },
-    { round: 2, flag: '🇸🇦', name: 'Saudi Arabian Grand Prix', date: '9 Mar 2024', winner: 'Max Verstappen' },
-    { round: 3, flag: '🇦🇺', name: 'Australian Grand Prix', date: '24 Mar 2024', winner: 'Carlos Sainz' },
-    { round: 4, flag: '🇯🇵', name: 'Japanese Grand Prix', date: '7 Apr 2024', winner: 'Max Verstappen' },
-    { round: 5, flag: '🇨🇳', name: 'Chinese Grand Prix', date: '21 Apr 2024', winner: 'Max Verstappen' },
-    { round: 6, flag: '🇺🇸', name: 'Miami Grand Prix', date: '5 May 2024', winner: 'Lando Norris' },
-    { round: 7, flag: '🇲🇨', name: 'Monaco Grand Prix', date: '26 May 2024', winner: 'Charles Leclerc' },
-    { round: 8, flag: '🇨🇦', name: 'Canadian Grand Prix', date: '9 Jun 2024', winner: 'George Russell' },
-  ]
+  const maxConstructorPts = Math.max(...constructorTop.map((c) => c.pts), 1)
 
   const tabs = ['Driver Standings', 'Constructor Standings', 'Race Calendar'] as const
 
@@ -312,7 +287,7 @@ export default async function SeasonPage({ params }: PageProps) {
                     </div>
                     <div style={{ fontSize: '28px', lineHeight: 1, marginBottom: '6px' }}>👑</div>
                     <div style={{ fontFamily: font.display, fontSize: '22px', fontWeight: 800, color: tokens.text, textTransform: 'uppercase' }}>
-                      Max Verstappen
+                      {championName}
                     </div>
                   </div>
                   <div
@@ -330,18 +305,18 @@ export default async function SeasonPage({ params }: PageProps) {
                     </div>
                     <div style={{ fontSize: '28px', lineHeight: 1, marginBottom: '6px' }}>🏆</div>
                     <div style={{ fontFamily: font.display, fontSize: '22px', fontWeight: 800, color: tokens.text, textTransform: 'uppercase' }}>
-                      McLaren
+                      {constructorChampion}
                     </div>
                   </div>
                 </div>
 
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
                   {[
-                    { label: '24 Races' },
-                    { label: '6 Sprint Races' },
-                    { label: '10 Teams' },
-                    { label: '20 Drivers' },
-                    { label: '5 Winners' },
+                    { label: `${seasonData.rounds ?? races.length} Races` },
+                    { label: `${driverStandings.length} Top Drivers` },
+                    { label: `${raceWinnersCount} Winners` },
+                    { label: `${year} Season` },
+                    { label: `${races.length} Loaded` },
                   ].map((p) => (
                     <span
                       key={p.label}
@@ -590,7 +565,7 @@ export default async function SeasonPage({ params }: PageProps) {
                 gap: '12px',
               }}
             >
-              {races2024.map((r) => (
+              {raceCalendar.map((r) => (
                 <div
                   key={r.round}
                   style={{
@@ -672,12 +647,12 @@ export default async function SeasonPage({ params }: PageProps) {
               </div>
               <div style={{ padding: '16px' }}>
                 {[
-                  ['Race winners', '5 drivers'],
-                  ['Most wins', 'VER 9'],
-                  ['Most poles', 'VER 9'],
-                  ['Total points', '2964'],
-                  ['DNFs', '48'],
-                  ['Safety cars', '31'],
+                  ['Race winners', `${raceWinnersCount} drivers`],
+                  ['Most wins', winnerList[0] ? `${winnerList[0][0]} ${winnerList[0][1]}` : 'N/A'],
+                  ['Total races', String(seasonData.rounds ?? races.length)],
+                  ['Loaded races', String(races.length)],
+                  ['Season year', String(year)],
+                  ['Data source', 'Supabase'],
                 ].map(([label, value]) => (
                   <div
                     key={label}
