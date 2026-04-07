@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "seed:full": "node --env-file=.env.local --experimental-strip-types src/scripts/seed-full.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.102.1",
