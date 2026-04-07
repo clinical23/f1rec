@@ -26,7 +26,7 @@ function getDriverId(driver: DriverRow): string | null {
 }
 
 async function getCareerStats(driverId: string) {
-  const url = `https://api.jolpi.ca/ergast/f1/drivers/${driverId}/results/`
+  const url = `https://api.jolpi.ca/ergast/f1/drivers/${driverId}/results/?limit=1000`
   const response = await fetch(url)
 
   if (!response.ok) {
