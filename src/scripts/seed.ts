@@ -79,18 +79,17 @@ async function run() {
     try {
       const stats = await getCareerStats(driverId)
 
-      const { error: upsertError } = await supabase
+      const { error: updateError } = await supabase
         .from('drivers')
-        .upsert(
-          {
-            slug: driver.slug,
-            ...stats,
-          },
-          { onConflict: 'slug' }
-        )
+        .update({
+          career_wins: stats.career_wins,
+          career_podiums: stats.career_podiums,
+          career_starts: stats.career_starts,
+        })
+        .eq('slug', driver.slug)
 
-      if (upsertError) {
-        console.error(`Failed to upsert ${driver.slug}: ${upsertError.message}`)
+      if (updateError) {
+        console.error(`Failed to update ${driver.slug}: ${updateError.message}`)
         continue
       }
 
