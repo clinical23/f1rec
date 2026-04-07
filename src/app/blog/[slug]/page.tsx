@@ -1,5 +1,7 @@
 import Link from 'next/link'
 import type { Metadata } from 'next'
+import type { ReactNode } from 'react'
+import { Fragment } from 'react'
 import { createServerClient } from '@/lib/supabase/server'
 
 const tokens = {
@@ -58,41 +60,149 @@ function readTime(post: Post) {
   return Math.max(3, Math.ceil(words / 220))
 }
 
-function renderMarkdownWithAd(content: string) {
-  const blocks = content.split('\n\n').map((b) => b.trim()).filter(Boolean)
-  let paragraphCount = 0
-  return blocks.map((block, idx) => {
-    if (block.startsWith('### ')) {
-      return (
-        <h3 key={`h3-${idx}`} style={{ margin: '24px 0 10px', fontFamily: font.display, fontSize: '28px', lineHeight: 1, textTransform: 'uppercase' }}>
-          {block.replace(/^###\s+/, '')}
-        </h3>
-      )
+const bodyProseStyle = {
+  fontFamily: font.body,
+  fontSize: 18,
+  lineHeight: 1.75,
+  color: tokens.text,
+} as const
+
+function renderInlineMarkdown(text: string): ReactNode {
+  if (!text.includes('**')) return text
+  const out: ReactNode[] = []
+  const re = /\*\*(.+?)\*\*/gs
+  let last = 0
+  let match: RegExpExecArray | null
+  let key = 0
+  while ((match = re.exec(text)) !== null) {
+    if (match.index > last) {
+      out.push(<Fragment key={`t-${key++}`}>{text.slice(last, match.index)}</Fragment>)
     }
-    if (block.startsWith('## ')) {
-      return (
-        <h2 key={`h2-${idx}`} style={{ margin: '28px 0 10px', fontFamily: font.display, fontSize: '34px', lineHeight: 1, textTransform: 'uppercase' }}>
-          {block.replace(/^##\s+/, '')}
+    out.push(
+      <strong key={`b-${key++}`} style={{ fontWeight: 700 }}>
+        {match[1]}
+      </strong>
+    )
+    last = match.index + match[0].length
+  }
+  if (last < text.length) {
+    out.push(<Fragment key={`t-${key++}`}>{text.slice(last)}</Fragment>)
+  }
+  return out.length > 0 ? out : text
+}
+
+type Block =
+  | { kind: 'h2'; text: string; level: 'top' | 'sub' }
+  | { kind: 'h3'; text: string }
+  | { kind: 'p'; lines: string[] }
+
+function parseMarkdownBlocks(content: string): Block[] {
+  const raw = content.replace(/\r\n/g, '\n').trim()
+  if (!raw) return []
+
+  const chunks = raw.split(/\n{2,}/)
+  const blocks: Block[] = []
+
+  for (const chunk of chunks) {
+    const lines = chunk.split('\n').map((l) => l.trimEnd())
+    const nonEmpty = lines.filter((l) => l.length > 0)
+    if (nonEmpty.length === 0) continue
+
+    const first = nonEmpty[0]
+    if (first.startsWith('### ')) {
+      blocks.push({ kind: 'h3', text: first.slice(4).trim() })
+      const rest = nonEmpty.slice(1)
+      if (rest.length) blocks.push({ kind: 'p', lines: rest })
+      continue
+    }
+    if (first.startsWith('## ')) {
+      blocks.push({ kind: 'h2', text: first.slice(3).trim(), level: 'sub' })
+      const rest = nonEmpty.slice(1)
+      if (rest.length) blocks.push({ kind: 'p', lines: rest })
+      continue
+    }
+    if (first.startsWith('# ')) {
+      blocks.push({ kind: 'h2', text: first.slice(2).trim(), level: 'top' })
+      const rest = nonEmpty.slice(1)
+      if (rest.length) blocks.push({ kind: 'p', lines: rest })
+      continue
+    }
+
+    blocks.push({ kind: 'p', lines: nonEmpty })
+  }
+
+  return blocks
+}
+
+function renderMarkdownWithAd(content: string) {
+  const parsed = parseMarkdownBlocks(content)
+  let paragraphCount = 0
+  const elements: ReactNode[] = []
+
+  for (let idx = 0; idx < parsed.length; idx += 1) {
+    const block = parsed[idx]
+    if (block.kind === 'h2') {
+      const isTop = block.level === 'top'
+      elements.push(
+        <h2
+          key={`h2-${idx}`}
+          style={{
+            margin: isTop ? '32px 0 12px' : '28px 0 10px',
+            fontFamily: font.display,
+            fontSize: isTop ? 32 : 28,
+            lineHeight: 1.15,
+            textTransform: 'uppercase',
+            letterSpacing: '-0.02em',
+            color: tokens.text,
+            fontWeight: 800,
+          }}
+        >
+          {renderInlineMarkdown(block.text)}
         </h2>
       )
+      continue
     }
-    if (block.startsWith('# ')) {
-      return (
-        <h1 key={`h1-${idx}`} style={{ margin: '28px 0 12px', fontFamily: font.display, fontSize: '40px', lineHeight: 1, textTransform: 'uppercase' }}>
-          {block.replace(/^#\s+/, '')}
-        </h1>
+    if (block.kind === 'h3') {
+      elements.push(
+        <h3
+          key={`h3-${idx}`}
+          style={{
+            margin: '24px 0 10px',
+            fontFamily: font.display,
+            fontSize: 24,
+            lineHeight: 1.2,
+            textTransform: 'uppercase',
+            letterSpacing: '-0.01em',
+            color: tokens.text,
+            fontWeight: 800,
+          }}
+        >
+          {renderInlineMarkdown(block.text)}
+        </h3>
       )
+      continue
     }
 
     paragraphCount += 1
+    const paraBody = (
+      <>
+        {block.lines.map((line, lineIdx) => (
+          <Fragment key={lineIdx}>
+            {lineIdx > 0 ? <br /> : null}
+            {renderInlineMarkdown(line)}
+          </Fragment>
+        ))}
+      </>
+    )
     const para = (
-      <p key={`p-${idx}`} style={{ margin: '0 0 16px', fontSize: '18px', lineHeight: 1.85, color: tokens.text }}>
-        {block}
+      <p key={`p-${idx}`} style={{ margin: '0 0 1.25em', ...bodyProseStyle }}>
+        {paraBody}
       </p>
     )
+
     if (paragraphCount === 3) {
-      return (
-        <div key={`ad-${idx}`}>
+      elements.push(
+        <div key={`ad-wrap-${idx}`}>
           {para}
           <div
             style={{
@@ -107,16 +217,20 @@ function renderMarkdownWithAd(content: string) {
               alignItems: 'center',
               justifyContent: 'center',
               color: tokens.muted,
-              fontSize: '12px',
+              fontFamily: font.body,
+              fontSize: 12,
             }}
           >
             728 × 90 Ad — Inline Sponsor Slot
           </div>
         </div>
       )
+    } else {
+      elements.push(para)
     }
-    return para
-  })
+  }
+
+  return elements
 }
 
 export async function generateStaticParams() {
@@ -241,7 +355,17 @@ export default async function BlogArticlePage({ params }: PageProps) {
               </div>
             </header>
 
-            <div style={{ maxWidth: '780px' }}>{renderMarkdownWithAd(post.content ?? '')}</div>
+            <div
+              style={{
+                maxWidth: '780px',
+                fontFamily: font.body,
+                fontSize: 18,
+                lineHeight: 1.75,
+                color: tokens.text,
+              }}
+            >
+              {renderMarkdownWithAd(post.content ?? '')}
+            </div>
 
             <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '24px', marginBottom: '30px' }}>
               <a href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(post.title)}`} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none', border: `1px solid ${tokens.border}`, background: tokens.bg2, color: tokens.text, borderRadius: '8px', padding: '8px 12px', fontSize: '13px' }}>Share on X</a>
