@@ -3,7 +3,7 @@ import { createClient } from '@supabase/supabase-js'
 const API_BASE = 'https://api.jolpi.ca/ergast/f1'
 const START_SEASON = 1950
 const END_SEASON = 2025
-const API_DELAY_MS = 200
+const API_DELAY_MS = 1000
 
 type SeasonItem = { season: string; url?: string }
 type DriverItem = {
