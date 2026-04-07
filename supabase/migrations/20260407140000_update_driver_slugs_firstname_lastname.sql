@@ -1,5 +1,6 @@
--- Rebuild driver slugs as lowercase firstname-lastname (e.g. lewis-hamilton).
--- Also rewrites results.driver_slug so race history still matches drivers.slug.
+-- Rebuild drivers.slug from first_name + last_name: lowercase, non-alphanumerics -> hyphens.
+-- Examples: hamilton -> lewis-hamilton, alonso -> fernando-alonso (using name columns).
+-- Also updates results.driver_slug from old slug -> new slug so seeded results still join drivers.
 
 begin;
 
