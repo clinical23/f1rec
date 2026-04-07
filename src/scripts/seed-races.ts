@@ -5,7 +5,8 @@ import { createClient } from '@supabase/supabase-js'
 const API_BASE = 'https://api.jolpi.ca/ergast/f1'
 const START_SEASON = 1950
 const END_SEASON = 2025
-const API_DELAY_MS = 1000
+const API_DELAY_MS = 2000
+const RATE_LIMIT_RETRY_DELAY_MS = 10000
 
 type CircuitItem = {
   circuitId: string
@@ -66,7 +67,13 @@ function loadEnvLocal() {
 }
 
 async function fetchJson(path: string): Promise<ApiResponse> {
-  const response = await fetch(`${API_BASE}${path}`)
+  let response = await fetch(`${API_BASE}${path}`)
+  if (response.status === 429) {
+    console.warn(`Rate limited on ${path}. Waiting ${RATE_LIMIT_RETRY_DELAY_MS / 1000}s before retry...`)
+    await sleep(RATE_LIMIT_RETRY_DELAY_MS)
+    response = await fetch(`${API_BASE}${path}`)
+  }
+
   if (!response.ok) {
     throw new Error(`Jolpica request failed (${response.status}) for ${path}`)
   }
