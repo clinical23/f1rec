@@ -40,6 +40,14 @@ type ApiResponse = {
 
 const sleep = (ms: number) => new Promise<void>((resolvePromise) => setTimeout(resolvePromise, ms))
 
+function slugify(value: string) {
+  return value
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+}
+
 function parseEnvFile(content: string) {
   for (const line of content.split(/\r?\n/)) {
     const trimmed = line.trim()
@@ -142,12 +150,13 @@ async function run() {
       })
 
       const round = Number.parseInt(race.round, 10)
+      const raceName = race.raceName || `Round ${race.round}`
       raceRows.push({
-        slug: `${race.season}-${race.round}`,
+        slug: `${race.season}-${slugify(raceName)}`,
         season_year: Number.parseInt(race.season, 10),
         round: Number.isFinite(round) ? round : 0,
-        name: race.raceName || `Round ${race.round}`,
-        full_name: `${race.season} ${race.raceName || `Round ${race.round}`}`,
+        name: raceName,
+        full_name: `${race.season} ${raceName}`,
         race_date: race.date ?? `${race.season}-01-01`,
         race_time: race.time ?? null,
         circuit_slug: circuitSlug,
