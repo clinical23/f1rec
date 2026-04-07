@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { createServerClient } from '@/lib/supabase/server'
 
 const tokens = {
   bg: '#0a0a0f',
@@ -27,27 +28,48 @@ type PageProps = {
 
 export default async function DriverPage({ params }: PageProps) {
   const { slug } = await params
+  const supabase = createServerClient()
+  const { data: driverData } = await supabase.from('drivers').select('*').eq('slug', slug).maybeSingle()
+
+  if (!driverData) {
+    return (
+      <main
+        style={{
+          fontFamily: font.body,
+          background: tokens.bg,
+          color: tokens.text,
+          minHeight: '100vh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        Driver not found
+      </main>
+    )
+  }
+
+  const fullName = `${driverData.first_name} ${driverData.last_name}`
+  const displayDob = driverData.date_of_birth ? new Date(driverData.date_of_birth).toLocaleDateString('en-GB') : 'N/A'
 
   const driver = {
-    firstName: 'LEWIS',
-    lastName: 'HAMILTON',
-    code: 'HAM',
-    number: '44',
-    nationality: 'British',
-    flag: '🇬🇧',
-    team: 'Mercedes',
+    firstName: String(driverData.first_name ?? '').toUpperCase(),
+    lastName: String(driverData.last_name ?? '').toUpperCase(),
+    code: driverData.code ?? 'N/A',
+    number: driverData.number ?? 0,
+    nationality: driverData.nationality ?? 'N/A',
     teamColor: '#27f4d2',
-    titles: 7,
-    bio: 'Seven-time Formula One World Champion. The most successful driver in F1 history by race wins and podiums. Known for relentless pace, wet-weather mastery, and advocacy beyond the track.',
+    titles: driverData.championships ?? 0,
+    bio: `${fullName} is a Formula 1 driver from ${driverData.nationality ?? 'unknown nationality'}.`,
   }
 
   const careerStats = [
-    { label: 'Wins', value: '103' },
-    { label: 'Poles', value: '104' },
-    { label: 'Podiums', value: '197' },
-    { label: 'Titles', value: '7' },
-    { label: 'Points', value: '4801.5' },
-    { label: 'Starts', value: '334' },
+    { label: 'Wins', value: String(driverData.career_wins ?? 0) },
+    { label: 'Poles', value: String(driverData.career_poles ?? 0) },
+    { label: 'Podiums', value: String(driverData.career_podiums ?? 0) },
+    { label: 'Titles', value: String(driverData.championships ?? 0) },
+    { label: 'Points', value: String(driverData.career_points ?? 0) },
+    { label: 'Starts', value: String(driverData.career_starts ?? 0) },
   ] as const
 
   const tabs = ['Race Results', 'Season by Season', 'Head-to-Head', 'Lap Records'] as const
@@ -206,7 +228,7 @@ export default async function DriverPage({ params }: PageProps) {
             Drivers
           </Link>
           <span aria-hidden>›</span>
-          <span style={{ color: tokens.text, fontWeight: 600 }}>Lewis Hamilton</span>
+          <span style={{ color: tokens.text, fontWeight: 600 }}>{fullName}</span>
         </nav>
 
         <div
@@ -282,7 +304,7 @@ export default async function DriverPage({ params }: PageProps) {
                           gap: '6px',
                         }}
                       >
-                        {driver.flag} {driver.nationality}
+                        {driver.nationality}
                       </span>
                       <span
                         style={{
@@ -298,7 +320,7 @@ export default async function DriverPage({ params }: PageProps) {
                         }}
                       >
                         <span style={{ width: '8px', height: '8px', borderRadius: '2px', background: driver.teamColor }} />
-                        {driver.team}
+                        DOB {displayDob}
                       </span>
                       <span
                         style={{
@@ -412,7 +434,7 @@ export default async function DriverPage({ params }: PageProps) {
                     textDecoration: 'none',
                   }}
                 >
-                  Compare Hamilton
+                  Compare {driverData.last_name}
                 </Link>
               </div>
             </section>
@@ -706,12 +728,18 @@ export default async function DriverPage({ params }: PageProps) {
               </div>
               <div style={{ padding: '16px' }}>
                 {[
-                  ['Nationality', `${driver.flag} ${driver.nationality}`],
-                  ['Date of birth', '7 January 1985'],
-                  ['Age', '41'],
-                  ['First race', '2007 Australian GP'],
-                  ['Height', '1.74 m'],
-                  ['Car number', `#${driver.number}`],
+                  ['First name', driverData.first_name ?? 'N/A'],
+                  ['Last name', driverData.last_name ?? 'N/A'],
+                  ['Nationality', driverData.nationality ?? 'N/A'],
+                  ['Date of birth', displayDob],
+                  ['Code', driverData.code ?? 'N/A'],
+                  ['Car number', `#${driverData.number ?? 0}`],
+                  ['Career wins', String(driverData.career_wins ?? 0)],
+                  ['Career poles', String(driverData.career_poles ?? 0)],
+                  ['Career podiums', String(driverData.career_podiums ?? 0)],
+                  ['Career points', String(driverData.career_points ?? 0)],
+                  ['Career starts', String(driverData.career_starts ?? 0)],
+                  ['Championships', String(driverData.championships ?? 0)],
                 ].map(([k, v]) => (
                   <div
                     key={k}
