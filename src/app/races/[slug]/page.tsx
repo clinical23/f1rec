@@ -62,7 +62,26 @@ export default async function RacePage({ params }: PageProps) {
     .maybeSingle()
 
   const { data: resultsData } = await supabase.from('results').select('*').eq('race_slug', slug)
-  const results = (resultsData ?? []).slice().sort((a, b) => {
+  const resultsByDriver = new Map<string, (typeof resultsData extends Array<infer T> ? T : never)>()
+  for (const row of resultsData ?? []) {
+    const driverSlug =
+      typeof row.driver_slug === 'string' && row.driver_slug.length > 0
+        ? row.driver_slug
+        : `unknown-${row.slug ?? Math.random()}`
+    const existing = resultsByDriver.get(driverSlug)
+    if (!existing) {
+      resultsByDriver.set(driverSlug, row)
+      continue
+    }
+
+    const existingPos = typeof existing.position === 'number' ? existing.position : 9999
+    const currentPos = typeof row.position === 'number' ? row.position : 9999
+    if (currentPos < existingPos) {
+      resultsByDriver.set(driverSlug, row)
+    }
+  }
+
+  const results = Array.from(resultsByDriver.values()).sort((a, b) => {
     const pa = typeof a.position === 'number' ? a.position : 9999
     const pb = typeof b.position === 'number' ? b.position : 9999
     return pa - pb
