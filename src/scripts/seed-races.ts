@@ -102,12 +102,25 @@ async function run() {
       continue
     }
 
-    const circuitsMap = new Map<string, { slug: string; circuit_id: string; name: string; locality: string | null; country: string | null; lat: number | null; lng: number | null }>()
+    const circuitsMap = new Map<
+      string,
+      {
+        slug: string
+        circuit_id: string
+        name: string
+        city: string
+        locality: string | null
+        country: string | null
+        lat: number | null
+        lng: number | null
+      }
+    >()
     const raceRows: Array<{
       slug: string
       season_year: number
       round: number
       name: string
+      full_name: string
       race_date: string | null
       race_time: string | null
       circuit_slug: string
@@ -120,7 +133,8 @@ async function run() {
       circuitsMap.set(circuitSlug, {
         slug: circuitSlug,
         circuit_id: circuit.circuitId,
-        name: circuit.circuitName,
+        name: circuit.circuitName || circuit.circuitId || 'Unknown Circuit',
+        city: circuit.Location?.locality ?? 'Unknown',
         locality: circuit.Location?.locality ?? null,
         country: circuit.Location?.country ?? null,
         lat: circuit.Location?.lat ? Number.parseFloat(circuit.Location.lat) : null,
@@ -132,8 +146,9 @@ async function run() {
         slug: `${race.season}-${race.round}`,
         season_year: Number.parseInt(race.season, 10),
         round: Number.isFinite(round) ? round : 0,
-        name: race.raceName,
-        race_date: race.date ?? null,
+        name: race.raceName || `Round ${race.round}`,
+        full_name: `${race.season} ${race.raceName || `Round ${race.round}`}`,
+        race_date: race.date ?? `${race.season}-01-01`,
         race_time: race.time ?? null,
         circuit_slug: circuitSlug,
         url: race.url ?? null,
