@@ -67,11 +67,10 @@ export default async function BlogIndexPage() {
     .from('posts')
     .select('*')
     .eq('is_published', true)
-    .order('featured', { ascending: false })
     .order('published_at', { ascending: false })
 
   const posts = ((data ?? []) as Post[]).filter((p) => p.slug)
-  const featured = posts.find((p) => p.featured) ?? posts[0]
+  const featured = posts.find((p) => p.featured === true) ?? posts[0]
   const rest = posts.filter((p) => p.slug !== featured?.slug)
 
   return (
