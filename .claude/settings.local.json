@@ -7,7 +7,14 @@
       "Bash(git commit:*)",
       "Bash(git push:*)",
       "Bash(npx next:*)",
-      "Bash(npm run:*)"
+      "Bash(npm run:*)",
+      "Bash(npx vercel:*)",
+      "WebFetch(domain:api.jolpi.ca)",
+      "Bash(npx -y deno check supabase/functions/import-latest-race/index.ts)",
+      "Bash(node -e ':*)",
+      "Bash(npx deno:*)",
+      "mcp__claude_ai_Supabase__deploy_edge_function",
+      "mcp__claude_ai_Supabase__execute_sql"
     ]
   }
 }

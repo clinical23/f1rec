@@ -1,0 +1,8 @@
+[project]
+id = "mezipswmplrcdbinwjwy"
+
+[functions.import-latest-race]
+verify_jwt = false
+
+[functions.import-season-results]
+verify_jwt = false

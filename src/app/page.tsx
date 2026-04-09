@@ -4,8 +4,25 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 
+interface RecentRace {
+  season_year: number
+  round: number
+  race_name: string
+  driver_name: string
+  race_slug: string
+}
+
+interface Champion {
+  year: number
+  name: string
+  slug: string
+  team: string | null
+}
+
 export default function HomePage() {
   const [stats, setStats] = useState({ drivers: 1076, races: 1107, seasons: 77, circuits: 78 })
+  const [recentRaces, setRecentRaces] = useState<RecentRace[]>([])
+  const [champion, setChampion] = useState<Champion | null>(null)
 
   useEffect(() => {
     document.title = 'F1Rec — Formula 1 Statistics, Records & Driver Comparisons'
@@ -14,12 +31,24 @@ export default function HomePage() {
   }, [])
 
   useEffect(() => {
-    async function fetchCounts() {
-      const [drivers, races, seasons, circuits] = await Promise.all([
+    async function fetchData() {
+      const [drivers, races, seasons, circuits, recentRes, champRes] = await Promise.all([
         supabase.from('drivers').select('*', { count: 'exact', head: true }),
         supabase.from('races').select('*', { count: 'exact', head: true }),
         supabase.from('seasons').select('*', { count: 'exact', head: true }),
         supabase.from('circuits').select('*', { count: 'exact', head: true }),
+        supabase.from('results')
+          .select('season_year, round, race_name, driver_name, race_slug')
+          .eq('position', 1)
+          .eq('is_sprint', false)
+          .order('season_year', { ascending: false })
+          .order('round', { ascending: false })
+          .limit(20),
+        supabase.from('seasons')
+          .select('year, champion_driver_id, champion_team_id')
+          .not('champion_driver_id', 'is', null)
+          .order('year', { ascending: false })
+          .limit(1),
       ])
       setStats({
         drivers: drivers.count ?? 1076,
@@ -27,8 +56,40 @@ export default function HomePage() {
         seasons: seasons.count ?? 77,
         circuits: circuits.count ?? 78,
       })
+
+      // Dedup recent races (one per season_year+round)
+      if (recentRes.data) {
+        const seen = new Set<string>()
+        const deduped: RecentRace[] = []
+        for (const r of recentRes.data) {
+          const key = `${r.season_year}-${r.round}`
+          if (!seen.has(key)) {
+            seen.add(key)
+            deduped.push(r)
+          }
+          if (deduped.length >= 5) break
+        }
+        setRecentRaces(deduped)
+      }
+
+      // Fetch champion driver + team names
+      if (champRes.data && champRes.data.length > 0) {
+        const s = champRes.data[0]
+        const [driverRes, teamRes] = await Promise.all([
+          supabase.from('drivers').select('full_name, slug').eq('id', s.champion_driver_id).single(),
+          s.champion_team_id
+            ? supabase.from('teams').select('name').eq('id', s.champion_team_id).single()
+            : { data: null },
+        ])
+        setChampion({
+          year: s.year,
+          name: driverRes.data?.full_name ?? 'TBD',
+          slug: driverRes.data?.slug ?? '',
+          team: teamRes.data?.name ?? null,
+        })
+      }
     }
-    fetchCounts()
+    fetchData()
   }, [])
 
   return (
@@ -87,25 +148,20 @@ export default function HomePage() {
             <Link href="/races" style={{ fontSize: '12px', fontWeight: 600, color: 'var(--accent)', textDecoration: 'none' }}>See all →</Link>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '32px' }}>
-            {[
-              { round: 'R24', flag: '🇦🇪', name: 'Abu Dhabi Grand Prix', circuit: 'Yas Marina', date: '8 Dec 2024', winner: 'Lando Norris', time: '1:26:13.523' },
-              { round: 'R23', flag: '🇶🇦', name: 'Qatar Grand Prix', circuit: 'Lusail', date: '1 Dec 2024', winner: 'Max Verstappen', time: '1:31:05.323' },
-              { round: 'R22', flag: '🇧🇷', name: 'São Paulo Grand Prix', circuit: 'Interlagos', date: '3 Nov 2024', winner: 'Max Verstappen', time: '1:45:33.433' },
-              { round: 'R21', flag: '🇲🇽', name: 'Mexico City Grand Prix', circuit: 'Hermanos Rodríguez', date: '27 Oct 2024', winner: 'Carlos Sainz', time: '1:42:11.044' },
-            ].map((race, i) => (
-              <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '14px 16px', background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: '8px', cursor: 'pointer' }}>
-                <div style={{ fontFamily: 'monospace', fontSize: '11px', color: 'var(--muted)', width: '40px', textAlign: 'center', flexShrink: 0 }}>{race.round}</div>
-                <div style={{ fontSize: '24px', flexShrink: 0 }}>{race.flag}</div>
+            {recentRaces.length > 0 ? recentRaces.map((race, i) => (
+              <Link key={i} href={`/races/${race.race_slug}`} style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '14px 16px', background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: '8px', cursor: 'pointer', textDecoration: 'none', color: 'inherit' }}>
+                <div style={{ fontFamily: 'monospace', fontSize: '11px', color: 'var(--muted)', width: '40px', textAlign: 'center', flexShrink: 0 }}>R{race.round}</div>
                 <div style={{ flex: 1 }}>
-                  <div style={{ fontWeight: 600, color: '#fff', fontSize: '14px' }}>{race.name}</div>
-                  <div style={{ fontSize: '12px', color: 'var(--muted)' }}>{race.circuit} · {race.date}</div>
+                  <div style={{ fontWeight: 600, color: '#fff', fontSize: '14px' }}>{race.race_name}</div>
+                  <div style={{ fontSize: '12px', color: 'var(--muted)' }}>{race.season_year} Season</div>
                 </div>
                 <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                  <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text)' }}>🥇 {race.winner}</div>
-                  <div style={{ fontSize: '11px', color: 'var(--muted)', fontFamily: 'monospace' }}>{race.time}</div>
+                  <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text)' }}>🥇 {race.driver_name}</div>
                 </div>
-              </div>
-            ))}
+              </Link>
+            )) : (
+              <div style={{ padding: '24px', textAlign: 'center', color: 'var(--muted)', fontSize: '13px' }}>Loading recent races...</div>
+            )}
           </div>
 
           {/* Leaderboard */}
@@ -159,18 +215,20 @@ export default function HomePage() {
         <div>
           <div style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: '8px', overflow: 'hidden', marginBottom: '16px' }}>
             <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--border)', background: 'var(--bg3)' }}>
-              <div style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '13px', fontWeight: 800, letterSpacing: '1px', textTransform: 'uppercase', color: '#fff' }}>2024 Champion</div>
+              <div style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '13px', fontWeight: 800, letterSpacing: '1px', textTransform: 'uppercase', color: '#fff' }}>{champion ? `${champion.year} Champion` : 'Champion'}</div>
             </div>
             <div style={{ padding: '16px', textAlign: 'center' }}>
               <div style={{ fontSize: '40px', marginBottom: '8px' }}>🏆</div>
-              <div style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '24px', fontWeight: 900, color: '#fff' }}>Max Verstappen</div>
-              <div style={{ color: 'var(--muted)', fontSize: '13px', marginTop: '4px', marginBottom: '16px' }}>Red Bull Racing · 🇳🇱</div>
-              {[['Points', '437'], ['Wins', '9'], ['Poles', '9'], ['Podiums', '14']].map(([label, val]) => (
-                <div key={label} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid var(--border)', fontSize: '13px' }}>
-                  <span style={{ color: 'var(--muted)' }}>{label}</span>
-                  <span style={{ fontFamily: 'monospace', fontWeight: 600, color: '#fff' }}>{val}</span>
-                </div>
-              ))}
+              {champion ? (
+                <>
+                  <Link href={`/drivers/${champion.slug}`} style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '24px', fontWeight: 900, color: '#fff', textDecoration: 'none' }}>
+                    {champion.name}
+                  </Link>
+                  {champion.team && <div style={{ color: 'var(--muted)', fontSize: '13px', marginTop: '4px' }}>{champion.team}</div>}
+                </>
+              ) : (
+                <div style={{ color: 'var(--muted)', fontSize: '13px' }}>Loading...</div>
+              )}
             </div>
           </div>
 

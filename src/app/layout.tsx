@@ -1,6 +1,7 @@
 ﻿import type { Metadata } from 'next'
-import Link from 'next/link'
 import './globals.css'
+import Nav from '@/components/Nav'
+import Footer from '@/components/Footer'
 
 export const metadata: Metadata = {
   title: {
@@ -20,16 +21,6 @@ export const metadata: Metadata = {
   },
 }
 
-const navLinks = [
-  { label: 'Drivers', href: '/drivers' },
-  { label: 'Teams', href: '/teams' },
-  { label: 'Races', href: '/races' },
-  { label: 'Seasons', href: '/seasons' },
-  { label: 'Compare', href: '/compare' },
-  { label: 'Leaderboards', href: '/leaderboards' },
-  { label: 'Sim Racing', href: '/sim-racing' },
-]
-
 export default function RootLayout({
   children,
 }: {
@@ -38,52 +29,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <nav style={{
-          position: 'sticky',
-          top: 0,
-          zIndex: 100,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '0 24px',
-          height: '48px',
-          background: 'rgba(10,10,15,0.85)',
-          backdropFilter: 'blur(12px)',
-          borderBottom: '1px solid var(--border)',
-        }}>
-          <Link href="/" style={{
-            fontFamily: 'var(--font-display)',
-            fontWeight: 900,
-            fontSize: '18px',
-            color: 'var(--text)',
-            textDecoration: 'none',
-            textTransform: 'uppercase',
-            letterSpacing: '1px',
-          }}>
-            F1<span style={{ color: 'var(--accent)' }}>Rec</span>
-          </Link>
-          <div style={{ display: 'flex', gap: '24px', alignItems: 'center' }}>
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                style={{
-                  fontFamily: 'var(--font-display)',
-                  fontWeight: 600,
-                  fontSize: '12px',
-                  color: link.href === '/sim-racing' ? 'var(--accent)' : 'var(--muted)',
-                  textDecoration: 'none',
-                  textTransform: 'uppercase',
-                  letterSpacing: '1.5px',
-                  transition: 'color 0.2s',
-                }}
-              >
-                {link.label}
-              </Link>
-            ))}
-          </div>
-        </nav>
+        <Nav />
         {children}
+        <Footer />
       </body>
     </html>
   )
