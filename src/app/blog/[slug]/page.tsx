@@ -19,6 +19,10 @@ const font = {
   body: "'Barlow', sans-serif",
 }
 
+function cleanTitle(title: string): string {
+  return title.replace(/^Title:\s*/i, '')
+}
+
 type PageProps = {
   params: Promise<{ slug: string }>
 }
@@ -251,10 +255,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
   const post = data as Post
   return {
-    title: `${post.title} | F1Rec`,
+    title: `${cleanTitle(post.title)} | F1Rec`,
     description: post.meta_description ?? post.excerpt ?? 'F1Rec editorial insight.',
     openGraph: {
-      title: post.title,
+      title: cleanTitle(post.title),
       description: post.meta_description ?? post.excerpt ?? 'F1Rec editorial insight.',
       type: 'article',
       url: `/blog/${post.slug}`,
@@ -310,7 +314,7 @@ export default async function BlogArticlePage({ params }: PageProps) {
   const articleJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Article',
-    headline: post.title,
+    headline: cleanTitle(post.title),
     description: post.meta_description ?? post.excerpt,
     datePublished: post.published_at,
     author: {
@@ -336,7 +340,7 @@ export default async function BlogArticlePage({ params }: PageProps) {
           <span aria-hidden>›</span>
           <span>{categoryLabel(post.category)}</span>
           <span aria-hidden>›</span>
-          <span style={{ color: tokens.text }}>{post.title}</span>
+          <span style={{ color: tokens.text }}>{cleanTitle(post.title)}</span>
         </nav>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) 300px', gap: '32px', alignItems: 'start' }}>
@@ -346,7 +350,7 @@ export default async function BlogArticlePage({ params }: PageProps) {
                 {categoryLabel(post.category)}
               </div>
               <h1 style={{ margin: '0 0 10px', fontFamily: font.display, fontWeight: 900, fontSize: 'clamp(34px,5vw,56px)', lineHeight: 0.95, textTransform: 'uppercase' }}>
-                {post.title}
+                {cleanTitle(post.title)}
               </h1>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '14px', color: tokens.muted, fontSize: '13px' }}>
                 <span>{formatDate(post.published_at)}</span>
@@ -368,8 +372,8 @@ export default async function BlogArticlePage({ params }: PageProps) {
             </div>
 
             <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '24px', marginBottom: '30px' }}>
-              <a href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(post.title)}`} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none', border: `1px solid ${tokens.border}`, background: tokens.bg2, color: tokens.text, borderRadius: '8px', padding: '8px 12px', fontSize: '13px' }}>Share on X</a>
-              <a href={`https://www.reddit.com/submit?url=${encodeURIComponent(shareUrl)}&title=${encodeURIComponent(post.title)}`} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none', border: `1px solid ${tokens.border}`, background: tokens.bg2, color: tokens.text, borderRadius: '8px', padding: '8px 12px', fontSize: '13px' }}>Share on Reddit</a>
+              <a href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(cleanTitle(post.title))}`} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none', border: `1px solid ${tokens.border}`, background: tokens.bg2, color: tokens.text, borderRadius: '8px', padding: '8px 12px', fontSize: '13px' }}>Share on X</a>
+              <a href={`https://www.reddit.com/submit?url=${encodeURIComponent(shareUrl)}&title=${encodeURIComponent(cleanTitle(post.title))}`} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none', border: `1px solid ${tokens.border}`, background: tokens.bg2, color: tokens.text, borderRadius: '8px', padding: '8px 12px', fontSize: '13px' }}>Share on Reddit</a>
               <button type="button" style={{ border: `1px solid ${tokens.border}`, background: tokens.bg2, color: tokens.text, borderRadius: '8px', padding: '8px 12px', fontSize: '13px' }}>
                 Copy Link
               </button>

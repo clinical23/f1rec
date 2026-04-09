@@ -48,6 +48,10 @@ export default function DriversPage() {
   const [visibleCount, setVisibleCount] = useState(60)
 
   useEffect(() => {
+    document.title = 'All F1 Drivers — Career Stats & Records | F1Rec'
+  }, [])
+
+  useEffect(() => {
     async function fetchDrivers() {
       const { data, error } = await supabase
         .from('drivers')

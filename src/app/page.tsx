@@ -1,22 +1,38 @@
+'use client'
+
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
+import { supabase } from '@/lib/supabase'
 
 export default function HomePage() {
+  const [stats, setStats] = useState({ drivers: 1076, races: 1107, seasons: 77, circuits: 78 })
+
+  useEffect(() => {
+    document.title = 'F1Rec — Formula 1 Statistics, Records & Driver Comparisons'
+    const metaDesc = document.querySelector('meta[name="description"]')
+    if (metaDesc) metaDesc.setAttribute('content', 'The most complete Formula 1 statistics platform. Explore driver records, race results, season standings and head-to-head comparisons from 1950 to today.')
+  }, [])
+
+  useEffect(() => {
+    async function fetchCounts() {
+      const [drivers, races, seasons, circuits] = await Promise.all([
+        supabase.from('drivers').select('*', { count: 'exact', head: true }),
+        supabase.from('races').select('*', { count: 'exact', head: true }),
+        supabase.from('seasons').select('*', { count: 'exact', head: true }),
+        supabase.from('circuits').select('*', { count: 'exact', head: true }),
+      ])
+      setStats({
+        drivers: drivers.count ?? 1076,
+        races: races.count ?? 1107,
+        seasons: seasons.count ?? 77,
+        circuits: circuits.count ?? 78,
+      })
+    }
+    fetchCounts()
+  }, [])
+
   return (
     <main style={{ fontFamily: "'Barlow', sans-serif", background: 'var(--bg)', minHeight: '100vh' }}>
-
-      {/* NAV */}
-      <nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 24px', height: '56px', background: 'var(--bg2)', borderBottom: '1px solid var(--border)', position: 'sticky', top: 0, zIndex: 100 }}>
-        <span style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '26px', fontWeight: 900, color: '#fff' }}>
-          F1<span style={{ color: 'var(--accent)' }}>Rec</span>
-        </span>
-        <div style={{ display: 'flex', gap: '4px' }}>
-          {['Drivers', 'Teams', 'Races', 'Seasons', 'Compare', 'Leaderboards'].map(item => (
-            <Link key={item} href={`/${item.toLowerCase()}`} style={{ color: 'var(--muted)', textDecoration: 'none', fontSize: '13px', fontWeight: 600, letterSpacing: '0.5px', textTransform: 'uppercase', padding: '6px 12px', borderRadius: '4px' }}>
-              {item}
-            </Link>
-          ))}
-        </div>
-      </nav>
 
       {/* HERO */}
       <div style={{ position: 'relative', overflow: 'hidden', padding: '64px 24px', textAlign: 'center', background: 'linear-gradient(180deg, #0a0a0f 0%, #12040a 50%, #0a0a0f 100%)' }}>
@@ -42,10 +58,10 @@ export default function HomePage() {
       {/* STATS BAR */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)', background: 'var(--bg2)' }}>
         {[
-          { num: '1,076', label: 'Drivers' },
-          { num: '1,107', label: 'Races' },
-          { num: '77', label: 'Seasons' },
-          { num: '78', label: 'Circuits' },
+          { num: stats.drivers.toLocaleString(), label: 'Drivers' },
+          { num: stats.races.toLocaleString(), label: 'Races' },
+          { num: stats.seasons.toLocaleString(), label: 'Seasons' },
+          { num: stats.circuits.toLocaleString(), label: 'Circuits' },
         ].map((stat, i) => (
           <div key={i} style={{ padding: '20px 24px', borderRight: i < 3 ? '1px solid var(--border)' : 'none', textAlign: 'center' }}>
             <div style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '40px', fontWeight: 900, color: '#fff', lineHeight: 1 }}>{stat.num}</div>

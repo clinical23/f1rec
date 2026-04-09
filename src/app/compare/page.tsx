@@ -97,6 +97,10 @@ function CompareContent() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    document.title = 'Compare F1 Drivers Head-to-Head | F1Rec'
+  }, [])
+
+  useEffect(() => {
     async function fetchDrivers() {
       const { data } = await supabase.from('drivers')
         .select('id, slug, full_name, code, championships, career_wins, career_podiums, career_poles, career_points, career_starts, career_dnfs, career_fastest_laps, first_season, last_season, nationality')

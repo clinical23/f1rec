@@ -43,6 +43,10 @@ export default function DriverProfilePage() {
       const { data: driverData } = await supabase.from('drivers').select('*').eq('slug', slug).single()
       if (driverData) {
         setDriver(driverData)
+        const champText = driverData.championships > 0 ? `${driverData.championships}x World Champion. ` : ''
+        document.title = `${driverData.full_name} — F1 Career Stats & Results | F1Rec`
+        const metaDesc = document.querySelector('meta[name="description"]')
+        if (metaDesc) metaDesc.setAttribute('content', `${champText}${driverData.career_wins} wins, ${driverData.career_podiums} podiums, ${driverData.career_points} points. Full season-by-season F1 stats for ${driverData.full_name}.`)
         const { data: statsData } = await supabase
           .from('driver_season_stats')
           .select(`id, championship_position, points, wins, podiums, poles, fastest_laps, starts, dnfs, points_per_race, seasons!inner(year), teams!inner(name)`)
