@@ -31,6 +31,12 @@ type Product = {
   cons: string[] | null
 }
 
+type SimBrand = {
+  id: string
+  name: string
+  sort_order: number | null
+}
+
 const CATEGORY_PILLS: Array<{ label: string; value: CategoryFilter }> = [
   { label: 'All', value: 'all' },
   { label: 'Wheel Bases', value: 'wheel-bases' },
@@ -53,6 +59,7 @@ function normalizeCategory(slug: string | null, name: string | null): CategoryFi
 
 export default function ProductsClient() {
   const [products, setProducts] = useState<Product[]>([])
+  const [featuredBrands, setFeaturedBrands] = useState<SimBrand[]>([])
   const [loading, setLoading] = useState(true)
   const [category, setCategory] = useState<CategoryFilter>('all')
   const [brand, setBrand] = useState('all')
@@ -60,15 +67,22 @@ export default function ProductsClient() {
 
   useEffect(() => {
     async function fetchProducts() {
-      const { data } = await supabase
-        .from('sim_products')
-        .select('id, name, brand, price_gbp, rating, short_description, affiliate_url, is_featured, is_budget_pick, is_premium_pick, pros, cons, category_id, sim_product_categories(name, slug)')
-        .order('brand', { ascending: true })
-        .order('price_gbp', { ascending: false })
+      const [{ data: productData }, { data: brandData }] = await Promise.all([
+        supabase
+          .from('sim_products')
+          .select('id, name, brand, price_gbp, rating, short_description, affiliate_url, is_featured, is_budget_pick, is_premium_pick, pros, cons, category_id, sim_product_categories(name, slug)')
+          .order('brand', { ascending: true })
+          .order('price_gbp', { ascending: false }),
+        supabase
+          .from('sim_brands')
+          .select('id, name, sort_order')
+          .eq('is_featured', true)
+          .order('sort_order', { ascending: true }),
+      ])
 
-      if (data) {
+      if (productData) {
         setProducts(
-          data.map((row: any) => ({
+          productData.map((row: any) => ({
             id: row.id,
             brand: row.brand ?? null,
             name: row.name,
@@ -86,10 +100,21 @@ export default function ProductsClient() {
           }))
         )
       }
+      if (brandData) {
+        setFeaturedBrands(brandData as SimBrand[])
+      }
       setLoading(false)
     }
 
     fetchProducts()
+  }, [])
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return
+    const value = new URLSearchParams(window.location.search).get('brand')
+    if (value) {
+      setBrand(value)
+    }
   }, [])
 
   const brands = useMemo(() => {
@@ -130,6 +155,39 @@ export default function ProductsClient() {
       </section>
 
       <section style={{ maxWidth: '1200px', margin: '0 auto', padding: '1.5rem' }}>
+        <div style={{ marginBottom: '1.15rem' }}>
+          <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: '22px', textTransform: 'uppercase', color: 'var(--text)', marginBottom: '6px' }}>
+            Trusted <span style={{ color: 'var(--accent)' }}>Brands</span>
+          </h2>
+          <div className="products-brand-wall" style={{ display: 'grid', gridTemplateColumns: 'repeat(6, minmax(0, 1fr))', gap: '10px' }}>
+            {featuredBrands.map((item) => (
+              <button
+                key={item.id}
+                onClick={() => setBrand(item.name)}
+                style={{
+                  background: 'var(--bg2)',
+                  border: `1px solid ${brand === item.name ? 'var(--accent)' : 'var(--border)'}`,
+                  borderBottom: `2px solid ${brand === item.name ? 'var(--accent)' : 'transparent'}`,
+                  borderRadius: '6px',
+                  minHeight: '56px',
+                  color: '#fff',
+                  fontFamily: 'var(--font-barlow-condensed)',
+                  fontWeight: 800,
+                  letterSpacing: '0.04em',
+                  textTransform: 'uppercase',
+                  fontSize: '1rem',
+                  cursor: 'pointer',
+                  transition: 'transform 0.2s ease, border-color 0.2s ease',
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)' }}
+                onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)' }}
+              >
+                {item.name}
+              </button>
+            ))}
+          </div>
+        </div>
+
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '1rem' }}>
           <p style={{ margin: 0, color: 'var(--muted)', fontSize: '0.82rem' }}>
             {products.length} products from {new Set(products.map((p) => p.brand).filter(Boolean)).size} brands
@@ -222,6 +280,14 @@ export default function ProductsClient() {
             ))}
           </div>
         )}
+        <style>{`
+          @media (max-width: 980px) {
+            .products-brand-wall { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
+          }
+          @media (max-width: 640px) {
+            .products-brand-wall { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+          }
+        `}</style>
       </section>
     </main>
   )
