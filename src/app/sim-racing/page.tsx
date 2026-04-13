@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import BrandsWall from './brands-wall'
 import SoundLink from '@/components/SoundLink'
+import EmailCapture from '@/components/EmailCapture'
 
 const categories = [
   {
@@ -419,65 +420,15 @@ export default function SimRacingPage() {
         </div>
       </section>
 
-      {/* CTA / Newsletter */}
-      <section style={{
-        maxWidth: '1200px',
-        margin: '0 auto',
-        padding: '40px 24px 80px',
-      }}>
-        <div style={{
-          background: 'linear-gradient(135deg, rgba(232,0,45,0.1) 0%, rgba(59,130,246,0.06) 100%)',
-          border: '1px solid var(--border)',
-          borderRadius: '12px',
-          padding: '48px 32px',
-          textAlign: 'center',
-        }}>
-          <h2 style={{
-            fontFamily: 'var(--font-display)',
-            fontWeight: 800,
-            fontSize: '28px',
-            textTransform: 'uppercase',
-            color: 'var(--text)',
-            marginBottom: '12px',
-          }}>
-            Get the <span style={{ color: 'var(--accent)' }}>setup advantage</span>
-          </h2>
-          <p style={{ color: 'var(--muted)', fontSize: '15px', maxWidth: '480px', margin: '0 auto 24px', lineHeight: 1.5 }}>
-            Weekly hardware deals, new setup drops, and exclusive rig builder
-            discounts. No spam, just speed.
-          </p>
-          <div style={{ display: 'flex', gap: '8px', justifyContent: 'center', maxWidth: '420px', margin: '0 auto' }}>
-            <input
-              type="email"
-              placeholder="your@email.com"
-              style={{
-                flex: 1,
-                background: 'var(--bg)',
-                border: '1px solid var(--border)',
-                borderRadius: '4px',
-                padding: '12px 16px',
-                color: 'var(--text)',
-                fontSize: '14px',
-                outline: 'none',
-              }}
-            />
-            <button style={{
-              background: 'var(--accent)',
-              color: '#fff',
-              border: 'none',
-              borderRadius: '4px',
-              padding: '12px 24px',
-              fontFamily: 'var(--font-display)',
-              fontWeight: 700,
-              fontSize: '13px',
-              letterSpacing: '1px',
-              textTransform: 'uppercase',
-              cursor: 'pointer',
-            }}>
-              Subscribe
-            </button>
-          </div>
-        </div>
+      {/* Email capture */}
+      <section
+        style={{
+          maxWidth: '1200px',
+          margin: '0 auto',
+          padding: '40px 24px 80px',
+        }}
+      >
+        <EmailCapture source="sim-racing" />
       </section>
     </main>
   )

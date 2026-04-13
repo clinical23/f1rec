@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { createServerClient } from '@/lib/supabase/server'
+import EmailCapture from '@/components/EmailCapture'
 
 /** Fresh standings and race data on each request (not frozen at build time). */
 export const dynamic = 'force-dynamic'
@@ -574,16 +575,8 @@ export default async function HomePage() {
           </div>
         </section>
 
-        {/* Ad placeholder */}
-        <div className="mb-12">
-          <p className="mb-1 text-center font-mono text-[10px] uppercase tracking-widest text-[var(--muted)] opacity-70">Advertisement</p>
-          <div className="flex h-[90px] items-center justify-center rounded-md border border-dashed border-[var(--border)] bg-[var(--bg3)] font-mono text-xs text-[var(--muted)] opacity-80">
-            728 × 90 — Ad space
-          </div>
-        </div>
-
         {/* Sim racing teaser */}
-        <section className="rounded-xl border border-[var(--border)] bg-gradient-to-br from-[color-mix(in_srgb,var(--accent)_12%,var(--bg2))] to-[var(--bg2)] p-8 text-center md:p-10">
+        <section className="mb-12 rounded-xl border border-[var(--border)] bg-gradient-to-br from-[color-mix(in_srgb,var(--accent)_12%,var(--bg2))] to-[var(--bg2)] p-8 text-center md:p-10">
           <h2 className="font-display text-2xl font-black uppercase text-[var(--text)] md:text-3xl">
             Sim Racing Hub — Reviews, Setups, and Gear
           </h2>
@@ -597,6 +590,18 @@ export default async function HomePage() {
             Open Sim Racing
           </Link>
         </section>
+
+        <div className="mb-12 max-w-3xl mx-auto">
+          <EmailCapture source="homepage" />
+        </div>
+
+        {/* Ad placeholder */}
+        <div className="mb-12">
+          <p className="mb-1 text-center font-mono text-[10px] uppercase tracking-widest text-[var(--muted)] opacity-70">Advertisement</p>
+          <div className="flex h-[90px] items-center justify-center rounded-md border border-dashed border-[var(--border)] bg-[var(--bg3)] font-mono text-xs text-[var(--muted)] opacity-80">
+            728 × 90 — Ad space
+          </div>
+        </div>
       </div>
     </main>
   )

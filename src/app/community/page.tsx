@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
+import EmailCapture from '@/components/EmailCapture'
 
 type CreatorRow = {
   id: string
@@ -282,28 +283,7 @@ export default function CommunityPage() {
         </div>
 
         {/* Join */}
-        <div style={{ border: '1px solid var(--border)', borderRadius: '10px', padding: '1.25rem', background: 'linear-gradient(180deg, rgba(232,0,45,0.08) 0%, transparent 100%)' }}>
-          <h2 style={{ margin: 0, fontFamily: 'var(--font-barlow-condensed)', textTransform: 'uppercase', fontWeight: 800, fontSize: '1.5rem' }}>
-            Stay in the Loop
-          </h2>
-          <p style={{ color: 'var(--muted)', margin: '0.5rem 0 1rem', fontSize: '0.9rem' }}>
-            Weekly curated F1 content picks, sim racing deals, and stats breakdowns. No spam.
-          </p>
-          <form onSubmit={(e) => e.preventDefault()} style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap' }}>
-            <input
-              type="email"
-              placeholder="Enter your email"
-              aria-label="Email address"
-              style={{ flex: '1 1 260px', minWidth: '220px', background: 'var(--bg2)', border: '1px solid var(--border)', color: 'var(--text)', borderRadius: '6px', padding: '0.7rem 0.8rem', fontSize: '0.9rem', outline: 'none' }}
-            />
-            <button
-              type="submit"
-              style={{ border: '1px solid var(--accent)', background: 'var(--accent)', color: '#fff', borderRadius: '6px', padding: '0.7rem 1rem', fontFamily: 'var(--font-barlow-condensed)', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 700, fontSize: '0.75rem', cursor: 'pointer' }}
-            >
-              Subscribe
-            </button>
-          </form>
-        </div>
+        <EmailCapture source="community" />
       </div>
     </main>
   )
