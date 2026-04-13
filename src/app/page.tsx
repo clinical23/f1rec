@@ -2,6 +2,9 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { createServerClient } from '@/lib/supabase/server'
 
+/** Fresh standings and race data on each request (not frozen at build time). */
+export const dynamic = 'force-dynamic'
+
 export const metadata: Metadata = {
   title: 'F1Rec — Every Stat. Every Race. Every Era.',
   description:
