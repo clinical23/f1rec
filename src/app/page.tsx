@@ -1,262 +1,599 @@
-'use client'
-
-import { useEffect, useState } from 'react'
+import type { Metadata } from 'next'
 import Link from 'next/link'
-import { supabase } from '@/lib/supabase'
-import SoundLink from '@/components/SoundLink'
+import { createServerClient } from '@/lib/supabase/server'
 
-interface RecentRace {
-  season_year: number
-  round: number
-  race_name: string
-  driver_name: string
-  race_slug: string
+export const metadata: Metadata = {
+  title: 'F1Rec — Every Stat. Every Race. Every Era.',
+  description:
+    'The definitive Formula 1 statistics platform — seasons, drivers, race results, standings, and head-to-head comparisons from 1950 to today.',
+  openGraph: {
+    title: 'F1Rec — Every Stat. Every Race. Every Era.',
+    description:
+      'The definitive Formula 1 statistics platform — seasons, drivers, race results, standings, and head-to-head comparisons from 1950 to today.',
+    url: 'https://f1rec.com',
+    siteName: 'F1Rec',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'F1Rec — Every Stat. Every Race. Every Era.',
+    description:
+      'The definitive Formula 1 statistics platform — seasons, drivers, race results, standings, and head-to-head comparisons from 1950 to today.',
+  },
 }
 
-interface Champion {
+type SeasonRow = {
+  id: string
   year: number
-  name: string
   slug: string
-  team: string | null
+  champion_driver_id: string | null
+  champion_team_id: string | null
 }
 
-export default function HomePage() {
-  const [stats, setStats] = useState({ drivers: 1076, races: 1107, seasons: 77, circuits: 78 })
-  const [recentRaces, setRecentRaces] = useState<RecentRace[]>([])
-  const [champion, setChampion] = useState<Champion | null>(null)
+type DriverStandingRow = {
+  championship_position: number | null
+  points: number | string | null
+  wins: number | string | null
+  podiums: number | string | null
+  drivers: { full_name: string; slug: string } | { full_name: string; slug: string }[]
+  teams: { name: string; slug: string } | { name: string; slug: string }[]
+}
 
-  useEffect(() => {
-    document.title = 'F1Rec — Formula 1 Statistics, Records & Driver Comparisons'
-    const metaDesc = document.querySelector('meta[name="description"]')
-    if (metaDesc) metaDesc.setAttribute('content', 'The most complete Formula 1 statistics platform. Explore driver records, race results, season standings and head-to-head comparisons from 1950 to today.')
-  }, [])
+type TeamStandingRow = {
+  championship_position: number | null
+  points: number | string | null
+  teams: { name: string; slug: string } | { name: string; slug: string }[]
+}
 
-  useEffect(() => {
-    async function fetchData() {
-      const [drivers, races, seasons, circuits, recentRes, champRes] = await Promise.all([
-        supabase.from('drivers').select('*', { count: 'exact', head: true }),
-        supabase.from('races').select('*', { count: 'exact', head: true }),
-        supabase.from('seasons').select('*', { count: 'exact', head: true }),
-        supabase.from('circuits').select('*', { count: 'exact', head: true }),
-        supabase.from('results')
-          .select('season_year, round, race_name, driver_name, race_slug')
-          .eq('position', 1)
-          .eq('is_sprint', false)
-          .order('season_year', { ascending: false })
-          .order('round', { ascending: false })
-          .limit(20),
-        supabase.from('seasons')
-          .select('year, champion_driver_id, champion_team_id')
-          .not('champion_driver_id', 'is', null)
-          .order('year', { ascending: false })
-          .limit(1),
+function unwrapRelation<T>(rel: T | T[] | null | undefined): T | null {
+  if (rel == null) return null
+  return Array.isArray(rel) ? rel[0] ?? null : rel
+}
+
+function num(v: number | string | null | undefined): number {
+  if (v == null) return 0
+  const n = typeof v === 'number' ? v : Number.parseFloat(String(v))
+  return Number.isFinite(n) ? n : 0
+}
+
+async function loadHomePageData() {
+  const supabase = createServerClient()
+
+  const empty = {
+    counts: { drivers: 818, seasons: 77, results: 25872, teams: 206 },
+    season2025: null as SeasonRow | null,
+    season2026: null as SeasonRow | null,
+    season2026Slug: null as string | null,
+    champion2025: null as {
+      fullName: string
+      slug: string
+      teamName: string | null
+      teamSlug: string | null
+      wins: number
+      podiums: number
+      points: number
+    } | null,
+    wdc2026: [] as Array<{
+      pos: number
+      fullName: string
+      slug: string
+      teamName: string
+      teamSlug: string
+      points: number
+    }>,
+    wcc2026: [] as Array<{ pos: number; name: string; slug: string; points: number }>,
+    recentRaces2026: [] as Array<{
+      name: string
+      slug: string
+      round: number
+      dateLabel: string
+      circuitName: string
+      winnerName: string
+      winnerSlug: string | null
+    }>,
+    simCounts: { products: 57, reviews: 12, brands: 27 },
+  }
+
+  try {
+    const [
+      driversCountRes,
+      seasonsCountRes,
+      resultsCountRes,
+      teamsCountRes,
+      season2025Res,
+      season2026Res,
+      simProductsRes,
+      simReviewsRes,
+      simBrandsRes,
+    ] = await Promise.all([
+      supabase.from('drivers').select('*', { count: 'exact', head: true }),
+      supabase.from('seasons').select('*', { count: 'exact', head: true }),
+      supabase.from('results').select('*', { count: 'exact', head: true }),
+      supabase.from('teams').select('*', { count: 'exact', head: true }),
+      supabase.from('seasons').select('id, year, slug, champion_driver_id, champion_team_id').eq('year', 2025).maybeSingle(),
+      supabase.from('seasons').select('id, year, slug, champion_driver_id, champion_team_id').eq('year', 2026).maybeSingle(),
+      supabase.from('sim_products').select('*', { count: 'exact', head: true }),
+      supabase.from('sim_reviews').select('*', { count: 'exact', head: true }),
+      supabase.from('sim_brands').select('*', { count: 'exact', head: true }),
+    ])
+
+    const counts = {
+      drivers: driversCountRes.count ?? empty.counts.drivers,
+      seasons: seasonsCountRes.count ?? empty.counts.seasons,
+      results: resultsCountRes.count ?? empty.counts.results,
+      teams: teamsCountRes.count ?? empty.counts.teams,
+    }
+
+    const season2025 = (season2025Res.data as SeasonRow | null) ?? null
+    const season2026 = (season2026Res.data as SeasonRow | null) ?? null
+    const season2026Slug = season2026?.slug ?? null
+
+    let champion2025 = empty.champion2025
+    if (season2025?.champion_driver_id) {
+      const [{ data: driverRow }, statsRes] = await Promise.all([
+        supabase.from('drivers').select('full_name, slug').eq('id', season2025.champion_driver_id).maybeSingle(),
+        supabase
+          .from('driver_season_stats')
+          .select('wins, podiums, points, teams(name, slug)')
+          .eq('season_id', season2025.id)
+          .eq('driver_id', season2025.champion_driver_id)
+          .maybeSingle(),
       ])
-      setStats({
-        drivers: drivers.count ?? 1076,
-        races: races.count ?? 1107,
-        seasons: seasons.count ?? 77,
-        circuits: circuits.count ?? 78,
-      })
-
-      // Dedup recent races (one per season_year+round)
-      if (recentRes.data) {
-        const seen = new Set<string>()
-        const deduped: RecentRace[] = []
-        for (const r of recentRes.data) {
-          const key = `${r.season_year}-${r.round}`
-          if (!seen.has(key)) {
-            seen.add(key)
-            deduped.push(r)
-          }
-          if (deduped.length >= 5) break
+      const d = driverRow as { full_name: string; slug: string } | null
+      const st = statsRes.data as {
+        wins?: number | string | null
+        podiums?: number | string | null
+        points?: number | string | null
+        teams?: { name: string; slug: string } | { name: string; slug: string }[]
+      } | null
+      const teamRel = unwrapRelation(st?.teams ?? null)
+      if (d) {
+        champion2025 = {
+          fullName: d.full_name,
+          slug: d.slug,
+          teamName: teamRel?.name ?? null,
+          teamSlug: teamRel?.slug ?? null,
+          wins: num(st?.wins),
+          podiums: num(st?.podiums),
+          points: num(st?.points),
         }
-        setRecentRaces(deduped)
-      }
-
-      // Fetch champion driver + team names
-      if (champRes.data && champRes.data.length > 0) {
-        const s = champRes.data[0]
-        const [driverRes, teamRes] = await Promise.all([
-          supabase.from('drivers').select('full_name, slug').eq('id', s.champion_driver_id).single(),
-          s.champion_team_id
-            ? supabase.from('teams').select('name').eq('id', s.champion_team_id).single()
-            : { data: null },
-        ])
-        setChampion({
-          year: s.year,
-          name: driverRes.data?.full_name ?? 'TBD',
-          slug: driverRes.data?.slug ?? '',
-          team: teamRes.data?.name ?? null,
-        })
       }
     }
-    fetchData()
-  }, [])
+
+    let wdc2026 = empty.wdc2026
+    let wcc2026 = empty.wcc2026
+    if (season2026?.id) {
+      const [dssRes, tssRes] = await Promise.all([
+        supabase
+          .from('driver_season_stats')
+          .select('championship_position, points, drivers!inner(full_name, slug), teams!inner(name, slug)')
+          .eq('season_id', season2026.id),
+        supabase
+          .from('team_season_stats')
+          .select('championship_position, points, teams!inner(name, slug)')
+          .eq('season_id', season2026.id),
+      ])
+
+      const dRows = (dssRes.data ?? []) as unknown as DriverStandingRow[]
+      const sortedD = dRows
+        .map((row) => {
+          const driver = unwrapRelation(row.drivers)
+          const team = unwrapRelation(row.teams)
+          const pos = row.championship_position ?? 9999
+          return {
+            pos,
+            fullName: driver?.full_name ?? 'Unknown',
+            slug: driver?.slug ?? '',
+            teamName: team?.name ?? '—',
+            teamSlug: team?.slug ?? '',
+            points: num(row.points),
+          }
+        })
+        .filter((r) => r.slug)
+        .sort((a, b) => {
+          if (a.pos !== b.pos) return a.pos - b.pos
+          return b.points - a.points
+        })
+      wdc2026 = sortedD.slice(0, 10).map((r, i) => ({ ...r, pos: r.pos <= 20 ? r.pos : i + 1 }))
+
+      const tRows = (tssRes.data ?? []) as unknown as TeamStandingRow[]
+      const sortedT = tRows
+        .map((row) => {
+          const team = unwrapRelation(row.teams)
+          const pos = row.championship_position ?? 9999
+          return {
+            pos,
+            name: team?.name ?? 'Unknown',
+            slug: team?.slug ?? '',
+            points: num(row.points),
+          }
+        })
+        .filter((r) => r.slug)
+        .sort((a, b) => {
+          if (a.pos !== b.pos) return a.pos - b.pos
+          return b.points - a.points
+        })
+      wcc2026 = sortedT.slice(0, 10).map((r, i) => ({ ...r, pos: r.pos <= 20 ? r.pos : i + 1 }))
+    }
+
+    let recentRaces2026 = empty.recentRaces2026
+    const racesRes = await supabase
+      .from('races')
+      .select('name, slug, round, race_date, circuit_slug')
+      .eq('season_year', 2026)
+      .order('round', { ascending: false })
+      .limit(3)
+
+    const raceList = (racesRes.data ?? []) as Array<{
+      name: string | null
+      slug: string | null
+      round: number | null
+      race_date: string | null
+      circuit_slug: string | null
+    }>
+
+    const circuitSlugs = [...new Set(raceList.map((r) => r.circuit_slug).filter(Boolean))] as string[]
+    let circuitMap = new Map<string, string>()
+    if (circuitSlugs.length > 0) {
+      const { data: circ } = await supabase.from('circuits').select('slug, name').in('slug', circuitSlugs)
+      circuitMap = new Map((circ ?? []).map((c: { slug: string; name: string }) => [c.slug, c.name]))
+    }
+
+    const winnersRes = await supabase
+      .from('results')
+      .select('race_slug, driver_name, driver_slug')
+      .eq('season_year', 2026)
+      .eq('position', 1)
+      .eq('is_sprint', false)
+
+    const winnerByRace = new Map<string, { name: string; slug: string | null }>()
+    for (const w of winnersRes.data ?? []) {
+      const rs = w.race_slug as string | null
+      if (!rs || winnerByRace.has(rs)) continue
+      winnerByRace.set(rs, {
+        name: (w.driver_name as string) ?? '—',
+        slug: (w.driver_slug as string | null) ?? null,
+      })
+    }
+
+    recentRaces2026 = raceList
+      .filter((r) => r.slug)
+      .map((r) => {
+        const slug = r.slug as string
+        const win = winnerByRace.get(slug)
+        const dateLabel =
+          r.race_date != null && r.race_date !== ''
+            ? new Date(r.race_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
+            : 'TBD'
+        return {
+          name: r.name ?? 'Grand Prix',
+          slug,
+          round: r.round ?? 0,
+          dateLabel,
+          circuitName: (r.circuit_slug && circuitMap.get(r.circuit_slug)) || r.circuit_slug || '—',
+          winnerName: win?.name ?? '—',
+          winnerSlug: win?.slug ?? null,
+        }
+      })
+
+    const simCounts = {
+      products: simProductsRes.count ?? empty.simCounts.products,
+      reviews: simReviewsRes.count ?? empty.simCounts.reviews,
+      brands: simBrandsRes.count ?? empty.simCounts.brands,
+    }
+
+    return {
+      counts,
+      season2025,
+      season2026,
+      season2026Slug,
+      champion2025,
+      wdc2026,
+      wcc2026,
+      recentRaces2026,
+      simCounts,
+    }
+  } catch {
+    return {
+      ...empty,
+      champion2025: null,
+    }
+  }
+}
+
+export default async function HomePage() {
+  const data = await loadHomePageData()
+  const { counts, champion2025, wdc2026, wcc2026, recentRaces2026, simCounts, season2026Slug } = data
+
+  const heroSubtitle = `The definitive Formula 1 statistics platform — ${counts.seasons.toLocaleString()} seasons, ${counts.drivers.toLocaleString()} drivers, ${counts.results.toLocaleString()} results`
 
   return (
-    <main style={{ fontFamily: "'Barlow', sans-serif", background: 'var(--bg)', minHeight: '100vh' }}>
-
-      {/* HERO */}
-      <div style={{ position: 'relative', overflow: 'hidden', padding: '64px 24px', textAlign: 'center', background: 'linear-gradient(180deg, #0a0a0f 0%, #12040a 50%, #0a0a0f 100%)' }}>
-        <div style={{ display: 'inline-block', fontFamily: "'Barlow Condensed', sans-serif", fontSize: '11px', fontWeight: 700, letterSpacing: '3px', textTransform: 'uppercase', color: 'var(--accent)', marginBottom: '16px', padding: '4px 12px', border: '1px solid rgba(232,0,45,0.3)', borderRadius: '20px' }}>
-          The F1 Database
-        </div>
-        <h1 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '72px', fontWeight: 900, lineHeight: 0.9, letterSpacing: '-2px', color: '#fff', marginBottom: '20px', textTransform: 'uppercase' }}>
-          Every stat.<br /><span style={{ color: 'var(--accent)' }}>Every race.</span><br />Every era.
-        </h1>
-        <p style={{ color: 'var(--muted)', fontSize: '17px', maxWidth: '520px', margin: '0 auto 32px' }}>
-          The most complete Formula 1 statistics platform. Explore drivers, teams, circuits and results from 1950 to today.
+    <main className="min-h-screen bg-[var(--bg)] text-[var(--text)]">
+      {/* Hero */}
+      <section className="relative overflow-hidden bg-gradient-to-b from-[var(--bg)] via-[var(--bg2)] to-[var(--bg)] px-6 py-16 text-center md:py-20">
+        <p className="font-display mb-4 inline-block rounded-full border border-[color-mix(in_srgb,var(--accent)_30%,transparent)] px-3 py-1 text-[11px] font-bold uppercase tracking-[0.2em] text-[var(--accent)]">
+          The F1 database
         </p>
-        <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
-          <SoundLink href="/drivers" soundId="drivers" style={{ background: 'var(--accent)', color: 'white', fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700, fontSize: '14px', letterSpacing: '1px', textTransform: 'uppercase', padding: '12px 28px', borderRadius: '4px', textDecoration: 'none' }}>
+        <h1 className="font-display mx-auto max-w-4xl text-[clamp(2.25rem,6vw,4rem)] font-black uppercase leading-[0.95] tracking-tight text-[var(--text)]">
+          Every Stat. Every Race. Every Era.
+        </h1>
+        <p className="mx-auto mt-5 max-w-xl text-[17px] text-[var(--muted)]">{heroSubtitle}</p>
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+          <Link
+            href="/drivers"
+            className="font-display rounded border border-transparent bg-[var(--accent)] px-7 py-3 text-sm font-bold uppercase tracking-wide text-white no-underline transition-opacity hover:opacity-90"
+          >
             Explore Drivers
-          </SoundLink>
-          <Link href="/compare" style={{ background: 'transparent', color: 'var(--text)', fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700, fontSize: '14px', letterSpacing: '1px', textTransform: 'uppercase', padding: '12px 28px', borderRadius: '4px', border: '1px solid var(--border)', textDecoration: 'none' }}>
-            Compare Drivers →
+          </Link>
+          <Link
+            href="/compare"
+            className="font-display rounded border border-[var(--border)] bg-transparent px-7 py-3 text-sm font-bold uppercase tracking-wide text-[var(--text)] no-underline transition-colors hover:border-[var(--accent)] hover:text-[var(--accent)]"
+          >
+            Compare Head-to-Head
           </Link>
         </div>
-      </div>
+      </section>
 
-      {/* STATS BAR */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)', background: 'var(--bg2)' }}>
+      {/* Stats bar */}
+      <div className="grid grid-cols-2 border-y border-[var(--border)] bg-[var(--bg2)] md:grid-cols-4">
         {[
-          { num: stats.drivers.toLocaleString(), label: 'Drivers' },
-          { num: stats.races.toLocaleString(), label: 'Races' },
-          { num: stats.seasons.toLocaleString(), label: 'Seasons' },
-          { num: stats.circuits.toLocaleString(), label: 'Circuits' },
+          { num: counts.drivers.toLocaleString(), label: 'Drivers' },
+          { num: counts.results.toLocaleString(), label: 'Results' },
+          { num: counts.seasons.toLocaleString(), label: 'Seasons' },
+          { num: counts.teams.toLocaleString(), label: 'Teams' },
         ].map((stat, i) => (
-          <div key={i} style={{ padding: '20px 24px', borderRight: i < 3 ? '1px solid var(--border)' : 'none', textAlign: 'center' }}>
-            <div style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '40px', fontWeight: 900, color: '#fff', lineHeight: 1 }}>{stat.num}</div>
-            <div style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--muted)', marginTop: '4px' }}>{stat.label}</div>
+          <div
+            key={stat.label}
+            className={`px-4 py-5 text-center md:px-6 ${i % 2 === 0 ? 'border-r border-[var(--border)] md:border-r' : ''} ${i < 2 ? 'border-b border-[var(--border)] md:border-b-0' : ''} md:border-r md:border-[var(--border)] md:[&:nth-child(4)]:border-r-0`}
+          >
+            <div className="font-display text-3xl font-black leading-none text-[var(--text)] md:text-4xl">{stat.num}</div>
+            <div className="mt-1 text-[11px] font-semibold uppercase tracking-wider text-[var(--muted)]">{stat.label}</div>
           </div>
         ))}
       </div>
 
-      {/* CONTENT */}
-      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '40px 24px', display: 'grid', gridTemplateColumns: '1fr 300px', gap: '32px' }}>
-
-        {/* MAIN */}
-        <div>
-          {/* Ad placeholder */}
-          <div style={{ fontSize: '10px', letterSpacing: '1px', textTransform: 'uppercase', color: '#444455', textAlign: 'center', marginBottom: '4px', fontFamily: 'monospace' }}>Advertisement</div>
-          <div style={{ background: 'var(--bg3)', border: '1px dashed #333344', borderRadius: '6px', height: '90px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#444455', fontSize: '11px', fontFamily: 'monospace', marginBottom: '24px' }}>728 × 90 — Leaderboard Ad</div>
-
-          {/* Recent Races */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
-            <h2 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '20px', fontWeight: 800, textTransform: 'uppercase', color: '#fff' }}>
-              Recent <span style={{ color: 'var(--accent)' }}>Races</span>
-            </h2>
-            <Link href="/races" style={{ fontSize: '12px', fontWeight: 600, color: 'var(--accent)', textDecoration: 'none' }}>See all →</Link>
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '32px' }}>
-            {recentRaces.length > 0 ? recentRaces.map((race, i) => (
-              <Link key={i} href={`/races/${race.race_slug}`} style={{ display: 'flex', alignItems: 'center', gap: '16px', padding: '14px 16px', background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: '8px', cursor: 'pointer', textDecoration: 'none', color: 'inherit' }}>
-                <div style={{ fontFamily: 'monospace', fontSize: '11px', color: 'var(--muted)', width: '40px', textAlign: 'center', flexShrink: 0 }}>R{race.round}</div>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontWeight: 600, color: '#fff', fontSize: '14px' }}>{race.race_name}</div>
-                  <div style={{ fontSize: '12px', color: 'var(--muted)' }}>{race.season_year} Season</div>
-                </div>
-                <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                  <div style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text)' }}>🥇 {race.driver_name}</div>
-                </div>
-              </Link>
-            )) : (
-              <div style={{ padding: '24px', textAlign: 'center', color: 'var(--muted)', fontSize: '13px' }}>Loading recent races...</div>
-            )}
-          </div>
-
-          {/* Leaderboard */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
-            <h2 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '20px', fontWeight: 800, textTransform: 'uppercase', color: '#fff' }}>
-              All-Time <span style={{ color: 'var(--accent)' }}>Wins</span> Leaders
-            </h2>
-            <Link href="/leaderboards" style={{ fontSize: '12px', fontWeight: 600, color: 'var(--accent)', textDecoration: 'none' }}>Full leaderboard →</Link>
-          </div>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '14px' }}>
-            <thead>
-              <tr>
-                {['Pos', 'Driver', 'Wins', 'Podiums', 'Poles', 'Points', '🏆'].map((h, i) => (
-                  <th key={i} style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '11px', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', color: 'var(--muted)', padding: '8px 12px', background: 'var(--bg2)', borderBottom: '1px solid var(--border)', textAlign: i > 1 ? 'right' : 'left' }}>{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {[
-                { pos: 1, code: 'HAM', name: 'Lewis Hamilton', nat: '🇬🇧', wins: 103, podiums: 197, poles: 104, points: '4,801.5', titles: 7, color: '#0077c8' },
-                { pos: 2, code: 'SCH', name: 'Michael Schumacher', nat: '🇩🇪', wins: 91, podiums: 155, poles: 68, points: '1,566', titles: 7, color: '#cc1e4a' },
-                { pos: 3, code: 'VER', name: 'Max Verstappen', nat: '🇳🇱', wins: 63, podiums: 112, poles: 41, points: '3,005.5', titles: 4, color: '#1e3799' },
-                { pos: 4, code: 'VET', name: 'Sebastian Vettel', nat: '🇩🇪', wins: 53, podiums: 122, poles: 57, points: '3,098', titles: 4, color: '#cc0000' },
-                { pos: 5, code: 'PRO', name: 'Alain Prost', nat: '🇫🇷', wins: 51, podiums: 106, poles: 33, points: '798.5', titles: 4, color: '#ff8700' },
-              ].map((d) => (
-                <tr key={d.pos} style={{ borderBottom: '1px solid var(--border)' }}>
-                  <td style={{ padding: '10px 12px' }}>
-                    <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '28px', height: '28px', borderRadius: '4px', fontFamily: "'Barlow Condensed', sans-serif", fontSize: '13px', fontWeight: 800, background: d.pos === 1 ? 'rgba(245,200,66,0.15)' : d.pos === 2 ? 'rgba(192,192,200,0.15)' : d.pos === 3 ? 'rgba(205,127,50,0.15)' : 'var(--bg4)', color: d.pos === 1 ? 'var(--gold)' : d.pos === 2 ? 'var(--silver)' : d.pos === 3 ? 'var(--bronze)' : 'var(--muted)' }}>{d.pos}</span>
-                  </td>
-                  <td style={{ padding: '10px 12px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <div style={{ width: '32px', height: '32px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: d.color, fontFamily: "'Barlow Condensed', sans-serif", fontSize: '11px', fontWeight: 800, color: '#fff', flexShrink: 0 }}>{d.code}</div>
-                      <div>
-                        <div style={{ fontWeight: 600, color: '#fff' }}>{d.name}</div>
-                        <div style={{ fontSize: '12px', color: 'var(--muted)' }}>{d.nat}</div>
-                      </div>
-                    </div>
-                  </td>
-                  <td style={{ padding: '10px 12px', textAlign: 'right', fontFamily: 'monospace', fontSize: '13px', color: d.pos === 1 ? 'var(--gold)' : 'var(--text)', fontWeight: d.pos === 1 ? 700 : 400 }}>{d.wins}</td>
-                  <td style={{ padding: '10px 12px', textAlign: 'right', fontFamily: 'monospace', fontSize: '13px' }}>{d.podiums}</td>
-                  <td style={{ padding: '10px 12px', textAlign: 'right', fontFamily: 'monospace', fontSize: '13px' }}>{d.poles}</td>
-                  <td style={{ padding: '10px 12px', textAlign: 'right', fontFamily: 'monospace', fontSize: '13px' }}>{d.points}</td>
-                  <td style={{ padding: '10px 12px', textAlign: 'right', fontFamily: 'monospace', fontSize: '13px', color: 'var(--gold)' }}>{d.titles}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        {/* SIDEBAR */}
-        <div>
-          <div style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: '8px', overflow: 'hidden', marginBottom: '16px' }}>
-            <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--border)', background: 'var(--bg3)' }}>
-              <div style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '13px', fontWeight: 800, letterSpacing: '1px', textTransform: 'uppercase', color: '#fff' }}>{champion ? `${champion.year} Champion` : 'Champion'}</div>
+      <div className="mx-auto max-w-6xl px-6 py-10 md:py-14">
+        {/* Reigning champion + 2026 live */}
+        <div className="mb-12 grid gap-8 lg:grid-cols-3">
+          <section className="rounded-lg border border-[var(--border)] bg-[var(--bg2)] lg:col-span-1">
+            <div className="border-b border-[var(--border)] bg-[var(--bg3)] px-4 py-3">
+              <h2 className="font-display text-sm font-extrabold uppercase tracking-wider text-[var(--text)]">
+                Reigning champion · 2025
+              </h2>
             </div>
-            <div style={{ padding: '16px', textAlign: 'center' }}>
-              <div style={{ fontSize: '40px', marginBottom: '8px' }}>🏆</div>
-              {champion ? (
+            <div className="p-6 text-center">
+              <div className="mb-3 text-4xl" aria-hidden>
+                🏆
+              </div>
+              {champion2025 ? (
                 <>
-                  <Link href={`/drivers/${champion.slug}`} style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '24px', fontWeight: 900, color: '#fff', textDecoration: 'none' }}>
-                    {champion.name}
+                  <Link
+                    href={`/drivers/${champion2025.slug}`}
+                    className="font-display text-2xl font-black uppercase text-[var(--text)] no-underline hover:text-[var(--accent)]"
+                  >
+                    {champion2025.fullName}
                   </Link>
-                  {champion.team && <div style={{ color: 'var(--muted)', fontSize: '13px', marginTop: '4px' }}>{champion.team}</div>}
+                  {champion2025.teamName ? (
+                    champion2025.teamSlug ? (
+                      <Link
+                        href={`/teams/${champion2025.teamSlug}`}
+                        className="mt-2 block text-sm text-[var(--muted)] no-underline hover:text-[var(--accent)]"
+                      >
+                        {champion2025.teamName}
+                      </Link>
+                    ) : (
+                      <p className="mt-2 text-sm text-[var(--muted)]">{champion2025.teamName}</p>
+                    )
+                  ) : null}
+                  <dl className="mt-4 grid grid-cols-3 gap-2 text-center font-mono text-sm">
+                    <div>
+                      <dt className="text-[10px] uppercase tracking-wider text-[var(--muted)]">Wins</dt>
+                      <dd className="font-semibold text-[var(--text)]">{champion2025.wins}</dd>
+                    </div>
+                    <div>
+                      <dt className="text-[10px] uppercase tracking-wider text-[var(--muted)]">Podiums</dt>
+                      <dd className="font-semibold text-[var(--text)]">{champion2025.podiums}</dd>
+                    </div>
+                    <div>
+                      <dt className="text-[10px] uppercase tracking-wider text-[var(--muted)]">Pts</dt>
+                      <dd className="font-semibold text-[var(--gold)]">{champion2025.points.toLocaleString()} pts</dd>
+                    </div>
+                  </dl>
                 </>
               ) : (
-                <div style={{ color: 'var(--muted)', fontSize: '13px' }}>Loading...</div>
+                <p className="text-sm text-[var(--muted)]">2025 champion data unavailable.</p>
               )}
             </div>
-          </div>
+          </section>
 
-          <div style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: '8px', overflow: 'hidden', marginBottom: '16px' }}>
-            <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--border)', background: 'var(--bg3)' }}>
-              <div style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '13px', fontWeight: 800, letterSpacing: '1px', textTransform: 'uppercase', color: '#fff' }}>2024 Constructors</div>
+          <section className="lg:col-span-2">
+            <div className="mb-4 flex flex-wrap items-end justify-between gap-2">
+              <h2 className="font-display text-xl font-extrabold uppercase tracking-wide text-[var(--text)]">
+                2026 season <span className="text-[var(--accent)]">live</span>
+              </h2>
+              <Link
+                href={season2026Slug ? `/seasons/${season2026Slug}` : '/seasons'}
+                className="text-xs font-semibold uppercase tracking-wide text-[var(--accent)] no-underline hover:underline"
+              >
+                Full season →
+              </Link>
             </div>
-            <div style={{ padding: '12px 16px' }}>
-              {[
-                { pos: 1, color: '#ff8700', name: 'McLaren', pts: '666' },
-                { pos: 2, color: '#e8002d', name: 'Ferrari', pts: '652' },
-                { pos: 3, color: '#3671c6', name: 'Red Bull', pts: '589' },
-                { pos: 4, color: '#27f4d2', name: 'Mercedes', pts: '468' },
-              ].map((t) => (
-                <div key={t.pos} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '8px 0', borderBottom: '1px solid var(--border)', fontSize: '13px' }}>
-                  <span style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 600, color: '#fff' }}>
-                    <span style={{ color: 'var(--muted)', fontFamily: 'monospace', fontSize: '11px' }}>{t.pos}</span>
-                    <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '2px', background: t.color }}></span>
-                    {t.name}
-                  </span>
-                  <span style={{ fontFamily: 'monospace', fontWeight: 600, color: 'var(--gold)' }}>{t.pts}</span>
+            <div className="grid gap-6 md:grid-cols-2">
+              <div className="rounded-lg border border-[var(--border)] bg-[var(--bg2)]">
+                <div className="border-b border-[var(--border)] px-4 py-2">
+                  <h3 className="font-display text-xs font-bold uppercase tracking-wider text-[var(--muted)]">
+                    WDC · Top 10
+                  </h3>
                 </div>
-              ))}
+                <ol className="divide-y divide-[var(--border)] p-2">
+                  {wdc2026.length > 0 ? (
+                    wdc2026.map((row, idx) => {
+                      const leader = idx === 0
+                      return (
+                        <li key={row.slug} className="flex items-center gap-2 px-2 py-2 text-sm">
+                          <span className="w-6 shrink-0 text-center font-mono text-xs text-[var(--muted)]">{row.pos}</span>
+                          <div className="min-w-0 flex-1">
+                            <Link
+                              href={`/drivers/${row.slug}`}
+                              className={`font-semibold no-underline ${leader ? 'text-[var(--accent)]' : 'text-[var(--text)] hover:text-[var(--accent)]'}`}
+                            >
+                              {row.fullName}
+                            </Link>
+                            <div className="truncate text-xs text-[var(--muted)]">
+                              {row.teamSlug ? (
+                                <Link href={`/teams/${row.teamSlug}`} className="text-[var(--muted)] no-underline hover:text-[var(--accent)]">
+                                  {row.teamName}
+                                </Link>
+                              ) : (
+                                row.teamName
+                              )}
+                            </div>
+                          </div>
+                          <span className="shrink-0 font-mono text-xs font-semibold text-[var(--gold)]">
+                            {row.points.toLocaleString()} pts
+                          </span>
+                        </li>
+                      )
+                    })
+                  ) : (
+                    <li className="px-3 py-6 text-center text-sm text-[var(--muted)]">No 2026 standings yet.</li>
+                  )}
+                </ol>
+              </div>
+              <div className="rounded-lg border border-[var(--border)] bg-[var(--bg2)]">
+                <div className="border-b border-[var(--border)] px-4 py-2">
+                  <h3 className="font-display text-xs font-bold uppercase tracking-wider text-[var(--muted)]">
+                    WCC · Top 10
+                  </h3>
+                </div>
+                <ol className="divide-y divide-[var(--border)] p-2">
+                  {wcc2026.length > 0 ? (
+                    wcc2026.map((row) => (
+                      <li key={row.slug} className="flex items-center gap-2 px-2 py-2 text-sm">
+                        <span className="w-6 shrink-0 text-center font-mono text-xs text-[var(--muted)]">{row.pos}</span>
+                        <Link
+                          href={`/teams/${row.slug}`}
+                          className="min-w-0 flex-1 truncate font-semibold text-[var(--text)] no-underline hover:text-[var(--accent)]"
+                        >
+                          {row.name}
+                        </Link>
+                        <span className="shrink-0 font-mono text-xs font-semibold text-[var(--gold)]">
+                          {row.points.toLocaleString()} pts
+                        </span>
+                      </li>
+                    ))
+                  ) : (
+                    <li className="px-3 py-6 text-center text-sm text-[var(--muted)]">No 2026 constructor standings yet.</li>
+                  )}
+                </ol>
+              </div>
             </div>
+          </section>
+        </div>
+
+        {/* Recent races */}
+        <section className="mb-12">
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
+            <h2 className="font-display text-xl font-extrabold uppercase text-[var(--text)]">
+              Recent <span className="text-[var(--accent)]">races</span> · 2026
+            </h2>
+            <Link href="/races" className="text-xs font-semibold uppercase tracking-wide text-[var(--accent)] no-underline hover:underline">
+              All races →
+            </Link>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {recentRaces2026.length > 0 ? (
+              recentRaces2026.map((race) => (
+                <article
+                  key={race.slug}
+                  className="flex flex-col rounded-lg border border-[var(--border)] bg-[var(--bg2)] p-4 transition-colors hover:border-[color-mix(in_srgb,var(--accent)_40%,var(--border))]"
+                >
+                  <div className="mb-1 font-mono text-[10px] uppercase tracking-wider text-[var(--muted)]">Round {race.round}</div>
+                  <h3 className="font-display text-lg font-bold uppercase leading-tight text-[var(--text)]">
+                    {race.name}
+                  </h3>
+                  <p className="mt-1 text-sm text-[var(--muted)]">
+                    {race.dateLabel} · {race.circuitName}
+                  </p>
+                  <p className="mt-3 text-sm text-[var(--text)]">
+                    <span className="text-[var(--muted)]">Winner: </span>
+                    {race.winnerSlug ? (
+                      <Link href={`/drivers/${race.winnerSlug}`} className="font-semibold text-[var(--gold)] no-underline hover:text-[var(--accent)]">
+                        {race.winnerName}
+                      </Link>
+                    ) : (
+                      <span className="font-semibold text-[var(--gold)]">{race.winnerName}</span>
+                    )}
+                  </p>
+                  <Link
+                    href={`/races/${race.slug}`}
+                    className="mt-auto pt-4 text-xs font-bold uppercase tracking-wide text-[var(--accent)] no-underline hover:underline"
+                  >
+                    View Results →
+                  </Link>
+                </article>
+              ))
+            ) : (
+              <p className="col-span-full rounded-lg border border-dashed border-[var(--border)] bg-[var(--bg2)] py-10 text-center text-sm text-[var(--muted)]">
+                No 2026 races in the database yet.
+              </p>
+            )}
+          </div>
+        </section>
+
+        {/* Quick links */}
+        <section className="mb-12">
+          <h2 className="mb-4 font-display text-xl font-extrabold uppercase text-[var(--text)]">
+            Explore
+          </h2>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {[
+              { href: '/drivers', emoji: '👤', title: 'Drivers', desc: 'Career stats for every F1 driver.', count: `${counts.drivers.toLocaleString()} drivers` },
+              { href: '/teams', emoji: '🏎️', title: 'Teams', desc: 'Constructor history and records.', count: `${counts.teams.toLocaleString()} teams` },
+              { href: '/seasons', emoji: '📅', title: 'Seasons', desc: 'Year-by-year championships and results.', count: `${counts.seasons.toLocaleString()} seasons` },
+              { href: '/compare', emoji: '⚖️', title: 'Compare', desc: 'Head-to-head driver comparisons.', count: 'Tool' },
+              { href: '/leaderboards', emoji: '📊', title: 'Leaderboards', desc: 'All-time rankings and records.', count: 'Records' },
+              { href: '/sim-racing', emoji: '🎮', title: 'Sim Racing', desc: 'Hardware, reviews, and setups.', count: 'Hub' },
+            ].map((card) => (
+              <Link
+                key={card.href}
+                href={card.href}
+                className="group rounded-lg border border-[var(--border)] bg-[var(--bg2)] p-5 no-underline transition-colors hover:border-[var(--accent)]"
+              >
+                <div className="mb-2 text-2xl">{card.emoji}</div>
+                <h3 className="font-display text-lg font-bold uppercase text-[var(--text)] group-hover:text-[var(--accent)]">
+                  {card.title}
+                </h3>
+                <p className="mt-1 text-sm text-[var(--muted)]">{card.desc}</p>
+                <p className="mt-3 font-mono text-xs text-[var(--gold)]">{card.count}</p>
+              </Link>
+            ))}
+          </div>
+        </section>
+
+        {/* Ad placeholder */}
+        <div className="mb-12">
+          <p className="mb-1 text-center font-mono text-[10px] uppercase tracking-widest text-[var(--muted)] opacity-70">Advertisement</p>
+          <div className="flex h-[90px] items-center justify-center rounded-md border border-dashed border-[var(--border)] bg-[var(--bg3)] font-mono text-xs text-[var(--muted)] opacity-80">
+            728 × 90 — Ad space
           </div>
         </div>
 
+        {/* Sim racing teaser */}
+        <section className="rounded-xl border border-[var(--border)] bg-gradient-to-br from-[color-mix(in_srgb,var(--accent)_12%,var(--bg2))] to-[var(--bg2)] p-8 text-center md:p-10">
+          <h2 className="font-display text-2xl font-black uppercase text-[var(--text)] md:text-3xl">
+            Sim Racing Hub — Reviews, Setups, and Gear
+          </h2>
+          <p className="mx-auto mt-3 max-w-lg text-sm text-[var(--muted)]">
+            {simCounts.products.toLocaleString()} products, {simCounts.reviews.toLocaleString()} reviews, {simCounts.brands.toLocaleString()} brands — curated for serious sim racers.
+          </p>
+          <Link
+            href="/sim-racing"
+            className="mt-6 inline-block rounded border border-[var(--accent)] bg-[var(--accent)] px-6 py-3 font-display text-sm font-bold uppercase tracking-wide text-white no-underline hover:opacity-90"
+          >
+            Open Sim Racing
+          </Link>
+        </section>
       </div>
     </main>
   )
