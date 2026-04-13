@@ -1,10 +1,12 @@
 ﻿import type { Metadata } from 'next'
+import Script from 'next/script'
 import { GoogleAnalytics } from '@next/third-parties/google'
 import './globals.css'
 import Nav from '@/components/Nav'
 import Footer from '@/components/Footer'
 import { SoundProvider } from '@/components/SoundProvider'
 import JsonLd from '@/components/JsonLd'
+import CookieConsent from '@/components/CookieConsent'
 
 export const metadata: Metadata = {
   title: {
@@ -32,11 +34,28 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
+        <Script
+          id="consent-defaults"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('consent', 'default', {
+        'analytics_storage': 'denied',
+        'ad_storage': 'denied',
+        'ad_user_data': 'denied',
+        'ad_personalization': 'denied',
+      });
+    `,
+          }}
+        />
         <SoundProvider>
           <Nav />
           {children}
           <Footer />
         </SoundProvider>
+        <CookieConsent />
         <JsonLd data={{
           '@context': 'https://schema.org',
           '@type': 'WebSite',

@@ -15,6 +15,7 @@ const moreLinks = [
   { label: 'Sim Racing', href: '/sim-racing' },
   { label: 'Community', href: '/community' },
   { label: 'Blog', href: '/blog' },
+  { label: 'Privacy Policy', href: '/privacy' },
 ]
 
 export default function Footer() {
