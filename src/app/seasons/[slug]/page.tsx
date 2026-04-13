@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { createServerClient } from '@/lib/supabase/server'
+import JsonLd from '@/components/JsonLd'
 
 type PageProps = {
   params: Promise<{ slug: string }>
@@ -101,8 +102,20 @@ export default async function SeasonDetailPage({ params }: PageProps) {
       return Number(b.points ?? 0) - Number(a.points ?? 0)
     })
 
+  const seasonPageUrl = `https://f1rec.com/seasons/${season.slug}`
+
   return (
     <main style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--text)' }}>
+      <JsonLd
+        id={`season-jsonld-${season.slug}`}
+        data={{
+          '@context': 'https://schema.org',
+          '@type': 'WebPage',
+          name: `${season.year} Formula 1 Season`,
+          description: `Complete results, standings, and statistics for the ${season.year} F1 season.`,
+          url: seasonPageUrl,
+        }}
+      />
       <section style={{ borderBottom: '1px solid var(--border)', padding: '3rem 1.5rem 2.2rem', background: 'linear-gradient(180deg, rgba(232,0,45,0.08) 0%, transparent 100%)' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
           <div style={{ marginBottom: '1rem' }}>
@@ -124,9 +137,13 @@ export default async function SeasonDetailPage({ params }: PageProps) {
                 Driver Champion
               </div>
               {championDriver ? (
-                <Link href={`/drivers/${championDriver.slug}`} style={{ color: 'var(--text)', textDecoration: 'none', fontFamily: 'var(--font-barlow-condensed)', fontWeight: 800, textTransform: 'uppercase', fontSize: '1.45rem' }}>
-                  {championDriver.full_name}
-                </Link>
+                championDriver.slug ? (
+                  <Link href={`/drivers/${championDriver.slug}`} style={{ color: 'var(--text)', textDecoration: 'none', fontFamily: 'var(--font-barlow-condensed)', fontWeight: 800, textTransform: 'uppercase', fontSize: '1.45rem' }}>
+                    {championDriver.full_name ?? '—'}
+                  </Link>
+                ) : (
+                  <span style={{ color: 'var(--text)', fontFamily: 'var(--font-barlow-condensed)', fontWeight: 800, textTransform: 'uppercase', fontSize: '1.45rem' }}>{championDriver.full_name ?? '—'}</span>
+                )
               ) : (
                 <div style={{ color: 'var(--muted)' }}>TBD</div>
               )}
@@ -136,9 +153,13 @@ export default async function SeasonDetailPage({ params }: PageProps) {
                 Constructor Champion
               </div>
               {championTeam ? (
-                <Link href={`/teams/${championTeam.slug}`} style={{ color: 'var(--text)', textDecoration: 'none', fontFamily: 'var(--font-barlow-condensed)', fontWeight: 800, textTransform: 'uppercase', fontSize: '1.45rem' }}>
-                  {championTeam.name}
-                </Link>
+                championTeam.slug ? (
+                  <Link href={`/teams/${championTeam.slug}`} style={{ color: 'var(--text)', textDecoration: 'none', fontFamily: 'var(--font-barlow-condensed)', fontWeight: 800, textTransform: 'uppercase', fontSize: '1.45rem' }}>
+                    {championTeam.name ?? '—'}
+                  </Link>
+                ) : (
+                  <span style={{ color: 'var(--text)', fontFamily: 'var(--font-barlow-condensed)', fontWeight: 800, textTransform: 'uppercase', fontSize: '1.45rem' }}>{championTeam.name ?? '—'}</span>
+                )
               ) : (
                 <div style={{ color: 'var(--muted)' }}>TBD</div>
               )}
@@ -170,24 +191,24 @@ export default async function SeasonDetailPage({ params }: PageProps) {
                       R{row.round}
                     </td>
                     <td style={{ padding: '0.55rem 0.75rem', color: 'var(--text)' }}>
-                      {row.race_name || row.race_slug}
+                      {row.race_name ?? row.race_slug ?? '—'}
                     </td>
                     <td style={{ padding: '0.55rem 0.75rem' }}>
-                      {row.driver_slug ? (
-                        <Link href={`/drivers/${row.driver_slug}`} style={{ color: 'var(--text)', textDecoration: 'none', fontWeight: 700 }}>
-                          {row.driver_name}
+                      {row.driver_slug?.trim() ? (
+                        <Link href={`/drivers/${row.driver_slug.trim()}`} style={{ color: 'var(--text)', textDecoration: 'none', fontWeight: 700 }}>
+                          {row.driver_name ?? '—'}
                         </Link>
                       ) : (
-                        <span style={{ color: 'var(--text)' }}>{row.driver_name}</span>
+                        <span style={{ color: 'var(--text)' }}>{row.driver_name ?? '—'}</span>
                       )}
                     </td>
                     <td style={{ padding: '0.55rem 0.75rem', color: 'var(--muted)' }}>
-                      {row.constructor_slug ? (
-                        <Link href={`/teams/${row.constructor_slug}`} style={{ color: 'var(--muted)', textDecoration: 'none' }}>
-                          {row.constructor_name || row.constructor_slug}
+                      {row.constructor_slug?.trim() ? (
+                        <Link href={`/teams/${row.constructor_slug.trim()}`} style={{ color: 'var(--muted)', textDecoration: 'none' }}>
+                          {row.constructor_name?.trim() || row.constructor_slug.trim()}
                         </Link>
                       ) : (
-                        row.constructor_name || '—'
+                        row.constructor_name?.trim() || '—'
                       )}
                     </td>
                   </tr>
@@ -217,15 +238,21 @@ export default async function SeasonDetailPage({ params }: PageProps) {
               {driverStandings.map((row, idx) => {
                 const driver = Array.isArray(row.drivers) ? row.drivers[0] : row.drivers
                 const team = Array.isArray(row.teams) ? row.teams[0] : row.teams
+                const driverSlug = driver?.slug
+                const driverLabel = driver?.full_name ?? '—'
                 return (
                   <tr key={row.id} style={{ borderBottom: '1px solid var(--border)' }}>
                     <td style={{ padding: '0.55rem 0.75rem', textAlign: 'right', fontFamily: 'var(--font-jetbrains, monospace)', color: Number(row.championship_position) === 1 ? 'var(--gold)' : 'var(--muted)' }}>
                       {row.championship_position ?? idx + 1}
                     </td>
                     <td style={{ padding: '0.55rem 0.75rem' }}>
-                      <Link href={`/drivers/${driver.slug}`} style={{ color: 'var(--text)', textDecoration: 'none', fontWeight: 700 }}>
-                        {driver.full_name}
-                      </Link>
+                      {driverSlug ? (
+                        <Link href={`/drivers/${driverSlug}`} style={{ color: 'var(--text)', textDecoration: 'none', fontWeight: 700 }}>
+                          {driverLabel}
+                        </Link>
+                      ) : (
+                        <span style={{ color: 'var(--text)', fontWeight: 700 }}>{driverLabel}</span>
+                      )}
                     </td>
                     <td style={{ padding: '0.55rem 0.75rem', color: 'var(--muted)' }}>{team?.name ?? '—'}</td>
                     <td style={{ padding: '0.55rem 0.75rem', textAlign: 'right', fontFamily: 'var(--font-jetbrains, monospace)' }}>{Number(row.points ?? 0).toLocaleString()}</td>
@@ -255,15 +282,21 @@ export default async function SeasonDetailPage({ params }: PageProps) {
             <tbody>
               {constructorStandings.map((row, idx) => {
                 const team = Array.isArray(row.teams) ? row.teams[0] : row.teams
+                const teamSlug = team?.slug
+                const teamLabel = team?.name ?? '—'
                 return (
                   <tr key={row.id} style={{ borderBottom: '1px solid var(--border)' }}>
                     <td style={{ padding: '0.55rem 0.75rem', textAlign: 'right', fontFamily: 'var(--font-jetbrains, monospace)', color: Number(row.championship_position) === 1 ? 'var(--gold)' : 'var(--muted)' }}>
                       {row.championship_position ?? idx + 1}
                     </td>
                     <td style={{ padding: '0.55rem 0.75rem' }}>
-                      <Link href={`/teams/${team.slug}`} style={{ color: 'var(--text)', textDecoration: 'none', fontWeight: 700 }}>
-                        {team.name}
-                      </Link>
+                      {teamSlug ? (
+                        <Link href={`/teams/${teamSlug}`} style={{ color: 'var(--text)', textDecoration: 'none', fontWeight: 700 }}>
+                          {teamLabel}
+                        </Link>
+                      ) : (
+                        <span style={{ color: 'var(--text)', fontWeight: 700 }}>{teamLabel}</span>
+                      )}
                     </td>
                     <td style={{ padding: '0.55rem 0.75rem', textAlign: 'right', fontFamily: 'var(--font-jetbrains, monospace)' }}>{Number(row.points ?? 0).toLocaleString()}</td>
                     <td style={{ padding: '0.55rem 0.75rem', textAlign: 'right', fontFamily: 'var(--font-jetbrains, monospace)' }}>{row.wins ?? 0}</td>

@@ -804,33 +804,43 @@ export default async function TeamDetailPage({ params }: PageProps) {
               {thisYear} <span className="text-[var(--accent)]">drivers</span>
             </h2>
             <div className="grid gap-4 sm:grid-cols-2">
-              {driversCurrentYear.map((d) => (
-                <Link
-                  key={d.slug}
-                  href={`/drivers/${d.slug}`}
-                  className="rounded-xl border border-[var(--border)] bg-[var(--bg2)] p-5 no-underline transition-colors hover:border-[color-mix(in_srgb,var(--accent)_40%,var(--border))]"
-                >
-                  <p className="font-display text-lg font-bold text-[var(--text)]">{d.full_name}</p>
-                  <dl className="mt-3 grid grid-cols-2 gap-2 font-mono text-xs text-[var(--muted)]">
-                    <div>
-                      <dt className="text-[10px] uppercase">WDC pos</dt>
-                      <dd className="text-[var(--gold)]">{d.championship_position != null ? ordinal(d.championship_position) : '—'}</dd>
-                    </div>
-                    <div>
-                      <dt className="text-[10px] uppercase">Points</dt>
-                      <dd className="text-[var(--text)]">{fmtPoints(d.points)}</dd>
-                    </div>
-                    <div>
-                      <dt className="text-[10px] uppercase">Wins</dt>
-                      <dd className="text-[var(--text)]">{d.wins}</dd>
-                    </div>
-                    <div>
-                      <dt className="text-[10px] uppercase">Podiums</dt>
-                      <dd className="text-[var(--text)]">{d.podiums}</dd>
-                    </div>
-                  </dl>
-                </Link>
-              ))}
+              {driversCurrentYear.map((d, idx) => {
+                const cardClass =
+                  'rounded-xl border border-[var(--border)] bg-[var(--bg2)] p-5 no-underline transition-colors hover:border-[color-mix(in_srgb,var(--accent)_40%,var(--border))]'
+                const inner = (
+                  <>
+                    <p className="font-display text-lg font-bold text-[var(--text)]">{d.full_name}</p>
+                    <dl className="mt-3 grid grid-cols-2 gap-2 font-mono text-xs text-[var(--muted)]">
+                      <div>
+                        <dt className="text-[10px] uppercase">WDC pos</dt>
+                        <dd className="text-[var(--gold)]">{d.championship_position != null ? ordinal(d.championship_position) : '—'}</dd>
+                      </div>
+                      <div>
+                        <dt className="text-[10px] uppercase">Points</dt>
+                        <dd className="text-[var(--text)]">{fmtPoints(d.points)}</dd>
+                      </div>
+                      <div>
+                        <dt className="text-[10px] uppercase">Wins</dt>
+                        <dd className="text-[var(--text)]">{d.wins}</dd>
+                      </div>
+                      <div>
+                        <dt className="text-[10px] uppercase">Podiums</dt>
+                        <dd className="text-[var(--text)]">{d.podiums}</dd>
+                      </div>
+                    </dl>
+                  </>
+                )
+                const k = d.slug?.trim() || `driver-${idx}-${d.full_name}`
+                return d.slug?.trim() ? (
+                  <Link key={k} href={`/drivers/${d.slug}`} className={cardClass}>
+                    {inner}
+                  </Link>
+                ) : (
+                  <div key={k} className={cardClass.replace(' no-underline', '')}>
+                    {inner}
+                  </div>
+                )
+              })}
             </div>
           </section>
         ) : null}
@@ -942,7 +952,7 @@ export default async function TeamDetailPage({ params }: PageProps) {
                       {p.category.replace(/-/g, ' ')}
                     </span>
                   ) : null}
-                  <h3 className="mt-2 font-display text-base font-bold text-[var(--text)]">{p.title}</h3>
+                  <h3 className="mt-2 font-display text-base font-bold text-[var(--text)]">{p.title ?? 'Article'}</h3>
                   <p className="mt-2 font-mono text-xs text-[var(--muted)]">
                     {p.published_at
                       ? new Date(p.published_at).toLocaleDateString('en-GB', {

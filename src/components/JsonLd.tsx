@@ -1,4 +1,24 @@
-import Script from 'next/script'
+/**
+ * JSON-LD for search engines. Uses a real <script> tag so markup appears in the
+ * initial HTML (next/script + afterInteractive often omits it from page source).
+ */
+function sanitizeJsonLd(value: unknown): unknown {
+  if (value === null || value === undefined) return undefined
+  if (Array.isArray(value)) {
+    const next = value.map(sanitizeJsonLd).filter((v) => v !== undefined && v !== null)
+    return next
+  }
+  if (typeof value === 'object') {
+    const o = value as Record<string, unknown>
+    const out: Record<string, unknown> = {}
+    for (const [k, v] of Object.entries(o)) {
+      const s = sanitizeJsonLd(v)
+      if (s !== undefined && s !== null) out[k] = s
+    }
+    return out
+  }
+  return value
+}
 
 interface JsonLdProps {
   data: Record<string, unknown>
@@ -7,12 +27,8 @@ interface JsonLdProps {
 }
 
 export default function JsonLd({ data, id = 'json-ld' }: JsonLdProps) {
-  return (
-    <Script
-      id={id}
-      type="application/ld+json"
-      strategy="afterInteractive"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
-    />
-  )
+  const cleaned = sanitizeJsonLd(data) as Record<string, unknown>
+  const json = JSON.stringify(cleaned ?? {})
+
+  return <script id={id} type="application/ld+json" dangerouslySetInnerHTML={{ __html: json }} />
 }

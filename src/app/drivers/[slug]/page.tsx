@@ -707,7 +707,7 @@ export default async function DriverProfilePage({ params }: PageProps) {
                         <td className="border-b border-[var(--border)] px-3 py-2.5 text-left">
                           {tm?.slug ? (
                             <Link href={`/teams/${tm.slug}`} className="text-[var(--text)] no-underline hover:text-[var(--accent)]">
-                              {tm.name}
+                              {tm.name ?? '—'}
                             </Link>
                           ) : (
                             <span className="text-[var(--muted)]">—</span>
@@ -817,7 +817,7 @@ export default async function DriverProfilePage({ params }: PageProps) {
                       {p.category.replace(/-/g, ' ')}
                     </span>
                   ) : null}
-                  <h3 className="mt-2 font-display text-base font-bold text-[var(--text)]">{p.title}</h3>
+                  <h3 className="mt-2 font-display text-base font-bold text-[var(--text)]">{p.title ?? 'Article'}</h3>
                   <p className="mt-2 font-mono text-xs text-[var(--muted)]">
                     {p.published_at
                       ? new Date(p.published_at).toLocaleDateString('en-GB', {

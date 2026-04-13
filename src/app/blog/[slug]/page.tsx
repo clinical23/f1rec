@@ -20,8 +20,22 @@ const font = {
   body: "'Barlow', sans-serif",
 }
 
-function cleanTitle(title: string): string {
-  return title.replace(/^Title:\s*/i, '')
+function cleanTitle(title: string | null | undefined): string {
+  return String(title ?? '').replace(/^Title:\s*/i, '')
+}
+
+function relatedDriverDisplayLine(driver: Record<string, unknown>): string {
+  const full = typeof driver.full_name === 'string' ? driver.full_name.trim() : ''
+  if (full) return full
+  const a = typeof driver.first_name === 'string' ? driver.first_name.trim() : ''
+  const b = typeof driver.last_name === 'string' ? driver.last_name.trim() : ''
+  return [a, b].filter(Boolean).join(' ') || '—'
+}
+
+function relatedDriverNationalityLine(driver: Record<string, unknown>): string {
+  const n = driver.nationality
+  if (typeof n === 'string' && n.trim()) return n.trim()
+  return '—'
 }
 
 type PageProps = {
@@ -256,10 +270,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
   const post = data as Post
   return {
-    title: `${cleanTitle(post.title)} | F1Rec`,
+    title: `${cleanTitle(post.title) || 'Article'} | F1Rec`,
     description: post.meta_description ?? post.excerpt ?? 'F1Rec editorial insight.',
     openGraph: {
-      title: cleanTitle(post.title),
+      title: cleanTitle(post.title) || 'Article',
       description: post.meta_description ?? post.excerpt ?? 'F1Rec editorial insight.',
       type: 'article',
       url: `/blog/${post.slug}`,
@@ -312,14 +326,14 @@ export default async function BlogArticlePage({ params }: PageProps) {
   }
 
   const shareUrl = `https://f1rec.com/blog/${post.slug}`
+  const headline = cleanTitle(post.title ?? 'Article')
   const articleJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Article',
-    headline: post.title,
-    description: post.excerpt || post.title,
-    url: `https://f1rec.com/blog/${post.slug}`,
-    datePublished: post.published_at,
-    dateModified: post.published_at,
+    headline,
+    description: (post.excerpt ?? post.meta_description ?? headline).trim() || 'F1Rec editorial article.',
+    url: shareUrl,
+    ...(post.published_at ? { datePublished: post.published_at, dateModified: post.published_at } : {}),
     publisher: {
       '@type': 'Organization',
       name: 'F1Rec',
@@ -327,7 +341,7 @@ export default async function BlogArticlePage({ params }: PageProps) {
     },
     mainEntityOfPage: {
       '@type': 'WebPage',
-      '@id': `https://f1rec.com/blog/${post.slug}`,
+      '@id': shareUrl,
     },
   }
 
@@ -418,10 +432,8 @@ export default async function BlogArticlePage({ params }: PageProps) {
               <div style={{ fontFamily: font.display, textTransform: 'uppercase', letterSpacing: '0.9px', fontWeight: 800, marginBottom: '10px' }}>Related Driver</div>
               {relatedDriver ? (
                 <div style={{ fontSize: '13px' }}>
-                  <div style={{ fontWeight: 700 }}>
-                    {String(relatedDriver.first_name ?? '')} {String(relatedDriver.last_name ?? '')}
-                  </div>
-                  <div style={{ color: tokens.muted, marginTop: '4px' }}>{String(relatedDriver.nationality ?? '')}</div>
+                  <div style={{ fontWeight: 700 }}>{relatedDriverDisplayLine(relatedDriver as Record<string, unknown>)}</div>
+                  <div style={{ color: tokens.muted, marginTop: '4px' }}>{relatedDriverNationalityLine(relatedDriver as Record<string, unknown>)}</div>
                 </div>
               ) : (
                 <div style={{ color: tokens.muted, fontSize: '13px' }}>No related driver tagged.</div>
