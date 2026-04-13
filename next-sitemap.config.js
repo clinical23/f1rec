@@ -33,6 +33,7 @@ module.exports = {
       { loc: '/sim-racing/products', priority: 0.8, changefreq: 'weekly' },
       { loc: '/sim-racing/reviews', priority: 0.8, changefreq: 'weekly' },
       { loc: '/sim-racing/setups', priority: 0.7, changefreq: 'weekly' },
+      { loc: '/sim-racing/rig-builder', priority: 0.9, changefreq: 'weekly' },
       { loc: '/memes', priority: 0.5, changefreq: 'weekly' },
     ]
 
