@@ -2,6 +2,13 @@ import Link from 'next/link'
 
 const categories = [
   {
+    title: 'Products',
+    desc: 'Browse our full hardware catalogue with filters by category, brand, rating, and price.',
+    href: '/sim-racing/products',
+    icon: '🛒',
+    tag: 'CATALOGUE',
+  },
+  {
     title: 'Hardware reviews',
     desc: 'Honest, in-depth reviews of wheels, pedals, rigs, and everything in between.',
     href: '/sim-racing/reviews',
@@ -94,6 +101,22 @@ export default function SimRacingPage() {
           downloadable setups — everything you need to race faster.
         </p>
         <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
+          <Link href="/sim-racing/products" style={{
+            background: 'var(--bg2)',
+            color: 'var(--text)',
+            padding: '14px 32px',
+            fontFamily: 'var(--font-display)',
+            fontWeight: 700,
+            fontSize: '14px',
+            letterSpacing: '1.5px',
+            textTransform: 'uppercase',
+            textDecoration: 'none',
+            borderRadius: '4px',
+            border: '1px solid var(--border)',
+            transition: 'border-color 0.2s',
+          }}>
+            Browse products
+          </Link>
           <Link href="/sim-racing/rig-builder" style={{
             background: 'var(--accent)',
             color: '#fff',
@@ -125,6 +148,28 @@ export default function SimRacingPage() {
           }}>
             Browse reviews →
           </Link>
+        </div>
+        <div style={{ marginTop: '1.1rem', display: 'flex', justifyContent: 'center', gap: '0.45rem', flexWrap: 'wrap' }}>
+          {[
+            { href: '/sim-racing/products', label: 'Products' },
+            { href: '/sim-racing/reviews', label: 'Reviews' },
+            { href: '/sim-racing/setups', label: 'Setups' },
+          ].map((item) => (
+            <Link key={item.href} href={item.href} style={{
+              border: '1px solid var(--border)',
+              color: 'var(--muted)',
+              textDecoration: 'none',
+              borderRadius: '4px',
+              padding: '0.35rem 0.6rem',
+              fontFamily: 'var(--font-display)',
+              textTransform: 'uppercase',
+              letterSpacing: '0.07em',
+              fontWeight: 700,
+              fontSize: '0.68rem',
+            }}>
+              {item.label}
+            </Link>
+          ))}
         </div>
       </section>
 

@@ -11,22 +11,23 @@ const corsHeaders = {
 };
 
 interface ResultItem {
-  number?: string;
   position?: string;
   positionText?: string;
   points?: string;
   grid?: string;
-  laps?: string;
   status?: string;
-  Time?: { millis?: string; time?: string };
-  FastestLap?: { rank?: string; lap?: string; Time?: { time?: string } };
   Driver: {
     driverId: string;
-    code?: string;
     givenName?: string;
     familyName?: string;
   };
-  Constructor?: { constructorId?: string; name?: string };
+  Constructor?: {
+    name?: string;
+  };
+  FastestLap?: {
+    rank?: string;
+    Time?: { time?: string };
+  };
 }
 
 interface RaceItem {
@@ -40,162 +41,20 @@ interface ApiResponse {
   MRData?: { RaceTable?: { Races?: RaceItem[] } };
 }
 
-function buildRows(races: RaceItem[], isSprint: boolean) {
-  const rows: Record<string, unknown>[] = [];
-  for (const race of races) {
-    const seasonYear = parseInt(race.season, 10);
-    const round = parseInt(race.round, 10);
-    const raceSlug = `${race.season}-${race.round}`;
-
-    for (const r of race.Results ?? []) {
-      const driverId = r.Driver.driverId;
-      const position = parseInt(r.position ?? "", 10);
-      const grid = parseInt(r.grid ?? "", 10);
-      const points = parseFloat(r.points ?? "");
-      const laps = parseInt(r.laps ?? "", 10);
-      const driverName =
-        `${r.Driver.givenName ?? ""} ${r.Driver.familyName ?? ""}`.trim() ||
-        driverId;
-
-      const positionKey = Number.isFinite(position)
-        ? String(position)
-        : [r.positionText, r.grid, r.status]
-            .filter(Boolean)
-            .join("-")
-            .replace(/\s+/g, "_") || "np";
-
-      rows.push({
-        slug: `${raceSlug}-${driverId}-${positionKey}`,
-        race_slug: raceSlug,
-        season_year: Number.isFinite(seasonYear) ? seasonYear : null,
-        round: Number.isFinite(round) ? round : 0,
-        race_name: race.raceName ?? null,
-        driver_slug: driverId,
-        driver_code: r.Driver.code ?? null,
-        driver_name: driverName,
-        constructor_slug: r.Constructor?.constructorId ?? null,
-        constructor_name: r.Constructor?.name ?? null,
-        number: r.number ? parseInt(r.number, 10) : null,
-        grid: Number.isFinite(grid) ? grid : null,
-        position: Number.isFinite(position) ? position : null,
-        position_text: r.positionText ?? null,
-        points: Number.isFinite(points) ? points : null,
-        laps: Number.isFinite(laps) ? laps : null,
-        status: r.status ?? null,
-        time_millis: r.Time?.millis ? parseInt(r.Time.millis, 10) : null,
-        time_text: r.Time?.time ?? null,
-        fastest_lap_time: r.FastestLap?.Time?.time ?? null,
-        fastest_lap_rank: r.FastestLap?.rank
-          ? parseInt(r.FastestLap.rank, 10)
-          : null,
-        is_sprint: isSprint,
-      });
-    }
-  }
-  return rows;
-}
-
-function dedup(rows: Record<string, unknown>[]) {
-  const map = new Map<string, Record<string, unknown>>();
-  for (const row of rows) {
-    const key = row.slug as string;
-    if (!map.has(key)) map.set(key, row);
-  }
-  return Array.from(map.values());
-}
-
-async function lookupDriverIds(
-  supabase: any,
-  slugs: string[]
-) {
-  const map = new Map<string, string>();
-  if (slugs.length === 0) return map;
-  const { data } = await supabase
-    .from("drivers")
-    .select("id, slug")
-    .in("slug", slugs);
-  for (const d of data ?? []) map.set(d.slug, d.id);
-  return map;
-}
-
-async function lookupTeamIds(
-  supabase: any,
-  slugs: string[]
-) {
-  const map = new Map<string, string>();
-  if (slugs.length === 0) return map;
-  const { data } = await supabase
-    .from("teams")
-    .select("id, slug")
-    .in("slug", slugs);
-  for (const t of data ?? []) map.set(t.slug, t.id);
-  return map;
-}
-
-async function lookupSeasonIds(
-  supabase: any,
-  years: number[]
-) {
-  const map = new Map<number, string>();
-  if (years.length === 0) return map;
-  const { data } = await supabase
-    .from("seasons")
-    .select("id, year")
-    .in("year", years);
-  for (const s of data ?? []) map.set(s.year, s.id);
-  return map;
-}
-
-async function updateCareerStats(
-  supabase: any,
-  driverSlugs: string[]
-) {
-  const updated: string[] = [];
-
-  for (const slug of driverSlugs) {
-    const { data: results } = await supabase
-      .from("results")
-      .select("position, points, is_sprint")
-      .eq("driver_slug", slug)
-      .eq("is_sprint", false);
-
-    if (!results || results.length === 0) continue;
-
-    const stats = {
-      career_starts: results.length,
-      career_wins: results.filter((r: Record<string, unknown>) => r.position === 1).length,
-      career_podiums: results.filter(
-        (r: Record<string, unknown>) =>
-          typeof r.position === "number" && r.position >= 1 && r.position <= 3
-      ).length,
-      career_points: results.reduce(
-        (sum: number, r: Record<string, unknown>) => sum + (typeof r.points === "number" ? r.points : 0),
-        0
-      ),
-    };
-
-    const { error } = await supabase
-      .from("drivers")
-      .update(stats)
-      .eq("slug", slug);
-
-    if (!error) updated.push(slug);
-  }
-
-  return updated;
-}
-
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const supabaseUrl = Deno.env.get("SUPABASE_URL");
+    const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+    if (!supabaseUrl || !serviceKey) {
+      throw new Error("Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY.");
+    }
     const supabase = createClient(supabaseUrl, serviceKey);
 
-    // Fetch latest race results from Jolpica
+    // 1) Fetch latest completed race results
     const res = await fetch(`${API_BASE}/current/last/results.json`);
     if (!res.ok) {
       throw new Error(`Jolpica API returned ${res.status}`);
@@ -213,67 +72,143 @@ Deno.serve(async (req) => {
     const race = races[0];
     const seasonYear = parseInt(race.season, 10);
     const round = parseInt(race.round, 10);
+    const raceName = race.raceName ?? "Unknown Grand Prix";
 
-    // Check if this race already exists
-    const { count } = await supabase
+    if (!Number.isFinite(seasonYear) || !Number.isFinite(round)) {
+      throw new Error("Invalid season or round received from Jolpica.");
+    }
+
+    // 2) Duplicate check by season + round
+    const { count, error: countError } = await supabase
       .from("results")
-      .select("id", { count: "exact", head: true })
+      .select("season_year", { count: "exact", head: true })
       .eq("season_year", seasonYear)
-      .eq("round", round)
-      .eq("is_sprint", false);
+      .eq("round", round);
+    if (countError) {
+      throw new Error(`Failed duplicate check: ${countError.message}`);
+    }
 
     if (count && count > 0) {
       return new Response(
         JSON.stringify({
           success: true,
-          message: `Race already imported: ${race.raceName} (${seasonYear} R${round}), ${count} results exist.`,
+          message: `Race already exists for ${seasonYear} round ${round}.`,
+          season_year: seasonYear,
+          round,
+          race_name: raceName,
+          existing_rows: count,
           skipped: true,
         }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
-    // Build rows
-    const rows = dedup(buildRows([race], false));
+    const results = race.Results ?? [];
+    if (results.length === 0) {
+      return new Response(
+        JSON.stringify({
+          success: true,
+          season_year: seasonYear,
+          round,
+          race_name: raceName,
+          inserted: 0,
+          message: "No finisher rows returned from Jolpica.",
+        }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
 
-    // Lookup foreign keys
-    const driverSlugs = [...new Set(rows.map((r) => r.driver_slug as string))];
-    const teamSlugs = [
-      ...new Set(rows.map((r) => r.constructor_slug as string).filter(Boolean)),
-    ];
-    const [driverIdMap, teamIdMap, seasonIdMap] = await Promise.all([
-      lookupDriverIds(supabase, driverSlugs),
-      lookupTeamIds(supabase, teamSlugs),
-      lookupSeasonIds(supabase, [seasonYear]),
+    // 3) Lookup related IDs
+    const driverSlugs = Array.from(
+      new Set(results.map((r) => r.Driver?.driverId).filter(Boolean))
+    ) as string[];
+    const constructorNames = Array.from(
+      new Set(results.map((r) => r.Constructor?.name).filter(Boolean))
+    ) as string[];
+
+    const [{ data: driverRows, error: driverLookupError }, { data: teamRows, error: teamLookupError }, { data: seasonRow, error: seasonLookupError }] = await Promise.all([
+      supabase.from("drivers").select("id, slug").in("slug", driverSlugs),
+      supabase.from("teams").select("id, name").in("name", constructorNames),
+      supabase.from("seasons").select("id").eq("year", seasonYear).maybeSingle(),
     ]);
 
-    for (const row of rows) {
-      row.driver_id = driverIdMap.get(row.driver_slug as string) ?? null;
-      row.team_id = teamIdMap.get(row.constructor_slug as string) ?? null;
-      row.season_id = seasonIdMap.get(seasonYear) ?? null;
-    }
+    if (driverLookupError) throw new Error(`Driver lookup failed: ${driverLookupError.message}`);
+    if (teamLookupError) throw new Error(`Team lookup failed: ${teamLookupError.message}`);
+    if (seasonLookupError) throw new Error(`Season lookup failed: ${seasonLookupError.message}`);
 
-    // Upsert results
-    const { error } = await supabase
+    const driverIdBySlug = new Map<string, string>();
+    for (const row of driverRows ?? []) driverIdBySlug.set(row.slug, row.id);
+
+    const teamIdByName = new Map<string, string>();
+    for (const row of teamRows ?? []) teamIdByName.set(row.name, row.id);
+
+    const seasonId = seasonRow?.id ?? null;
+
+    // 3) Map API -> DB fields
+    const rows = results.map((result) => {
+      const position = parseInt(result.position ?? "", 10);
+      const points = parseFloat(result.points ?? "");
+      const grid = parseInt(result.grid ?? "", 10);
+      const driverSlug = result.Driver.driverId;
+      const constructorName = result.Constructor?.name ?? null;
+      const driverName =
+        `${result.Driver.givenName ?? ""} ${result.Driver.familyName ?? ""}`.trim() ||
+        driverSlug;
+      const slug = `${seasonYear}-${round}-${driverSlug}-${result.position ?? result.positionText ?? "na"}`;
+
+      return {
+        slug,
+        race_slug: `${seasonYear}-${round}`,
+        season_year: seasonYear,
+        round,
+        race_name: raceName,
+        driver_name: driverName,
+        driver_slug: driverSlug,
+        constructor_name: constructorName,
+        position: Number.isFinite(position) ? position : null,
+        position_text: result.positionText ?? null,
+        points: Number.isFinite(points) ? points : null,
+        grid: Number.isFinite(grid) ? grid : null,
+        status: result.status ?? null,
+        fastest_lap_time: result.FastestLap?.Time?.time ?? null,
+        fastest_lap_rank: result.FastestLap?.rank
+          ? parseInt(result.FastestLap.rank, 10)
+          : null,
+        is_sprint: false,
+        driver_id: driverIdBySlug.get(driverSlug) ?? null,
+        team_id: constructorName ? (teamIdByName.get(constructorName) ?? null) : null,
+        season_id: seasonId,
+      };
+    });
+
+    const mappedDriverIds = rows.filter((row) => row.driver_id !== null).length;
+    const mappedTeamIds = rows.filter((row) => row.team_id !== null).length;
+
+    const { error: insertError } = await supabase
       .from("results")
-      .upsert(rows, { onConflict: "slug" });
+      .insert(rows);
 
-    if (error) {
-      throw new Error(`Upsert failed: ${error.message}`);
+    if (insertError) {
+      throw new Error(`Insert failed: ${insertError.message}`);
     }
 
-    // Update career stats for affected drivers
-    const updatedDrivers = await updateCareerStats(supabase, driverSlugs);
-
+    // 4) Return import summary
     return new Response(
       JSON.stringify({
         success: true,
-        race: race.raceName,
-        season: seasonYear,
+        season_year: seasonYear,
         round,
-        results_imported: rows.length,
-        drivers_stats_updated: updatedDrivers.length,
-        driver_slugs: driverSlugs,
+        race_name: raceName,
+        inserted: rows.length,
+        mapped_driver_ids: mappedDriverIds,
+        mapped_team_ids: mappedTeamIds,
+        season_id_found: seasonId !== null,
+        drivers_missing_id: rows
+          .filter((row) => row.driver_id === null)
+          .map((row) => row.driver_slug),
+        teams_missing_id: rows
+          .filter((row) => row.team_id === null)
+          .map((row) => row.constructor_name),
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
