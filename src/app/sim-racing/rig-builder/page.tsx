@@ -32,7 +32,9 @@ type ProductRow = {
   price_gbp: number | string | null
   rating: number | string | null
   short_description: string | null
+  description: string | null
   affiliate_url: string | null
+  image_url: string | null
   sim_product_categories: { name: string; slug: string } | { name: string; slug: string }[] | null
 }
 
@@ -42,7 +44,9 @@ async function loadData() {
   const [productsRes, brandsRes, presetsRes, reviewsRes] = await Promise.all([
     supabase
       .from('sim_products')
-      .select('id, name, slug, brand, price_gbp, rating, short_description, affiliate_url, sim_product_categories(name, slug)'),
+      .select(
+        'id, name, slug, brand, price_gbp, rating, short_description, description, affiliate_url, image_url, sim_product_categories(name, slug)'
+      ),
     supabase.from('sim_brands').select('id, name, website_url'),
     supabase.from('rig_presets').select('*').order('sort_order', { ascending: true }),
     supabase.from('sim_reviews').select('product_id, rating'),
@@ -72,9 +76,9 @@ async function loadData() {
       slug: row.slug ?? null,
       brand: row.brand ?? null,
       price_gbp: row.price_gbp != null ? Number(row.price_gbp) : null,
-      short_description: row.short_description ?? null,
+      short_description: row.short_description ?? row.description ?? null,
       affiliate_url: row.affiliate_url ?? null,
-      image_url: null,
+      image_url: row.image_url ?? null,
       rating: row.rating != null ? Number(row.rating) : null,
       review_rating: rr != null && Number.isFinite(rr) ? rr : null,
       category_slug: c?.slug ?? null,
