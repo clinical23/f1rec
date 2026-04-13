@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react'
 import { supabase } from '@/lib/supabase'
+import { useSound } from '@/components/SoundProvider'
 
 type CategoryFilter =
   | 'all'
@@ -64,6 +65,7 @@ export default function ProductsClient() {
   const [category, setCategory] = useState<CategoryFilter>('all')
   const [brand, setBrand] = useState('all')
   const [sort, setSort] = useState<SortKey>('price-desc')
+  const { playSound } = useSound()
 
   useEffect(() => {
     async function fetchProducts() {
@@ -163,7 +165,10 @@ export default function ProductsClient() {
             {featuredBrands.map((item) => (
               <button
                 key={item.id}
-                onClick={() => setBrand(item.name)}
+                onClick={() => {
+                  playSound('click')
+                  setBrand(item.name)
+                }}
                 style={{
                   background: 'var(--bg2)',
                   border: `1px solid ${brand === item.name ? 'var(--accent)' : 'var(--border)'}`,
@@ -193,12 +198,12 @@ export default function ProductsClient() {
             {products.length} products from {new Set(products.map((p) => p.brand).filter(Boolean)).size} brands
           </p>
           <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap' }}>
-            <select value={brand} onChange={(e) => setBrand(e.target.value)} style={{ background: 'var(--bg2)', border: '1px solid var(--border)', color: 'var(--text)', borderRadius: '6px', padding: '0.45rem 0.55rem', fontSize: '0.8rem' }}>
+            <select value={brand} onChange={(e) => { playSound('click'); setBrand(e.target.value) }} style={{ background: 'var(--bg2)', border: '1px solid var(--border)', color: 'var(--text)', borderRadius: '6px', padding: '0.45rem 0.55rem', fontSize: '0.8rem' }}>
               {brands.map((b) => (
                 <option key={b} value={b}>{b === 'all' ? 'All Brands' : b}</option>
               ))}
             </select>
-            <select value={sort} onChange={(e) => setSort(e.target.value as SortKey)} style={{ background: 'var(--bg2)', border: '1px solid var(--border)', color: 'var(--text)', borderRadius: '6px', padding: '0.45rem 0.55rem', fontSize: '0.8rem' }}>
+            <select value={sort} onChange={(e) => { playSound('click'); setSort(e.target.value as SortKey) }} style={{ background: 'var(--bg2)', border: '1px solid var(--border)', color: 'var(--text)', borderRadius: '6px', padding: '0.45rem 0.55rem', fontSize: '0.8rem' }}>
               <option value="price-asc">Price Low→High</option>
               <option value="price-desc">Price High→Low</option>
               <option value="rating">Rating</option>
@@ -209,7 +214,7 @@ export default function ProductsClient() {
 
         <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap', marginBottom: '1.25rem' }}>
           {CATEGORY_PILLS.map((pill) => (
-            <button key={pill.value} onClick={() => setCategory(pill.value)} style={{ padding: '0.45rem 0.8rem', fontSize: '0.75rem', fontFamily: 'var(--font-barlow-condensed)', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600, border: '1px solid', borderColor: category === pill.value ? 'var(--accent)' : 'var(--border)', background: category === pill.value ? 'rgba(232,0,45,0.15)' : 'transparent', color: category === pill.value ? 'var(--accent)' : 'var(--muted)', borderRadius: '4px', cursor: 'pointer' }}>
+            <button key={pill.value} onClick={() => { playSound('click'); setCategory(pill.value) }} style={{ padding: '0.45rem 0.8rem', fontSize: '0.75rem', fontFamily: 'var(--font-barlow-condensed)', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600, border: '1px solid', borderColor: category === pill.value ? 'var(--accent)' : 'var(--border)', background: category === pill.value ? 'rgba(232,0,45,0.15)' : 'transparent', color: category === pill.value ? 'var(--accent)' : 'var(--muted)', borderRadius: '4px', cursor: 'pointer' }}>
               {pill.label}
             </button>
           ))}
@@ -269,7 +274,7 @@ export default function ProductsClient() {
                     {product.price_gbp != null ? `£${product.price_gbp.toLocaleString()}` : 'Price TBC'}
                   </span>
                   {product.affiliate_url ? (
-                    <a href={product.affiliate_url} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none', border: '1px solid var(--accent)', background: 'var(--accent)', color: '#fff', borderRadius: '4px', padding: '0.45rem 0.75rem', fontFamily: 'var(--font-barlow-condensed)', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 700, fontSize: '0.68rem' }}>
+                    <a href={product.affiliate_url} target="_blank" rel="noopener noreferrer" onClick={() => playSound('wheel-gun')} style={{ textDecoration: 'none', border: '1px solid var(--accent)', background: 'var(--accent)', color: '#fff', borderRadius: '4px', padding: '0.45rem 0.75rem', fontFamily: 'var(--font-barlow-condensed)', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 700, fontSize: '0.68rem' }}>
                       Buy
                     </a>
                   ) : (

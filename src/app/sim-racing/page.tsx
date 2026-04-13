@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import BrandsWall from './brands-wall'
+import SoundLink from '@/components/SoundLink'
 
 const categories = [
   {
@@ -102,7 +103,7 @@ export default function SimRacingPage() {
           downloadable setups — everything you need to race faster.
         </p>
         <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
-          <Link href="/sim-racing/products" style={{
+          <SoundLink href="/sim-racing/products" soundId="click" style={{
             background: 'var(--bg2)',
             color: 'var(--text)',
             padding: '14px 32px',
@@ -117,8 +118,8 @@ export default function SimRacingPage() {
             transition: 'border-color 0.2s',
           }}>
             Browse products
-          </Link>
-          <Link href="/sim-racing/rig-builder" style={{
+          </SoundLink>
+          <SoundLink href="/sim-racing/rig-builder" soundId="wheel-gun" style={{
             background: 'var(--accent)',
             color: '#fff',
             padding: '14px 32px',
@@ -132,8 +133,8 @@ export default function SimRacingPage() {
             transition: 'opacity 0.2s',
           }}>
             Build your rig
-          </Link>
-          <Link href="/sim-racing/reviews" style={{
+          </SoundLink>
+          <SoundLink href="/sim-racing/reviews" soundId="click" style={{
             background: 'transparent',
             color: 'var(--text)',
             padding: '14px 32px',
@@ -148,7 +149,7 @@ export default function SimRacingPage() {
             transition: 'border-color 0.2s',
           }}>
             Browse reviews →
-          </Link>
+          </SoundLink>
         </div>
         <div style={{ marginTop: '1.1rem', display: 'flex', justifyContent: 'center', gap: '0.45rem', flexWrap: 'wrap' }}>
           {[

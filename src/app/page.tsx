@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
+import SoundLink from '@/components/SoundLink'
 
 interface RecentRace {
   season_year: number
@@ -107,9 +108,9 @@ export default function HomePage() {
           The most complete Formula 1 statistics platform. Explore drivers, teams, circuits and results from 1950 to today.
         </p>
         <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
-          <Link href="/drivers" style={{ background: 'var(--accent)', color: 'white', fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700, fontSize: '14px', letterSpacing: '1px', textTransform: 'uppercase', padding: '12px 28px', borderRadius: '4px', textDecoration: 'none' }}>
+          <SoundLink href="/drivers" soundId="drivers" style={{ background: 'var(--accent)', color: 'white', fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700, fontSize: '14px', letterSpacing: '1px', textTransform: 'uppercase', padding: '12px 28px', borderRadius: '4px', textDecoration: 'none' }}>
             Explore Drivers
-          </Link>
+          </SoundLink>
           <Link href="/compare" style={{ background: 'transparent', color: 'var(--text)', fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700, fontSize: '14px', letterSpacing: '1px', textTransform: 'uppercase', padding: '12px 28px', borderRadius: '4px', border: '1px solid var(--border)', textDecoration: 'none' }}>
             Compare Drivers →
           </Link>

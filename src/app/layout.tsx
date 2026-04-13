@@ -2,6 +2,7 @@
 import './globals.css'
 import Nav from '@/components/Nav'
 import Footer from '@/components/Footer'
+import { SoundProvider } from '@/components/SoundProvider'
 
 export const metadata: Metadata = {
   title: {
@@ -29,9 +30,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <Nav />
-        {children}
-        <Footer />
+        <SoundProvider>
+          <Nav />
+          {children}
+          <Footer />
+        </SoundProvider>
       </body>
     </html>
   )

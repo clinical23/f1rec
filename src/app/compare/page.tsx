@@ -4,6 +4,7 @@ import { Suspense, useEffect, useState, useCallback } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
+import { useSound } from '@/components/SoundProvider'
 
 interface DriverBasic {
   id: string; slug: string; full_name: string; code: string | null
@@ -95,6 +96,7 @@ function CompareContent() {
   const [d1Slug, setD1Slug] = useState(searchParams.get('d1') || '')
   const [d2Slug, setD2Slug] = useState(searchParams.get('d2') || '')
   const [loading, setLoading] = useState(true)
+  const { playSound } = useSound()
 
   useEffect(() => {
     document.title = 'Compare F1 Drivers Head-to-Head | F1Rec'
@@ -152,9 +154,20 @@ function CompareContent() {
           Compare <span style={{ color: 'var(--accent)' }}>Drivers</span>
         </h1>
         <p style={{ color: 'var(--muted)', maxWidth: '450px', margin: '1rem auto 0', fontSize: '0.9rem' }}>Pick two drivers. See who comes out on top.</p>
+        <button
+          type="button"
+          onClick={() => {
+            playSound('compare')
+            const section = document.getElementById('compare-selectors')
+            section?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+          }}
+          style={{ marginTop: '1rem', padding: '0.55rem 1.1rem', border: '1px solid var(--accent)', background: 'transparent', color: 'var(--accent)', borderRadius: '6px', cursor: 'pointer', fontFamily: 'var(--font-barlow-condensed)', textTransform: 'uppercase', letterSpacing: '0.09em', fontSize: '0.72rem', fontWeight: 700 }}
+        >
+          Compare Now
+        </button>
       </section>
 
-      <section style={{ maxWidth: '900px', margin: '0 auto', padding: '2rem 1.5rem' }}>
+      <section id="compare-selectors" style={{ maxWidth: '900px', margin: '0 auto', padding: '2rem 1.5rem' }}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', gap: '1rem', alignItems: 'center', marginBottom: '2rem' }}>
           <DriverSelector drivers={drivers} value={d1Slug} onChange={handleD1} color="var(--accent, #e8002d)" />
           <div style={{ fontFamily: 'var(--font-barlow-condensed)', fontSize: '1.2rem', fontWeight: 800, color: 'var(--muted)', textTransform: 'uppercase' }}>vs</div>
@@ -166,7 +179,7 @@ function CompareContent() {
             <p style={{ fontFamily: 'var(--font-barlow-condensed)', textTransform: 'uppercase', letterSpacing: '0.12em', fontSize: '0.7rem', color: 'var(--muted)', fontWeight: 600, marginBottom: '0.75rem', textAlign: 'center' }}>Popular Comparisons</p>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', justifyContent: 'center' }}>
               {POPULAR.map(p => (
-                <button key={p.label} onClick={() => { setD1Slug(p.d1); setD2Slug(p.d2); updateUrl(p.d1, p.d2) }}
+                <button key={p.label} onClick={() => { playSound('compare'); setD1Slug(p.d1); setD2Slug(p.d2); updateUrl(p.d1, p.d2) }}
                   style={{ padding: '0.4rem 0.8rem', background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: '6px', color: 'var(--text)', fontSize: '0.78rem', cursor: 'pointer', fontWeight: 500 }}>
                   {p.label}
                 </button>
@@ -203,6 +216,7 @@ function CompareContent() {
 
             <div style={{ textAlign: 'center', marginTop: '2.5rem', paddingTop: '1.5rem', borderTop: '1px solid var(--border)' }}>
               <button onClick={() => { navigator.clipboard.writeText(`${window.location.origin}/compare?d1=${d1.slug}&d2=${d2.slug}`); alert('Link copied!') }}
+                onMouseDown={() => playSound('click')}
                 style={{ padding: '0.6rem 1.5rem', background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: '6px', color: 'var(--text)', cursor: 'pointer', fontFamily: 'var(--font-barlow-condensed)', textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: '0.75rem', fontWeight: 600 }}>
                 Share This Comparison →
               </button>

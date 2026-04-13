@@ -3,8 +3,10 @@
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useSound } from '@/components/SoundProvider'
 
 const navLinks = [
+  { label: 'Home', href: '/', sound: 'home' },
   { label: 'Drivers', href: '/drivers' },
   { label: 'Teams', href: '/teams' },
   { label: 'Races', href: '/races' },
@@ -13,12 +15,28 @@ const navLinks = [
   { label: 'Leaderboards', href: '/leaderboards' },
   { label: 'Community', href: '/community' },
   { label: 'Sim Racing', href: '/sim-racing' },
+  { label: 'Memes', href: '/memes', sound: 'memes' },
 ]
 
 export default function Nav() {
   const [open, setOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
   const pathname = usePathname()
+  const { soundEnabled, toggleSound, playSound } = useSound()
+
+  const soundFor = (href: string) => {
+    if (href === '/') return 'home'
+    if (href === '/drivers') return 'drivers'
+    if (href === '/teams') return 'teams'
+    if (href === '/races') return 'races'
+    if (href === '/seasons') return 'seasons'
+    if (href === '/compare') return 'compare'
+    if (href === '/leaderboards') return 'leaderboards'
+    if (href === '/community') return 'community'
+    if (href === '/sim-racing') return 'sim-racing'
+    if (href === '/memes') return 'memes'
+    return 'click'
+  }
 
   // Close menu on route change
   useEffect(() => { setOpen(false) }, [pathname])
@@ -55,7 +73,7 @@ export default function Nav() {
         <Link href="/" style={{
           fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: '18px',
           color: 'var(--text)', textDecoration: 'none', textTransform: 'uppercase', letterSpacing: '1px',
-        }}>
+        }} onClick={() => playSound('home')}>
           F1<span style={{ color: 'var(--accent)' }}>Rec</span>
         </Link>
 
@@ -66,14 +84,34 @@ export default function Nav() {
               fontFamily: 'var(--font-display)', fontWeight: 600, fontSize: '12px',
               color: pathname === link.href ? 'var(--text)' : link.href === '/sim-racing' ? 'var(--accent)' : 'var(--muted)',
               textDecoration: 'none', textTransform: 'uppercase', letterSpacing: '1.5px', transition: 'color 0.2s',
-            }}>
+            }} onClick={() => playSound(soundFor(link.href))}>
               {link.label}
             </Link>
           ))}
+          <button
+            type="button"
+            onClick={toggleSound}
+            style={{
+              background: 'transparent',
+              border: 'none',
+              cursor: 'pointer',
+              fontFamily: 'var(--font-display)',
+              fontWeight: 600,
+              fontSize: '12px',
+              color: 'var(--muted)',
+              textTransform: 'uppercase',
+              letterSpacing: '1.5px',
+              padding: 0,
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--accent)')}
+            onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--muted)')}
+          >
+            {soundEnabled ? '🔊' : '🔇'}
+          </button>
         </div>
 
         {/* Hamburger button */}
-        <button className="nav-hamburger" onClick={() => setOpen(o => !o)}
+        <button className="nav-hamburger" onClick={() => { playSound('click'); setOpen(o => !o) }}
           aria-label="Toggle menu"
           style={{
             display: 'none', flexDirection: 'column', gap: '4px', background: 'none',
@@ -108,10 +146,32 @@ export default function Nav() {
                   color: pathname === link.href ? 'var(--accent)' : 'var(--text)',
                   textDecoration: 'none', textTransform: 'uppercase', letterSpacing: '1.5px',
                   borderBottom: '1px solid var(--border)',
-                }}>
+                }}
+                onMouseDown={() => playSound(soundFor(link.href))}>
                 {link.label}
               </Link>
             ))}
+            <button
+              type="button"
+              onClick={toggleSound}
+              style={{
+                display: 'block',
+                width: '100%',
+                padding: '0.85rem 1.5rem',
+                background: 'transparent',
+                border: 'none',
+                borderBottom: '1px solid var(--border)',
+                fontFamily: 'var(--font-display)',
+                fontWeight: 700,
+                fontSize: '14px',
+                color: 'var(--muted)',
+                textAlign: 'left',
+                textTransform: 'uppercase',
+                letterSpacing: '1.5px',
+                cursor: 'pointer',
+                }}>
+              Sound {soundEnabled ? '🔊' : '🔇'}
+            </button>
           </div>
         </>
       )}
