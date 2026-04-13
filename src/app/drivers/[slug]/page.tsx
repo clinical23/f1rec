@@ -1,187 +1,842 @@
-'use client'
-
-import { useEffect, useState } from 'react'
-import { useParams } from 'next/navigation'
+import type { Metadata } from 'next'
 import Link from 'next/link'
-import { supabase } from '@/lib/supabase'
+import { notFound } from 'next/navigation'
+import { createServerClient } from '@/lib/supabase/server'
 import JsonLd from '@/components/JsonLd'
+import EmailCapture from '@/components/EmailCapture'
 
-interface Driver {
-  id: string; slug: string; full_name: string; first_name: string; last_name: string
-  code: string | null; number: number | null; nationality: string | null
-  date_of_birth: string | null; career_wins: number; career_podiums: number
-  career_poles: number; career_points: number; career_starts: number
-  career_dnfs: number; career_fastest_laps: number; championships: number
-  is_active: boolean; first_season: number | null; last_season: number | null
-  biography: string | null
+type PageProps = {
+  params: Promise<{ slug: string }>
 }
 
-interface SeasonStat {
-  id: string; championship_position: number | null; points: number
-  wins: number; podiums: number; poles: number; fastest_laps: number
-  starts: number; dnfs: number; points_per_race: number | null
-  season_year: number; team_name: string
+type DriverRow = Record<string, unknown> & {
+  id: string
+  slug: string
+  full_name?: string | null
+  first_name?: string | null
+  last_name?: string | null
+  nationality?: string | null
+  current_team?: string | null
+  date_of_birth?: string | null
+  is_champion?: boolean | null
+  is_active?: boolean | null
+  code?: string | null
+  number?: number | null
+  championships?: number | null
 }
 
-function StatBox({ label, value, accent }: { label: string; value: string | number; accent?: boolean }) {
+type SeasonStatRow = {
+  id: string
+  championship_position: number | null
+  points: number | string | null
+  wins: number | string | null
+  podiums: number | string | null
+  poles: number | string | null
+  fastest_laps: number | string | null
+  starts?: number | string | null
+  races_entered?: number | string | null
+  dnfs: number | string | null
+  team_id: string | null
+  season_id: string | null
+  teams: { name: string; slug: string } | { name: string; slug: string }[] | null
+  seasons: {
+    id: string
+    year: number
+    slug: string
+    champion_driver_id: string | null
+  } | null
+}
+
+type PostRow = {
+  title: string | null
+  slug: string | null
+  category: string | null
+  published_at: string | null
+  body: string | null
+  related_driver_slug?: string | null
+}
+
+function unwrapRelation<T>(rel: T | T[] | null | undefined): T | null {
+  if (rel == null) return null
+  return Array.isArray(rel) ? rel[0] ?? null : rel
+}
+
+function num(v: number | string | null | undefined): number {
+  if (v == null) return 0
+  const n = typeof v === 'number' ? v : Number.parseFloat(String(v))
+  return Number.isFinite(n) ? n : 0
+}
+
+function ordinal(n: number): string {
+  const abs = Math.floor(Math.abs(n))
+  const mod100 = abs % 100
+  if (mod100 >= 11 && mod100 <= 13) return `${abs}th`
+  switch (abs % 10) {
+    case 1:
+      return `${abs}st`
+    case 2:
+      return `${abs}nd`
+    case 3:
+      return `${abs}rd`
+    default:
+      return `${abs}th`
+  }
+}
+
+function displayName(d: DriverRow): string {
+  const fn = (d.full_name as string | undefined)?.trim()
+  if (fn) return fn
+  const a = (d.first_name as string | undefined)?.trim() ?? ''
+  const b = (d.last_name as string | undefined)?.trim() ?? ''
+  return `${a} ${b}`.trim() || 'Driver'
+}
+
+type Aggregates = {
+  totalRaces: number
+  totalWins: number
+  totalPodiums: number
+  totalPoles: number
+  totalPoints: number
+  totalFastestLaps: number
+  totalDnfs: number
+  titleCount: number
+  bestChampPos: number | null
+  bestChampYear: number | null
+  bestChampOrdinal: string | null
+  maxWinsSeason: { wins: number; year: number } | null
+  maxPointsSeason: { points: number; year: number } | null
+  maxPodiumsSeason: { podiums: number; year: number } | null
+}
+
+function computeAggregates(seasonRows: SeasonStatRow[], driverId: string): Aggregates {
+  let totalRaces = 0
+  let totalWins = 0
+  let totalPodiums = 0
+  let totalPoles = 0
+  let totalPoints = 0
+  let totalFastestLaps = 0
+  let totalDnfs = 0
+  let titleCount = 0
+  let bestChampPos: number | null = null
+  let bestChampYear: number | null = null
+  let maxWinsSeason: { wins: number; year: number } | null = null
+  let maxPointsSeason: { points: number; year: number } | null = null
+  let maxPodiumsSeason: { podiums: number; year: number } | null = null
+
+  for (const row of seasonRows) {
+    const se = unwrapRelation(row.seasons)
+    const year = se?.year ?? 0
+    const races = num(row.races_entered ?? row.starts)
+    totalRaces += races
+    const w = num(row.wins)
+    const p = num(row.podiums)
+    const po = num(row.poles)
+    const pts = num(row.points)
+    const fl = num(row.fastest_laps)
+    const dnf = num(row.dnfs)
+    totalWins += w
+    totalPodiums += p
+    totalPoles += po
+    totalPoints += pts
+    totalFastestLaps += fl
+    totalDnfs += dnf
+
+    if (se?.champion_driver_id === driverId) titleCount += 1
+
+    const cp = row.championship_position
+    if (cp != null && Number.isFinite(Number(cp)) && Number(cp) > 0) {
+      const cpn = Number(cp)
+      if (bestChampPos == null || cpn < bestChampPos) {
+        bestChampPos = cpn
+        bestChampYear = year || null
+      }
+    }
+
+    if (year > 0) {
+      if (!maxWinsSeason || w > maxWinsSeason.wins) maxWinsSeason = { wins: w, year }
+      if (!maxPointsSeason || pts > maxPointsSeason.points) maxPointsSeason = { points: pts, year }
+      if (!maxPodiumsSeason || p > maxPodiumsSeason.podiums) maxPodiumsSeason = { podiums: p, year }
+    }
+  }
+
+  const bestChampOrdinal = bestChampPos != null ? ordinal(bestChampPos) : null
+
+  return {
+    totalRaces,
+    totalWins,
+    totalPodiums,
+    totalPoles,
+    totalPoints,
+    totalFastestLaps,
+    totalDnfs,
+    titleCount,
+    bestChampPos,
+    bestChampYear,
+    bestChampOrdinal,
+    maxWinsSeason,
+    maxPointsSeason,
+    maxPodiumsSeason,
+  }
+}
+
+async function loadDriverProfileData(slug: string) {
+  const supabase = createServerClient()
+
+  const { data: driver, error: driverErr } = await supabase.from('drivers').select('*').eq('slug', slug).maybeSingle()
+  if (driverErr || !driver) return null
+
+  const d = driver as DriverRow
+  const driverId = d.id
+
+  const [seasonStatsRes, postsRes, countriesRes] = await Promise.all([
+    supabase
+      .from('driver_season_stats')
+      .select(
+        `
+        id,
+        championship_position,
+        points,
+        wins,
+        podiums,
+        poles,
+        fastest_laps,
+        starts,
+        dnfs,
+        team_id,
+        season_id,
+        teams(name, slug),
+        seasons(id, year, slug, champion_driver_id)
+      `
+      )
+      .eq('driver_id', driverId)
+      .order('seasons(year)', { ascending: false }),
+    supabase
+      .from('posts')
+      .select('title, slug, category, published_at, body, related_driver_slug')
+      .eq('is_published', true),
+    supabase.from('countries').select('name, flag_emoji'),
+  ])
+
+  const seasonRows = ((seasonStatsRes.data ?? []) as SeasonStatRow[]).sort((a, b) => {
+    const ya = unwrapRelation(a.seasons)?.year ?? 0
+    const yb = unwrapRelation(b.seasons)?.year ?? 0
+    return yb - ya
+  })
+
+  const posts = (postsRes.data ?? []) as PostRow[]
+  const countryFlags = new Map<string, string>()
+  if (!countriesRes.error && countriesRes.data) {
+    for (const c of countriesRes.data as { name: string; flag_emoji: string | null }[]) {
+      if (c.name && c.flag_emoji) countryFlags.set(String(c.name).toLowerCase(), c.flag_emoji)
+    }
+  }
+
+  const years = seasonRows.map((r) => unwrapRelation(r.seasons)?.year).filter((y): y is number => typeof y === 'number')
+  const maxYear = years.length ? Math.max(...years) : null
+  const minYear = years.length ? Math.min(...years) : null
+  const thisYear = new Date().getFullYear()
+  const careerEndLabel = maxYear != null && maxYear >= thisYear ? 'Present' : maxYear != null ? String(maxYear) : '—'
+
+  const seasonIds = [...new Set(seasonRows.map((r) => r.season_id).filter(Boolean))] as string[]
+
+  const pairKeys = new Set<string>()
+  for (const r of seasonRows) {
+    if (r.season_id && r.team_id) pairKeys.add(`${r.season_id}:${r.team_id}`)
+  }
+
+  const [teammatesRes, firstRaceRes, firstWinRes, currentTeamRes] = await Promise.all([
+    seasonIds.length
+      ? supabase
+          .from('driver_season_stats')
+          .select('driver_id, season_id, team_id, drivers(full_name, slug)')
+          .in('season_id', seasonIds)
+      : Promise.resolve({ data: [] as unknown[], error: null }),
+    supabase
+      .from('results')
+      .select('season_year, round, race_name, race_slug')
+      .eq('driver_slug', slug)
+      .eq('is_sprint', false)
+      .order('season_year', { ascending: true })
+      .order('round', { ascending: true })
+      .limit(1),
+    supabase
+      .from('results')
+      .select('season_year, round, race_name, race_slug')
+      .eq('driver_slug', slug)
+      .eq('position', 1)
+      .eq('is_sprint', false)
+      .order('season_year', { ascending: true })
+      .order('round', { ascending: true })
+      .limit(1),
+    d.current_team
+      ? supabase.from('teams').select('name, slug').ilike('name', `%${String(d.current_team).trim()}%`).limit(1)
+      : Promise.resolve({ data: null as { name: string; slug: string } | null, error: null }),
+  ])
+
+  const teammateMap = new Map<string, { full_name: string; slug: string }>()
+  for (const row of (teammatesRes.data ?? []) as Array<{
+    driver_id: string
+    season_id: string
+    team_id: string
+    drivers: { full_name: string; slug: string } | { full_name: string; slug: string }[] | null
+  }>) {
+    if (row.driver_id === driverId) continue
+    const key = `${row.season_id}:${row.team_id}`
+    if (!pairKeys.has(key)) continue
+    const dr = unwrapRelation(row.drivers)
+    if (dr?.slug && dr.full_name) teammateMap.set(dr.slug, { full_name: dr.full_name, slug: dr.slug })
+  }
+  const teammates = [...teammateMap.values()].sort((a, b) => a.full_name.localeCompare(b.full_name))
+
+  const firstRace = (firstRaceRes.data ?? [])[0] as
+    | { season_year: number; race_name: string | null; race_slug: string | null }
+    | undefined
+  const firstWin = (firstWinRes.data ?? [])[0] as
+    | { season_year: number; race_name: string | null; race_slug: string | null }
+    | undefined
+
+  const aggregates = computeAggregates(seasonRows, driverId)
+
+  const titleCount = aggregates.titleCount > 0 ? aggregates.titleCount : num(d.championships)
+  const showChampionBadge = Boolean(d.is_champion) || titleCount > 0
+
+  const nationality = d.nationality?.trim() || null
+  let flag = nationality ? countryFlags.get(nationality.toLowerCase()) : undefined
+  if (!flag && nationality) {
+    for (const [k, v] of countryFlags) {
+      if (nationality.toLowerCase().includes(k) || k.includes(nationality.toLowerCase())) {
+        flag = v
+        break
+      }
+    }
+  }
+
+  const latestTeam = unwrapRelation(seasonRows[0]?.teams ?? null)
+  const matchedFromCurrent = ((currentTeamRes.data ?? []) as { name: string; slug: string }[])[0] ?? null
+  const currentTeamLink = matchedFromCurrent ?? latestTeam
+
+  const name = displayName(d)
+
+  const relatedPosts = posts.filter((p) => {
+    if (!p.slug) return false
+    if (p.related_driver_slug === slug) return true
+    const fullLower = name.toLowerCase()
+    const parts = name.split(/\s+/).filter(Boolean)
+    const lastName = (parts[parts.length - 1] ?? '').toLowerCase()
+    const t = (p.title ?? '').toLowerCase()
+    const b = (p.body ?? '').toLowerCase()
+    if (lastName.length >= 3 && (t.includes(lastName) || b.includes(lastName))) return true
+    return t.includes(fullLower) || b.includes(fullLower)
+  })
+
+  const titleSeasonRows = seasonRows.filter((r) => unwrapRelation(r.seasons)?.champion_driver_id === driverId)
+
+  return {
+    driver: d,
+    name,
+    seasonRows,
+    aggregates,
+    teammates,
+    firstRace,
+    firstWin,
+    titleCount,
+    showChampionBadge,
+    nationality,
+    flag: flag ?? null,
+    currentTeamLink,
+    minYear,
+    careerEndLabel,
+    relatedPosts: relatedPosts.slice(0, 8),
+    titleSeasonRows,
+  }
+}
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { slug } = await params
+  const data = await loadDriverProfileData(slug)
+  if (!data) {
+    return {
+      title: 'Driver Not Found | F1Rec',
+      description: 'The requested Formula 1 driver could not be found on F1Rec.',
+    }
+  }
+  const { name, aggregates } = data
+  const desc = `Complete Formula 1 career statistics for ${name}. ${aggregates.totalWins} wins, ${aggregates.totalPodiums} podiums, ${Math.round(aggregates.totalPoints).toLocaleString()} points across ${aggregates.totalRaces} races.`
+  return {
+    title: `${name} — Career Stats, Results & Records | F1Rec`,
+    description: desc,
+    openGraph: {
+      title: `${name} — F1 Career Stats | F1Rec`,
+      description: desc,
+      type: 'profile',
+      url: `https://f1rec.com/drivers/${slug}`,
+      siteName: 'F1Rec',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${name} — F1 Career Stats | F1Rec`,
+      description: desc,
+    },
+  }
+}
+
+function StatCard({
+  label,
+  value,
+  accent,
+  gold,
+}: {
+  label: string
+  value: string | number
+  accent?: boolean
+  gold?: boolean
+}) {
   return (
-    <div style={{ background: 'var(--bg2, #111118)', border: '1px solid var(--border, #2a2a3a)', borderRadius: '8px', padding: '1.25rem 1rem', textAlign: 'center' }}>
-      <div style={{ fontFamily: 'var(--font-barlow-condensed)', fontSize: 'clamp(1.6rem, 3vw, 2.2rem)', fontWeight: 800, color: accent ? 'var(--gold, #f5c842)' : 'var(--text)', lineHeight: 1.1 }}>{value}</div>
-      <div style={{ fontFamily: 'var(--font-barlow-condensed)', textTransform: 'uppercase', letterSpacing: '0.12em', fontSize: '0.65rem', color: 'var(--muted, #889)', marginTop: '0.4rem', fontWeight: 600 }}>{label}</div>
+    <div className="rounded-lg border border-[var(--border)] bg-[var(--bg2)] px-4 py-4 text-center">
+      <div
+        className={`font-mono text-2xl font-bold leading-tight md:text-[1.65rem] ${
+          gold ? 'text-[var(--gold)]' : accent ? 'text-[var(--accent)]' : 'text-[var(--text)]'
+        }`}
+      >
+        {value}
+      </div>
+      <div className="mt-1 font-display text-[0.65rem] font-semibold uppercase tracking-[0.12em] text-[var(--muted)]">
+        {label}
+      </div>
     </div>
   )
 }
 
-export default function DriverProfilePage() {
-  const params = useParams()
-  const slug = params.slug as string
-  const [driver, setDriver] = useState<Driver | null>(null)
-  const [seasons, setSeasons] = useState<SeasonStat[]>([])
-  const [loading, setLoading] = useState(true)
+function RecordRow({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="grid grid-cols-1 gap-1 border-b border-[var(--border)] py-3 sm:grid-cols-2 sm:gap-4">
+      <dt className="text-sm text-[var(--muted)]">{label}</dt>
+      <dd className="font-mono text-sm text-[var(--text)] sm:text-right">{value}</dd>
+    </div>
+  )
+}
 
-  useEffect(() => {
-    async function fetchDriver() {
-      const { data: driverData } = await supabase.from('drivers').select('*').eq('slug', slug).single()
-      if (driverData) {
-        setDriver(driverData)
-        const champText = driverData.championships > 0 ? `${driverData.championships}x World Champion. ` : ''
-        document.title = `${driverData.full_name} — F1 Career Stats & Results | F1Rec`
-        const metaDesc = document.querySelector('meta[name="description"]')
-        if (metaDesc) metaDesc.setAttribute('content', `${champText}${driverData.career_wins} wins, ${driverData.career_podiums} podiums, ${driverData.career_points} points. Full season-by-season F1 stats for ${driverData.full_name}.`)
-        const { data: statsData } = await supabase
-          .from('driver_season_stats')
-          .select(`id, championship_position, points, wins, podiums, poles, fastest_laps, starts, dnfs, points_per_race, seasons!inner(year), teams!inner(name)`)
-          .eq('driver_id', driverData.id)
-          .order('seasons(year)', { ascending: false })
-        if (statsData) {
-          setSeasons(statsData.map((s: any) => ({ ...s, season_year: s.seasons.year, team_name: s.teams.name })))
+export default async function DriverProfilePage({ params }: PageProps) {
+  const { slug } = await params
+  const data = await loadDriverProfileData(slug)
+  if (!data) notFound()
+
+  const {
+    driver,
+    name,
+    seasonRows,
+    aggregates,
+    teammates,
+    firstRace,
+    firstWin,
+    titleCount,
+    showChampionBadge,
+    nationality,
+    flag,
+    currentTeamLink,
+    minYear,
+    careerEndLabel,
+    relatedPosts,
+    titleSeasonRows,
+  } = data
+
+  const affiliationName =
+    (driver.current_team as string | null)?.trim() || currentTeamLink?.name || null
+
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    name,
+    jobTitle: 'Formula 1 Driver',
+    url: `https://f1rec.com/drivers/${slug}`,
+    ...(nationality ? { nationality } : {}),
+    ...(affiliationName
+      ? {
+          affiliation: {
+            '@type': 'SportsTeam',
+            name: affiliationName,
+            ...(currentTeamLink?.slug ? { url: `https://f1rec.com/teams/${currentTeamLink.slug}` } : {}),
+          },
         }
-      }
-      setLoading(false)
-    }
-    fetchDriver()
-  }, [slug])
+      : {}),
+    description: `${name} Formula 1 career statistics, season results, and records on F1Rec.`,
+  }
 
-  if (loading) return (
-    <main style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--text)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <div style={{ textAlign: 'center' }}>
-        <div style={{ width: '24px', height: '24px', border: '2px solid var(--border)', borderTopColor: 'var(--accent)', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 1rem' }} />
-        <p style={{ color: 'var(--muted)' }}>Loading driver profile...</p>
-        <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
-      </div>
-    </main>
-  )
-
-  if (!driver) return (
-    <main style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--text)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <div style={{ textAlign: 'center' }}>
-        <h1 style={{ fontFamily: 'var(--font-barlow-condensed)', fontSize: '3rem', fontWeight: 800, textTransform: 'uppercase' }}>Driver Not Found</h1>
-        <Link href="/drivers" style={{ color: 'var(--accent)', textDecoration: 'none', fontWeight: 600 }}>← Back to Drivers</Link>
-      </div>
-    </main>
-  )
-
-  const winRate = driver.career_starts > 0 ? ((driver.career_wins / driver.career_starts) * 100).toFixed(1) : '0'
-  const podiumRate = driver.career_starts > 0 ? ((driver.career_podiums / driver.career_starts) * 100).toFixed(1) : '0'
-  const uniqueTeams = [...new Set(seasons.map(s => s.team_name))]
+  const categoryStyles: Record<string, string> = {
+    'race-review': 'bg-[color-mix(in_srgb,var(--accent)_18%,transparent)] text-[var(--accent)]',
+    'driver-analysis': 'bg-[color-mix(in_srgb,var(--green)_18%,transparent)] text-[var(--green)]',
+    'season-preview': 'bg-[color-mix(in_srgb,var(--blue)_18%,transparent)] text-[var(--blue)]',
+    history: 'bg-[color-mix(in_srgb,var(--gold)_18%,transparent)] text-[var(--gold)]',
+    tech: 'bg-[color-mix(in_srgb,#ce93d8_18%,transparent)] text-[#ce93d8]',
+  }
 
   return (
-    <main style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--text)' }}>
-      <JsonLd data={{
-        '@context': 'https://schema.org',
-        '@type': 'Person',
-        name: `${driver.first_name} ${driver.last_name}`,
-        description: `${driver.first_name} ${driver.last_name} Formula 1 career statistics, race results and records on F1Rec.`,
-        url: `https://f1rec.com/drivers/${driver.slug}`,
-        ...(driver.nationality && { nationality: { '@type': 'Country', name: driver.nationality } }),
-      }} />
-      <section style={{ padding: '3rem 1.5rem 2.5rem', borderBottom: '1px solid var(--border)', background: 'linear-gradient(180deg, rgba(232,0,45,0.08) 0%, transparent 100%)' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          <div style={{ marginBottom: '1.5rem', fontSize: '0.8rem' }}>
-            <Link href="/drivers" style={{ color: 'var(--muted)', textDecoration: 'none' }}>← All Drivers</Link>
+    <main className="min-h-screen bg-[var(--bg)] text-[var(--text)]">
+      <JsonLd data={jsonLd} id={`driver-jsonld-${slug}`} />
+
+      <section className="border-b border-[var(--border)] bg-gradient-to-b from-[color-mix(in_srgb,var(--accent)_10%,transparent)] to-transparent px-6 py-10 md:py-14">
+        <div className="mx-auto max-w-6xl">
+          <div className="mb-6 text-sm">
+            <Link href="/drivers" className="text-[var(--muted)] no-underline hover:text-[var(--accent)]">
+              ← All Drivers
+            </Link>
           </div>
-          <div style={{ display: 'flex', alignItems: 'flex-start', gap: '2rem', flexWrap: 'wrap' }}>
-            {driver.number && (
-              <div style={{ width: '80px', height: '80px', borderRadius: '12px', background: 'var(--bg2)', border: '2px solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-barlow-condensed)', fontSize: '2rem', fontWeight: 800, color: 'var(--accent)', flexShrink: 0 }}>
-                #{driver.number}
-              </div>
-            )}
-            <div style={{ flex: 1 }}>
-              {driver.code && <span style={{ fontFamily: 'var(--font-barlow-condensed)', fontSize: '0.75rem', letterSpacing: '0.15em', color: 'var(--accent)', textTransform: 'uppercase', fontWeight: 700 }}>{driver.code}</span>}
-              <h1 style={{ fontFamily: 'var(--font-barlow-condensed)', fontSize: 'clamp(2.5rem, 5vw, 3.5rem)', fontWeight: 800, textTransform: 'uppercase', margin: '0.2rem 0 0.5rem', lineHeight: 1.05 }}>
-                {driver.first_name}{' '}<span style={{ color: 'var(--accent)' }}>{driver.last_name}</span>
-              </h1>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1.5rem', fontSize: '0.85rem', color: 'var(--muted)' }}>
-                {driver.nationality && <span>{driver.nationality}</span>}
-                {driver.first_season && driver.last_season && <span>{driver.first_season}–{driver.last_season} ({driver.last_season - driver.first_season + 1} seasons)</span>}
-                {uniqueTeams.length > 0 && <span>{uniqueTeams.length} team{uniqueTeams.length > 1 ? 's' : ''}</span>}
-              </div>
-              {driver.championships > 0 && (
-                <div style={{ marginTop: '0.75rem', display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.4rem 1rem', background: 'rgba(245,200,66,0.1)', border: '1px solid rgba(245,200,66,0.25)', borderRadius: '6px', fontFamily: 'var(--font-barlow-condensed)', textTransform: 'uppercase', letterSpacing: '0.08em', fontSize: '0.8rem', fontWeight: 700, color: 'var(--gold, #f5c842)' }}>
-                  🏆 {driver.championships}× World Champion
+          <div className="flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-between">
+            <div className="flex min-w-0 flex-1 flex-col gap-4 sm:flex-row sm:items-start">
+              {driver.number != null && Number(driver.number) > 0 ? (
+                <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-xl border-2 border-[var(--border)] bg-[var(--bg2)] font-display text-3xl font-extrabold text-[var(--accent)]">
+                  #{driver.number}
                 </div>
-              )}
+              ) : null}
+              <div className="min-w-0 flex-1">
+                {driver.code ? (
+                  <p className="font-display text-xs font-bold uppercase tracking-[0.2em] text-[var(--accent)]">
+                    {String(driver.code)}
+                  </p>
+                ) : null}
+                <h1 className="font-display text-[clamp(2rem,5vw,3.5rem)] font-extrabold uppercase leading-[1.05] tracking-tight text-[var(--text)]">
+                  {name}
+                </h1>
+                <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-[var(--muted)]">
+                  {nationality ? (
+                    <span className="inline-flex items-center gap-2">
+                      {flag ? <span aria-hidden>{flag}</span> : null}
+                      {nationality}
+                    </span>
+                  ) : null}
+                  {minYear != null ? (
+                    <span className="font-mono text-xs text-[var(--text)]">
+                      {minYear} – {careerEndLabel}
+                    </span>
+                  ) : null}
+                </div>
+                <div className="mt-3 text-sm">
+                  <span className="text-[var(--muted)]">Team: </span>
+                  {driver.is_active === false ? (
+                    <span className="text-[var(--text)]">Retired</span>
+                  ) : currentTeamLink?.slug ? (
+                    <Link
+                      href={`/teams/${currentTeamLink.slug}`}
+                      className="font-semibold text-[var(--text)] no-underline hover:text-[var(--accent)]"
+                    >
+                      {currentTeamLink.name}
+                    </Link>
+                  ) : affiliationName ? (
+                    <span className="text-[var(--text)]">{affiliationName}</span>
+                  ) : (
+                    <span className="text-[var(--muted)]">—</span>
+                  )}
+                </div>
+                {showChampionBadge ? (
+                  <div className="mt-4 inline-flex items-center gap-2 rounded-md border border-[color-mix(in_srgb,var(--gold)_35%,transparent)] bg-[color-mix(in_srgb,var(--gold)_12%,transparent)] px-4 py-2 font-display text-xs font-bold uppercase tracking-wider text-[var(--gold)]">
+                    <span aria-hidden>★</span>
+                    {titleCount > 0 ? `${titleCount}× World Champion` : 'World Champion'}
+                  </div>
+                ) : null}
+              </div>
             </div>
-            <Link href={`/compare?d1=${driver.slug}`}
-              style={{ padding: '0.6rem 1.2rem', border: '1px solid var(--border)', borderRadius: '6px', color: 'var(--text)', textDecoration: 'none', fontFamily: 'var(--font-barlow-condensed)', textTransform: 'uppercase', letterSpacing: '0.08em', fontSize: '0.75rem', fontWeight: 600, whiteSpace: 'nowrap' }}>
+            <Link
+              href={`/compare?d1=${encodeURIComponent(slug)}`}
+              className="inline-flex shrink-0 items-center justify-center rounded-lg border border-[var(--border)] bg-[var(--bg2)] px-5 py-3 font-display text-xs font-bold uppercase tracking-wider text-[var(--text)] no-underline transition-colors hover:border-[var(--accent)] hover:text-[var(--accent)]"
+            >
               Compare →
             </Link>
           </div>
         </div>
       </section>
 
-      <section style={{ maxWidth: '1200px', margin: '0 auto', padding: '2rem 1.5rem' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '0.75rem', marginBottom: '2.5rem' }}>
-          <StatBox label="Championships" value={driver.championships} accent={driver.championships > 0} />
-          <StatBox label="Wins" value={driver.career_wins} />
-          <StatBox label="Podiums" value={driver.career_podiums} />
-          <StatBox label="Poles" value={driver.career_poles} />
-          <StatBox label="Fastest Laps" value={driver.career_fastest_laps} />
-          <StatBox label="Points" value={Number(driver.career_points).toLocaleString()} />
-          <StatBox label="Starts" value={driver.career_starts} />
-          <StatBox label="Win Rate" value={`${winRate}%`} />
-          <StatBox label="Podium Rate" value={`${podiumRate}%`} />
-          <StatBox label="DNFs" value={driver.career_dnfs} />
-        </div>
-
-        <h2 style={{ fontFamily: 'var(--font-barlow-condensed)', textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: '1.1rem', fontWeight: 700, marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          Season by Season
-          <span style={{ fontSize: '0.7rem', color: 'var(--muted)', fontWeight: 500, letterSpacing: '0.05em' }}>{seasons.length} season{seasons.length !== 1 ? 's' : ''}</span>
-        </h2>
-
-        {seasons.length > 0 ? (
-          <div style={{ overflowX: 'auto', borderRadius: '8px', border: '1px solid var(--border)' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem' }}>
-              <thead>
-                <tr style={{ background: 'var(--bg2)' }}>
-                  {['Year', 'Team', 'Pos', 'Pts', 'W', 'Pod', 'Pole', 'FL', 'Starts', 'DNF', 'Pts/Race'].map(h => (
-                    <th key={h} style={{ padding: '0.7rem 0.6rem', textAlign: h === 'Team' ? 'left' : 'right', fontFamily: 'var(--font-barlow-condensed)', textTransform: 'uppercase', letterSpacing: '0.08em', fontSize: '0.65rem', color: 'var(--muted)', fontWeight: 600, borderBottom: '1px solid var(--border)', whiteSpace: 'nowrap' }}>{h}</th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {seasons.map(s => (
-                  <tr key={s.id} style={{ borderBottom: '1px solid var(--border)' }}
-                    onMouseEnter={e => (e.currentTarget.style.background = 'var(--bg2)')}
-                    onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
-                    <td style={{ padding: '0.55rem 0.6rem', textAlign: 'right', fontWeight: 700, fontFamily: 'var(--font-barlow-condensed)', fontSize: '0.9rem' }}>{s.season_year}</td>
-                    <td style={{ padding: '0.55rem 0.6rem', textAlign: 'left', color: 'var(--text)' }}>{s.team_name}</td>
-                    <td style={{ padding: '0.55rem 0.6rem', textAlign: 'right', fontFamily: 'var(--font-jetbrains, monospace)', color: s.championship_position === 1 ? 'var(--gold)' : 'var(--muted)' }}>{s.championship_position ? `P${s.championship_position}` : '—'}</td>
-                    <td style={{ padding: '0.55rem 0.6rem', textAlign: 'right', fontFamily: 'var(--font-jetbrains, monospace)' }}>{Number(s.points)}</td>
-                    <td style={{ padding: '0.55rem 0.6rem', textAlign: 'right', fontFamily: 'var(--font-jetbrains, monospace)', fontWeight: s.wins > 0 ? 700 : 400, color: s.wins > 0 ? 'var(--text)' : 'var(--muted)' }}>{s.wins}</td>
-                    <td style={{ padding: '0.55rem 0.6rem', textAlign: 'right', fontFamily: 'var(--font-jetbrains, monospace)', color: s.podiums > 0 ? 'var(--text)' : 'var(--muted)' }}>{s.podiums}</td>
-                    <td style={{ padding: '0.55rem 0.6rem', textAlign: 'right', fontFamily: 'var(--font-jetbrains, monospace)', color: s.poles > 0 ? 'var(--text)' : 'var(--muted)' }}>{s.poles}</td>
-                    <td style={{ padding: '0.55rem 0.6rem', textAlign: 'right', fontFamily: 'var(--font-jetbrains, monospace)', color: s.fastest_laps > 0 ? 'var(--text)' : 'var(--muted)' }}>{s.fastest_laps}</td>
-                    <td style={{ padding: '0.55rem 0.6rem', textAlign: 'right', fontFamily: 'var(--font-jetbrains, monospace)', color: 'var(--muted)' }}>{s.starts}</td>
-                    <td style={{ padding: '0.55rem 0.6rem', textAlign: 'right', fontFamily: 'var(--font-jetbrains, monospace)', color: s.dnfs > 0 ? 'var(--accent)' : 'var(--muted)' }}>{s.dnfs}</td>
-                    <td style={{ padding: '0.55rem 0.6rem', textAlign: 'right', fontFamily: 'var(--font-jetbrains, monospace)', color: 'var(--muted)', fontSize: '0.78rem' }}>{s.points_per_race ? Number(s.points_per_race).toFixed(1) : '—'}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+      <div className="mx-auto max-w-6xl px-6 py-10 md:py-14">
+        {/* Career stat cards */}
+        <section className="mb-12">
+          <h2 className="mb-4 font-display text-lg font-extrabold uppercase tracking-wide text-[var(--text)]">
+            Career <span className="text-[var(--accent)]">totals</span>
+          </h2>
+          <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-3">
+            <StatCard label="Races" value={aggregates.totalRaces.toLocaleString()} />
+            <StatCard label="Wins" value={aggregates.totalWins.toLocaleString()} accent={aggregates.totalWins > 0} />
+            <StatCard label="Podiums" value={aggregates.totalPodiums.toLocaleString()} />
+            <StatCard label="Poles" value={aggregates.totalPoles.toLocaleString()} />
+            <StatCard label="Points" value={Math.round(aggregates.totalPoints).toLocaleString()} />
+            <StatCard label="Championships" value={titleCount} gold={titleCount > 0} />
+            <StatCard label="Fastest laps" value={aggregates.totalFastestLaps.toLocaleString()} />
+            <StatCard label="DNFs" value={aggregates.totalDnfs.toLocaleString()} />
+            <StatCard
+              label="Best championship"
+              value={
+                aggregates.bestChampOrdinal
+                  ? `${aggregates.bestChampOrdinal}${aggregates.bestChampYear ? ` (${aggregates.bestChampYear})` : ''}`
+                  : '—'
+              }
+              gold={aggregates.bestChampPos === 1}
+            />
           </div>
-        ) : <p style={{ color: 'var(--muted)', fontStyle: 'italic' }}>No season-by-season data available.</p>}
-      </section>
+        </section>
+
+        {/* World championships */}
+        {titleSeasonRows.length > 0 ? (
+          <section className="mb-12">
+            <h2 className="mb-4 font-display text-lg font-extrabold uppercase tracking-wide text-[var(--text)]">
+              World <span className="text-[var(--gold)]">Championships</span>
+            </h2>
+            <ul className="space-y-2">
+              {titleSeasonRows.map((row) => {
+                const se = unwrapRelation(row.seasons)
+                const tm = unwrapRelation(row.teams)
+                const y = se?.year ?? '—'
+                return (
+                  <li
+                    key={row.id}
+                    className="flex flex-wrap items-baseline gap-2 rounded-lg border border-[var(--border)] bg-[var(--bg2)] px-4 py-3"
+                  >
+                    <span className="text-lg" aria-hidden>
+                      🏆
+                    </span>
+                    <span className="font-mono font-bold text-[var(--gold)]">{y}</span>
+                    <span className="text-[var(--muted)]">·</span>
+                    <span className="text-[var(--text)]">{tm?.name ?? '—'}</span>
+                  </li>
+                )
+              })}
+            </ul>
+          </section>
+        ) : null}
+
+        {/* Career records */}
+        <section className="mb-12">
+          <h2 className="mb-4 font-display text-lg font-extrabold uppercase tracking-wide text-[var(--text)]">
+            Career <span className="text-[var(--accent)]">records</span>
+          </h2>
+          <dl className="rounded-xl border border-[var(--border)] bg-[var(--bg2)] px-4 md:px-6">
+            <RecordRow
+              label="Best championship finish"
+              value={
+                aggregates.bestChampOrdinal && aggregates.bestChampYear
+                  ? `${aggregates.bestChampOrdinal} · ${aggregates.bestChampYear}`
+                  : aggregates.bestChampOrdinal ?? '—'
+              }
+            />
+            <RecordRow
+              label="Most wins in a season"
+              value={
+                aggregates.maxWinsSeason && aggregates.maxWinsSeason.wins > 0
+                  ? `${aggregates.maxWinsSeason.wins} · ${aggregates.maxWinsSeason.year}`
+                  : '—'
+              }
+            />
+            <RecordRow
+              label="Most points in a season"
+              value={
+                aggregates.maxPointsSeason && aggregates.maxPointsSeason.points > 0
+                  ? `${Math.round(aggregates.maxPointsSeason.points).toLocaleString()} · ${aggregates.maxPointsSeason.year}`
+                  : '—'
+              }
+            />
+            <RecordRow
+              label="Most podiums in a season"
+              value={
+                aggregates.maxPodiumsSeason && aggregates.maxPodiumsSeason.podiums > 0
+                  ? `${aggregates.maxPodiumsSeason.podiums} · ${aggregates.maxPodiumsSeason.year}`
+                  : '—'
+              }
+            />
+            <RecordRow
+              label="First race"
+              value={
+                firstRace
+                  ? `${firstRace.season_year} · ${firstRace.race_name ?? firstRace.race_slug ?? 'Grand Prix'}`
+                  : '—'
+              }
+            />
+            <RecordRow
+              label="First win"
+              value={
+                firstWin
+                  ? `${firstWin.season_year} · ${firstWin.race_name ?? firstWin.race_slug ?? 'Grand Prix'}`
+                  : '—'
+              }
+            />
+          </dl>
+        </section>
+
+        {/* Season table */}
+        <section className="mb-12">
+          <h2 className="mb-4 font-display text-lg font-extrabold uppercase tracking-wide text-[var(--text)]">
+            Season by <span className="text-[var(--accent)]">season</span>
+            <span className="ml-2 font-body text-xs font-normal normal-case tracking-normal text-[var(--muted)]">
+              {seasonRows.length} season{seasonRows.length !== 1 ? 's' : ''}
+            </span>
+          </h2>
+          {seasonRows.length > 0 ? (
+            <div className="overflow-x-auto rounded-xl border border-[var(--border)]">
+              <table className="w-full min-w-[720px] border-collapse text-sm">
+                <thead>
+                  <tr className="bg-[var(--bg2)]">
+                    {['Season', 'Team', 'Pos', 'Pts', 'Wins', 'Pods', 'Poles', 'FL', 'Races', 'DNFs'].map((h) => (
+                      <th
+                        key={h}
+                        className={`border-b border-[var(--border)] px-3 py-3 font-display text-[0.65rem] font-bold uppercase tracking-wider text-[var(--muted)] ${
+                          h === 'FL' || h === 'DNFs' ? 'hidden md:table-cell' : ''
+                        } ${h === 'Team' ? 'text-left' : 'text-right'}`}
+                      >
+                        {h}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {seasonRows.map((row, i) => {
+                    const se = unwrapRelation(row.seasons)
+                    const tm = unwrapRelation(row.teams)
+                    const year = se?.year ?? '—'
+                    const seasonSlug = se?.slug ?? String(year)
+                    const cp = row.championship_position
+                    const posLabel =
+                      cp != null && Number.isFinite(Number(cp)) && Number(cp) > 0 ? ordinal(Number(cp)) : '—'
+                    const isFirst = cp === 1
+                    const races = num(row.races_entered ?? row.starts)
+                    return (
+                      <tr
+                        key={row.id}
+                        className={i % 2 === 1 ? 'bg-[color-mix(in_srgb,var(--bg3)_55%,transparent)]' : ''}
+                      >
+                        <td className="border-b border-[var(--border)] px-3 py-2.5 text-right font-display font-bold">
+                          <Link href={`/seasons/${seasonSlug}`} className="text-[var(--text)] no-underline hover:text-[var(--accent)]">
+                            {year}
+                          </Link>
+                        </td>
+                        <td className="border-b border-[var(--border)] px-3 py-2.5 text-left">
+                          {tm?.slug ? (
+                            <Link href={`/teams/${tm.slug}`} className="text-[var(--text)] no-underline hover:text-[var(--accent)]">
+                              {tm.name}
+                            </Link>
+                          ) : (
+                            <span className="text-[var(--muted)]">—</span>
+                          )}
+                        </td>
+                        <td
+                          className={`border-b border-[var(--border)] px-3 py-2.5 text-right font-mono ${
+                            isFirst ? 'font-bold text-[var(--gold)]' : 'text-[var(--text)]'
+                          }`}
+                        >
+                          {posLabel}
+                        </td>
+                        <td className="border-b border-[var(--border)] px-3 py-2.5 text-right font-mono text-[var(--text)]">
+                          {Math.round(num(row.points)).toLocaleString()}
+                        </td>
+                        <td
+                          className={`border-b border-[var(--border)] px-3 py-2.5 text-right font-mono ${
+                            num(row.wins) > 0 ? 'font-semibold text-[var(--accent)]' : 'text-[var(--muted)]'
+                          }`}
+                        >
+                          {num(row.wins)}
+                        </td>
+                        <td className="border-b border-[var(--border)] px-3 py-2.5 text-right font-mono text-[var(--muted)]">
+                          {num(row.podiums)}
+                        </td>
+                        <td className="border-b border-[var(--border)] px-3 py-2.5 text-right font-mono text-[var(--muted)]">
+                          {num(row.poles)}
+                        </td>
+                        <td className="hidden border-b border-[var(--border)] px-3 py-2.5 text-right font-mono text-[var(--muted)] md:table-cell">
+                          {num(row.fastest_laps)}
+                        </td>
+                        <td className="border-b border-[var(--border)] px-3 py-2.5 text-right font-mono text-[var(--muted)]">
+                          {races}
+                        </td>
+                        <td className="hidden border-b border-[var(--border)] px-3 py-2.5 text-right font-mono text-[var(--muted)] md:table-cell">
+                          {num(row.dnfs)}
+                        </td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <p className="text-[var(--muted)]">No season-by-season data available.</p>
+          )}
+        </section>
+
+        {/* Teammates */}
+        {teammates.length > 0 ? (
+          <section className="mb-12">
+            <h2 className="mb-3 font-display text-lg font-extrabold uppercase tracking-wide text-[var(--text)]">
+              Teammates
+            </h2>
+            <p className="mb-3 text-sm text-[var(--muted)]">Drivers who shared a constructor in the same season.</p>
+            <p className="flex flex-wrap gap-x-1 gap-y-2 text-sm leading-relaxed text-[var(--text)]">
+              {teammates.map((t, idx) => (
+                <span key={t.slug}>
+                  {idx > 0 ? <span className="text-[var(--muted)]"> · </span> : null}
+                  <Link href={`/drivers/${t.slug}`} className="text-[var(--accent)] no-underline hover:underline">
+                    {t.full_name}
+                  </Link>
+                </span>
+              ))}
+            </p>
+          </section>
+        ) : null}
+
+        {/* Compare CTA */}
+        <section className="mb-12">
+          <Link
+            href={`/compare?d1=${encodeURIComponent(slug)}`}
+            className="flex flex-col gap-2 rounded-xl border border-[var(--border)] border-l-4 border-l-[var(--accent)] bg-[var(--bg2)] px-6 py-6 no-underline transition-opacity hover:opacity-95 sm:flex-row sm:items-center sm:justify-between"
+          >
+            <div>
+              <p className="font-display text-lg font-extrabold uppercase text-[var(--text)]">
+                <span aria-hidden className="mr-2">
+                  ⚔️
+                </span>
+                Compare {name} head-to-head
+              </p>
+              <p className="mt-1 text-sm text-[var(--muted)]">Stack stats against any other driver on F1Rec.</p>
+            </div>
+            <span className="font-display text-sm font-bold uppercase tracking-wide text-[var(--accent)]">Open compare →</span>
+          </Link>
+        </section>
+
+        {/* Related posts */}
+        {relatedPosts.length > 0 ? (
+          <section className="mb-12">
+            <h2 className="mb-4 font-display text-lg font-extrabold uppercase tracking-wide text-[var(--text)]">
+              Articles about <span className="text-[var(--accent)]">{name}</span>
+            </h2>
+            <div className="grid gap-4 sm:grid-cols-2">
+              {relatedPosts.map((p) => (
+                <Link
+                  key={p.slug!}
+                  href={`/blog/${p.slug}`}
+                  className="rounded-xl border border-[var(--border)] bg-[var(--bg2)] p-4 no-underline transition-colors hover:border-[color-mix(in_srgb,var(--accent)_40%,var(--border))]"
+                >
+                  {p.category ? (
+                    <span
+                      className={`inline-block rounded px-2 py-0.5 font-display text-[0.6rem] font-bold uppercase tracking-wider ${
+                        categoryStyles[p.category] ?? 'bg-[var(--bg3)] text-[var(--muted)]'
+                      }`}
+                    >
+                      {p.category.replace(/-/g, ' ')}
+                    </span>
+                  ) : null}
+                  <h3 className="mt-2 font-display text-base font-bold text-[var(--text)]">{p.title}</h3>
+                  <p className="mt-2 font-mono text-xs text-[var(--muted)]">
+                    {p.published_at
+                      ? new Date(p.published_at).toLocaleDateString('en-GB', {
+                          day: 'numeric',
+                          month: 'short',
+                          year: 'numeric',
+                        })
+                      : ''}
+                  </p>
+                </Link>
+              ))}
+            </div>
+          </section>
+        ) : null}
+
+        <section className="max-w-3xl">
+          <EmailCapture source="driver-page" />
+        </section>
+      </div>
     </main>
   )
 }
