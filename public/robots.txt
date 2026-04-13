@@ -1,0 +1,10 @@
+# *
+User-agent: *
+Allow: /
+Disallow: /api/
+
+# Host
+Host: https://f1rec.com
+
+# Sitemaps
+Sitemap: https://f1rec.com/sitemap.xml

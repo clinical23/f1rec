@@ -54,13 +54,18 @@ function cleanTitle(title: string): string {
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
-    title: 'F1 Blog — Analysis, History & News | F1Rec',
-    description: 'Race reviews, driver analysis, technical breakdowns, and historical insight from the F1Rec editorial team.',
+    title: 'F1 Blog — Analysis, Previews & History | F1Rec',
+    description: 'Race reviews, driver analysis, technical breakdowns, previews, and historical insight from the F1Rec editorial team.',
     openGraph: {
-      title: 'F1 Blog — Analysis, History & News | F1Rec',
-      description: 'Race reviews, driver analysis, technical breakdowns, and historical insight from the F1Rec editorial team.',
+      title: 'F1 Blog — Analysis, Previews & History | F1Rec',
+      description: 'Race reviews, driver analysis, technical breakdowns, previews, and historical insight from the F1Rec editorial team.',
       type: 'website',
-      url: '/blog',
+      url: 'https://f1rec.com/blog',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: 'F1 Blog — Analysis, Previews & History | F1Rec',
+      description: 'Race reviews, driver analysis, technical breakdowns, previews, and historical insight from the F1Rec editorial team.',
     },
   }
 }

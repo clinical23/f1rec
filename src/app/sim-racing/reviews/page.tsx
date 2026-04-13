@@ -3,6 +3,7 @@
 import { useEffect, useState, useMemo } from 'react'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
+import JsonLd from '@/components/JsonLd'
 
 interface Review {
   id: string; slug: string; title: string; excerpt: string | null
@@ -83,6 +84,20 @@ export default function ReviewsPage() {
 
   return (
     <main style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--text)' }}>
+      <JsonLd data={{
+        '@context': 'https://schema.org',
+        '@type': 'ItemList',
+        name: 'Sim Racing Hardware Reviews',
+        description: 'Expert sim racing hardware reviews — wheel bases, pedals, rigs and more.',
+        url: 'https://f1rec.com/sim-racing/reviews',
+        numberOfItems: reviews.length,
+        itemListElement: reviews.map((r: Review, i: number) => ({
+          '@type': 'ListItem',
+          position: i + 1,
+          name: r.title,
+          url: `https://f1rec.com/sim-racing/reviews#${r.slug || r.id}`,
+        })),
+      }} />
       <section style={{ padding: '4rem 1.5rem 2rem', textAlign: 'center', borderBottom: '1px solid var(--border)', background: 'linear-gradient(180deg, rgba(232,0,45,0.06) 0%, transparent 100%)' }}>
         <p style={{ fontFamily: 'var(--font-barlow-condensed, "Barlow Condensed", sans-serif)', textTransform: 'uppercase', letterSpacing: '0.2em', fontSize: '0.75rem', color: 'var(--accent, #e8002d)', marginBottom: '0.5rem' }}>Sim Racing</p>
         <h1 style={{ fontFamily: 'var(--font-barlow-condensed, "Barlow Condensed", sans-serif)', fontSize: 'clamp(2.5rem, 5vw, 4rem)', fontWeight: 800, textTransform: 'uppercase', margin: 0, lineHeight: 1.1 }}>

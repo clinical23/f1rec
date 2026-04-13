@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 import { useSound } from '@/components/SoundProvider'
+import JsonLd from '@/components/JsonLd'
 
 interface DriverBasic {
   id: string; slug: string; full_name: string; code: string | null
@@ -125,6 +126,8 @@ function CompareContent() {
   const d1 = drivers.find(d => d.slug === d1Slug)
   const d2 = drivers.find(d => d.slug === d2Slug)
   const bothSelected = d1 && d2
+  const driver1Name = d1?.full_name || ''
+  const driver2Name = d2?.full_name || ''
 
   let d1Score = 0, d2Score = 0
   if (bothSelected) {
@@ -148,6 +151,15 @@ function CompareContent() {
 
   return (
     <main style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--text)' }}>
+      {bothSelected ? (
+        <JsonLd data={{
+          '@context': 'https://schema.org',
+          '@type': 'WebPage',
+          name: `${driver1Name} vs ${driver2Name} — F1 Head-to-Head Comparison`,
+          description: `Compare ${driver1Name} and ${driver2Name} Formula 1 career statistics head-to-head on F1Rec.`,
+          url: `https://f1rec.com/compare?d1=${d1Slug}&d2=${d2Slug}`,
+        }} />
+      ) : null}
       <section style={{ padding: '4rem 1.5rem 2rem', textAlign: 'center', borderBottom: '1px solid var(--border)', background: 'linear-gradient(180deg, rgba(232,0,45,0.06) 0%, transparent 100%)' }}>
         <p style={{ fontFamily: 'var(--font-barlow-condensed)', textTransform: 'uppercase', letterSpacing: '0.2em', fontSize: '0.75rem', color: 'var(--accent)', marginBottom: '0.5rem' }}>Head to Head</p>
         <h1 style={{ fontFamily: 'var(--font-barlow-condensed)', fontSize: 'clamp(2.5rem, 5vw, 4rem)', fontWeight: 800, textTransform: 'uppercase', margin: 0, lineHeight: 1.1 }}>

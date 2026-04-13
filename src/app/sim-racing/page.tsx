@@ -55,8 +55,20 @@ const games = [
 ]
 
 export const metadata = {
-  title: 'Sim Racing Hub — Reviews, Rig Builder & Guides | F1Rec',
-  description: 'Your complete sim racing resource. Expert hardware reviews, an interactive rig builder, game guides for iRacing, ACC & ACE, and downloadable car setups.',
+  title: 'Sim Racing Hardware, Reviews & Setups | F1Rec',
+  description: 'Your complete sim racing resource for hardware, reviews, setups, and buying guides on F1Rec.',
+  openGraph: {
+    title: 'Sim Racing Hardware, Reviews & Setups | F1Rec',
+    description: 'Your complete sim racing resource for hardware, reviews, setups, and buying guides on F1Rec.',
+    url: 'https://f1rec.com/sim-racing',
+    siteName: 'F1Rec',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Sim Racing Hardware, Reviews & Setups | F1Rec',
+    description: 'Your complete sim racing resource for hardware, reviews, setups, and buying guides on F1Rec.',
+  },
 }
 
 export default function SimRacingPage() {

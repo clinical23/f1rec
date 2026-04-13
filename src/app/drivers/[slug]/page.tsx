@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
+import JsonLd from '@/components/JsonLd'
 
 interface Driver {
   id: string; slug: string; full_name: string; first_name: string; last_name: string
@@ -86,6 +87,14 @@ export default function DriverProfilePage() {
 
   return (
     <main style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--text)' }}>
+      <JsonLd data={{
+        '@context': 'https://schema.org',
+        '@type': 'Person',
+        name: `${driver.first_name} ${driver.last_name}`,
+        description: `${driver.first_name} ${driver.last_name} Formula 1 career statistics, race results and records on F1Rec.`,
+        url: `https://f1rec.com/drivers/${driver.slug}`,
+        ...(driver.nationality && { nationality: { '@type': 'Country', name: driver.nationality } }),
+      }} />
       <section style={{ padding: '3rem 1.5rem 2.5rem', borderBottom: '1px solid var(--border)', background: 'linear-gradient(180deg, rgba(232,0,45,0.08) 0%, transparent 100%)' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
           <div style={{ marginBottom: '1.5rem', fontSize: '0.8rem' }}>

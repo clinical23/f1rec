@@ -3,6 +3,7 @@ import type { Metadata } from 'next'
 import type { ReactNode } from 'react'
 import { Fragment } from 'react'
 import { createServerClient } from '@/lib/supabase/server'
+import JsonLd from '@/components/JsonLd'
 
 const tokens = {
   bg: '#0a0a0f',
@@ -314,24 +315,25 @@ export default async function BlogArticlePage({ params }: PageProps) {
   const articleJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Article',
-    headline: cleanTitle(post.title),
-    description: post.meta_description ?? post.excerpt,
+    headline: post.title,
+    description: post.excerpt || post.title,
+    url: `https://f1rec.com/blog/${post.slug}`,
     datePublished: post.published_at,
-    author: {
-      '@type': 'Organization',
-      name: post.author ?? 'F1Rec Editorial',
-    },
+    dateModified: post.published_at,
     publisher: {
       '@type': 'Organization',
       name: 'F1Rec',
+      url: 'https://f1rec.com',
     },
-    mainEntityOfPage: `https://f1rec.com/blog/${post.slug}`,
-    image: post.og_image_url ?? undefined,
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': `https://f1rec.com/blog/${post.slug}`,
+    },
   }
 
   return (
     <main style={{ fontFamily: font.body, background: tokens.bg, color: tokens.text, minHeight: '100vh' }}>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }} />
+      <JsonLd data={articleJsonLd} />
       <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '24px 24px 48px' }}>
         <nav style={{ fontSize: '13px', color: tokens.muted, marginBottom: '18px', display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
           <Link href="/" style={{ color: tokens.muted, textDecoration: 'none' }}>Home</Link>
