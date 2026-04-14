@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { createServerClient } from '@/lib/supabase/server'
 import EmailCapture from '@/components/EmailCapture'
+import DidYouKnowWidget from '@/components/random/DidYouKnowWidget'
 
 /** Refresh homepage data hourly via ISR. */
 export const revalidate = 3600
@@ -57,6 +58,14 @@ type ResultStandingRow = {
   points: number | string | null
   position: number | string | null
   is_sprint: boolean | null
+}
+
+type RandomStatRow = {
+  id: string
+  stat_text: string | null
+  category: string | null
+  related_driver_slug: string | null
+  related_team_slug: string | null
 }
 
 function unwrapRelation<T>(rel: T | T[] | null | undefined): T | null {
@@ -142,6 +151,12 @@ function deriveStandingsFromResults(rows: ResultStandingRow[]) {
   return { wdc2026, wcc2026 }
 }
 
+function pickRandom<T>(rows: T[]): T | null {
+  if (rows.length === 0) return null
+  const index = Math.floor(Math.random() * rows.length)
+  return rows[index] ?? null
+}
+
 async function loadHomePageData() {
   const supabase = createServerClient()
 
@@ -177,6 +192,7 @@ async function loadHomePageData() {
       winnerName: string
       winnerSlug: string | null
     }>,
+    randomStat: null as RandomStatRow | null,
     simCounts: { products: 57, reviews: 12, brands: 27 },
   }
 
@@ -191,6 +207,7 @@ async function loadHomePageData() {
       simProductsRes,
       simReviewsRes,
       simBrandsRes,
+      randomStatsRes,
     ] = await Promise.all([
       supabase.from('drivers').select('*', { count: 'exact', head: true }),
       supabase.from('seasons').select('*', { count: 'exact', head: true }),
@@ -201,6 +218,10 @@ async function loadHomePageData() {
       supabase.from('sim_products').select('*', { count: 'exact', head: true }),
       supabase.from('sim_reviews').select('*', { count: 'exact', head: true }),
       supabase.from('sim_brands').select('*', { count: 'exact', head: true }),
+      supabase
+        .from('random_stats')
+        .select('id, stat_text, category, related_driver_slug, related_team_slug')
+        .eq('is_active', true),
     ])
 
     const counts = {
@@ -378,6 +399,7 @@ async function loadHomePageData() {
       reviews: simReviewsRes.count ?? empty.simCounts.reviews,
       brands: simBrandsRes.count ?? empty.simCounts.brands,
     }
+    const randomStat = pickRandom((randomStatsRes.data ?? []) as RandomStatRow[])
 
     return {
       counts,
@@ -388,6 +410,7 @@ async function loadHomePageData() {
       wdc2026,
       wcc2026,
       recentRaces2026,
+      randomStat,
       simCounts,
     }
   } catch {
@@ -400,7 +423,7 @@ async function loadHomePageData() {
 
 export default async function HomePage() {
   const data = await loadHomePageData()
-  const { counts, champion2025, wdc2026, wcc2026, recentRaces2026, simCounts, season2026Slug } = data
+  const { counts, champion2025, wdc2026, wcc2026, recentRaces2026, simCounts, season2026Slug, randomStat } = data
 
   const heroSubtitle = `The definitive Formula 1 statistics platform — ${counts.seasons.toLocaleString()} seasons, ${counts.drivers.toLocaleString()} drivers, ${counts.results.toLocaleString()} results`
 
@@ -637,6 +660,8 @@ export default async function HomePage() {
             )}
           </div>
         </section>
+
+        <DidYouKnowWidget initialStat={randomStat} />
 
         {/* Quick links */}
         <section className="mb-12">

@@ -27,11 +27,11 @@ const categories = [
     tag: 'INTERACTIVE TOOL',
   },
   {
-    title: 'Game guides',
-    desc: 'Master iRacing, ACC, and Assetto Corsa Evo with track guides, setup tips, and driving tutorials.',
-    href: '/sim-racing/guides',
-    icon: '🏁',
-    tag: 'GUIDES',
+    title: 'Resources',
+    desc: 'Discover essential software, overlays, mods, leagues, and communities for your sim setup.',
+    href: '/sim-racing/resources',
+    icon: '🧰',
+    tag: 'RESOURCES',
   },
   {
     title: 'Setup library',
@@ -191,6 +191,7 @@ export default async function SimRacingPage() {
             { href: '/sim-racing/products', label: 'Products' },
             { href: '/sim-racing/reviews', label: 'Reviews' },
             { href: '/sim-racing/setups', label: 'Setups' },
+            { href: '/sim-racing/resources', label: 'Resources' },
           ].map((item) => (
             <Link key={item.href} href={item.href} style={{
               border: '1px solid var(--border)',

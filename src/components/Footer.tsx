@@ -13,6 +13,7 @@ const exploreLinks = [
 
 const moreLinks = [
   { label: 'Sim Racing', href: '/sim-racing' },
+  { label: 'Sim Resources', href: '/sim-racing/resources' },
   { label: 'Community', href: '/community' },
   { label: 'Blog', href: '/blog' },
   { label: 'Privacy Policy', href: '/privacy' },

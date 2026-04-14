@@ -15,6 +15,7 @@ const navLinks = [
   { label: 'Leaderboards', href: '/leaderboards' },
   { label: 'Community', href: '/community' },
   { label: 'Sim Racing', href: '/sim-racing' },
+  { label: 'Resources', href: '/sim-racing/resources' },
   { label: 'Memes', href: '/memes', sound: 'memes' },
 ]
 
@@ -34,6 +35,7 @@ export default function Nav() {
     if (href === '/leaderboards') return 'leaderboards'
     if (href === '/community') return 'community'
     if (href === '/sim-racing') return 'sim-racing'
+    if (href === '/sim-racing/resources') return 'sim-racing'
     if (href === '/memes') return 'memes'
     return 'click'
   }
