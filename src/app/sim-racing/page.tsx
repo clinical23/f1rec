@@ -120,7 +120,6 @@ export default async function SimRacingPage() {
           fontSize: 'clamp(40px, 7vw, 72px)',
           fontWeight: 900,
           lineHeight: 0.95,
-          textTransform: 'uppercase',
           color: 'var(--text)',
           marginBottom: '8px',
         }}>
@@ -254,7 +253,6 @@ export default async function SimRacingPage() {
                 fontFamily: 'var(--font-display)',
                 fontWeight: 700,
                 fontSize: '20px',
-                textTransform: 'uppercase',
                 color: 'var(--text)',
                 marginBottom: '8px',
               }}>
@@ -307,20 +305,6 @@ export default async function SimRacingPage() {
               borderRadius: '8px',
               padding: '20px',
             }}>
-              <div style={{
-                width: '100%',
-                height: '140px',
-                background: 'var(--bg3)',
-                borderRadius: '6px',
-                marginBottom: '14px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}>
-                <span style={{ color: 'var(--muted)', fontSize: '13px', fontFamily: 'var(--font-display)' }}>
-                  Product image
-                </span>
-              </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
                 <span style={{
                   fontSize: '11px',
@@ -408,7 +392,6 @@ export default async function SimRacingPage() {
                 fontFamily: 'var(--font-display)',
                 fontWeight: 700,
                 fontSize: '20px',
-                textTransform: 'uppercase',
                 color: 'var(--text)',
                 marginBottom: '4px',
               }}>

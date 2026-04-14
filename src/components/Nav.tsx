@@ -15,10 +15,10 @@ const navLinks = [
   { label: 'Seasons', href: '/seasons' },
   { label: 'Compare', href: '/compare' },
   { label: 'Leaderboards', href: '/leaderboards' },
+  { label: 'Blog', href: '/blog' },
   { label: 'Community', href: '/community' },
   { label: 'Paddock', href: '/paddock' },
   { label: 'Sim Racing', href: '/sim-racing' },
-  { label: 'Resources', href: '/sim-racing/resources' },
   { label: 'Memes', href: '/memes', sound: 'memes' },
 ]
 
@@ -38,10 +38,10 @@ export default function Nav() {
     if (href === '/seasons') return 'seasons'
     if (href === '/compare') return 'compare'
     if (href === '/leaderboards') return 'leaderboards'
+    if (href === '/blog') return 'click'
     if (href === '/community') return 'community'
     if (href === '/paddock') return 'community'
     if (href === '/sim-racing') return 'sim-racing'
-    if (href === '/sim-racing/resources') return 'sim-racing'
     if (href === '/memes') return 'memes'
     return 'click'
   }

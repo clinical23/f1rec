@@ -430,11 +430,19 @@ export default async function HomePage() {
   return (
     <main className="min-h-screen bg-[var(--bg)] text-[var(--text)]">
       {/* Hero */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-[var(--bg)] via-[var(--bg2)] to-[var(--bg)] px-6 py-16 text-center md:py-20">
+      <section className="relative overflow-hidden bg-[radial-gradient(ellipse_at_center_top,rgba(232,0,45,0.08),transparent_60%)] px-6 py-16 text-center md:py-20">
         <p className="font-display mb-4 inline-block rounded-full border border-[color-mix(in_srgb,var(--accent)_30%,transparent)] px-3 py-1 text-[11px] font-bold uppercase tracking-[0.2em] text-[var(--accent)]">
           The F1 database
         </p>
-        <h1 className="font-display mx-auto max-w-4xl text-[clamp(2.25rem,6vw,4rem)] font-black uppercase leading-[0.95] tracking-tight text-[var(--text)]">
+        <h1
+          className="font-display mx-auto max-w-4xl text-[clamp(2.25rem,6vw,4rem)] font-black leading-[0.95] tracking-tight"
+          style={{
+            background: 'linear-gradient(135deg, #e8e8f0 0%, #f5c842 50%, #e8002d 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
+          }}
+        >
           Every Stat. Every Race. Every Era.
         </h1>
         <p className="mx-auto mt-5 max-w-xl text-[17px] text-[var(--muted)]">{heroSubtitle}</p>
@@ -466,8 +474,9 @@ export default async function HomePage() {
             key={stat.label}
             className={`px-4 py-5 text-center md:px-6 ${i % 2 === 0 ? 'border-r border-[var(--border)] md:border-r' : ''} ${i < 2 ? 'border-b border-[var(--border)] md:border-b-0' : ''} md:border-r md:border-[var(--border)] md:[&:nth-child(4)]:border-r-0`}
           >
-            <div className="font-display text-3xl font-black leading-none text-[var(--text)] md:text-4xl">{stat.num}</div>
-            <div className="mt-1 text-[11px] font-semibold uppercase tracking-wider text-[var(--muted)]">{stat.label}</div>
+            <div className="font-mono text-3xl font-black leading-none text-[var(--text)] md:text-4xl">{stat.num}</div>
+            <div className="mx-auto mt-2 h-px w-8 bg-[var(--border)]" />
+            <div className="mt-2 text-[11px] font-semibold uppercase tracking-wider text-[var(--muted)]">{stat.label}</div>
           </div>
         ))}
       </div>
@@ -550,7 +559,7 @@ export default async function HomePage() {
                     wdc2026.map((row, idx) => {
                       const leader = idx === 0
                       return (
-                        <li key={row.slug} className="flex items-center gap-2 px-2 py-2 text-sm">
+                        <li key={row.slug} className="flex items-center gap-2 border-l-2 border-l-[var(--accent)] px-3 py-3 text-sm">
                           <span className="w-6 shrink-0 text-center font-mono text-xs text-[var(--muted)]">{row.pos}</span>
                           <div className="min-w-0 flex-1">
                             <Link
@@ -589,7 +598,7 @@ export default async function HomePage() {
                 <ol className="divide-y divide-[var(--border)] p-2">
                   {wcc2026.length > 0 ? (
                     wcc2026.map((row) => (
-                      <li key={row.slug} className="flex items-center gap-2 px-2 py-2 text-sm">
+                      <li key={row.slug} className="flex items-center gap-2 border-l-2 border-l-[var(--accent)] px-3 py-3 text-sm">
                         <span className="w-6 shrink-0 text-center font-mono text-xs text-[var(--muted)]">{row.pos}</span>
                         <Link
                           href={`/teams/${row.slug}`}
@@ -626,10 +635,10 @@ export default async function HomePage() {
               recentRaces2026.map((race) => (
                 <article
                   key={race.slug}
-                  className="flex flex-col rounded-lg border border-[var(--border)] bg-[var(--bg2)] p-4 transition-colors hover:border-[color-mix(in_srgb,var(--accent)_40%,var(--border))]"
+                  className="flex flex-col rounded-lg border border-[var(--border)] border-l-4 border-l-[var(--accent)] bg-[linear-gradient(160deg,var(--bg2),rgba(26,26,36,0.6))] p-5 transition-colors hover:border-[color-mix(in_srgb,var(--accent)_40%,var(--border))]"
                 >
                   <div className="mb-1 font-mono text-[10px] uppercase tracking-wider text-[var(--muted)]">Round {race.round}</div>
-                  <h3 className="font-display text-lg font-bold uppercase leading-tight text-[var(--text)]">
+                  <h3 className="font-display text-lg font-bold leading-tight text-[var(--text)]">
                     {race.name}
                   </h3>
                   <p className="mt-1 text-sm text-[var(--muted)]">
@@ -682,11 +691,11 @@ export default async function HomePage() {
                 href={card.href}
                 className="group rounded-lg border border-[var(--border)] bg-[var(--bg2)] p-5 no-underline transition-colors hover:border-[var(--accent)]"
               >
-                <div className="mb-2 text-2xl">{card.emoji}</div>
-                <h3 className="font-display text-lg font-bold uppercase text-[var(--text)] group-hover:text-[var(--accent)]">
+                <div className="mb-2 text-[2rem]">{card.emoji}</div>
+                <h3 className="font-display text-lg font-bold text-[var(--text)] group-hover:text-[var(--accent)]">
                   {card.title}
                 </h3>
-                <p className="mt-1 text-sm text-[var(--muted)]">{card.desc}</p>
+                <p className="mt-2 text-sm text-[var(--muted)]">{card.desc}</p>
                 <p className="mt-3 font-mono text-xs text-[var(--gold)]">{card.count}</p>
               </Link>
             ))}
@@ -694,7 +703,7 @@ export default async function HomePage() {
         </section>
 
         {/* Sim racing teaser */}
-        <section className="mb-12 rounded-xl border border-[var(--border)] border-t-4 border-t-[var(--accent)] bg-gradient-to-br from-[color-mix(in_srgb,var(--accent)_12%,var(--bg2))] to-[var(--bg2)] p-8 text-center md:p-10">
+        <section className="mb-12 rounded-xl border border-[var(--border)] border-t-4 border-t-[var(--accent)] bg-[radial-gradient(circle_at_top_right,rgba(232,0,45,0.22),transparent_50%),linear-gradient(120deg,var(--bg2),rgba(17,17,24,0.65))] p-8 text-center md:p-10">
           <p className="mb-2 font-display text-[0.62rem] font-bold uppercase tracking-[0.14em] text-[var(--accent)]">
             Sim Racing Section
           </p>
@@ -719,7 +728,7 @@ export default async function HomePage() {
         {/* Ad placeholder */}
         <div className="mb-12">
           <p className="mb-1 text-center font-mono text-[10px] uppercase tracking-widest text-[var(--muted)] opacity-70">Advertisement</p>
-          <div className="flex h-[90px] items-center justify-center rounded-md border border-dashed border-[var(--border)] bg-[var(--bg3)] font-mono text-xs text-[var(--muted)] opacity-80">
+          <div className="flex h-[90px] items-center justify-center rounded-md border border-dashed border-[color-mix(in_srgb,var(--border)_60%,transparent)] bg-transparent font-mono text-xs text-[var(--muted)] opacity-50">
             728 × 90 — Ad space
           </div>
         </div>

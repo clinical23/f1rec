@@ -6,14 +6,18 @@ const exploreLinks = [
   { label: 'Drivers', href: '/drivers' },
   { label: 'Teams', href: '/teams' },
   { label: 'Races', href: '/races' },
+  { label: 'Calendar', href: '/calendar' },
   { label: 'Seasons', href: '/seasons' },
   { label: 'Compare', href: '/compare' },
   { label: 'Leaderboards', href: '/leaderboards' },
 ]
 
 const moreLinks = [
+  { label: 'Live', href: '/live' },
+  { label: 'Paddock', href: '/paddock' },
   { label: 'Sim Racing', href: '/sim-racing' },
   { label: 'Sim Resources', href: '/sim-racing/resources' },
+  { label: 'Random Stats', href: '/random' },
   { label: 'Community', href: '/community' },
   { label: 'Blog', href: '/blog' },
   { label: 'Privacy Policy', href: '/privacy' },
@@ -62,6 +66,11 @@ export default function Footer() {
               </Link>
             ))}
           </div>
+        </div>
+
+        <div>
+          <h4 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '13px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1.5px', color: 'var(--text)', marginBottom: '16px' }}>Follow us</h4>
+          <p style={{ color: 'var(--muted)', fontSize: '13px' }}>@F1RecStats on X/Twitter coming soon</p>
         </div>
       </div>
 
