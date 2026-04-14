@@ -156,7 +156,7 @@ export default function ProductsClient() {
         <p style={{ fontFamily: 'var(--font-barlow-condensed, "Barlow Condensed", sans-serif)', textTransform: 'uppercase', letterSpacing: '0.2em', fontSize: '0.75rem', color: 'var(--accent, #e8002d)', marginBottom: '0.5rem' }}>
           Sim Racing Hardware
         </p>
-        <h1 style={{ fontFamily: 'var(--font-barlow-condensed, "Barlow Condensed", sans-serif)', fontSize: 'clamp(2.5rem, 5vw, 4rem)', fontWeight: 800, textTransform: 'uppercase', margin: 0, lineHeight: 1.05 }}>
+        <h1 style={{ fontFamily: 'var(--font-barlow-condensed, "Barlow Condensed", sans-serif)', fontSize: 'clamp(2.5rem, 5vw, 4rem)', fontWeight: 800, margin: 0, lineHeight: 1.05 }}>
           Sim Racing<br /><span style={{ color: 'var(--accent, #e8002d)' }}>Hardware</span>
         </h1>
         <p style={{ color: 'var(--muted, #889)', maxWidth: '560px', margin: '1rem auto 0', fontSize: '0.95rem' }}>
@@ -166,7 +166,7 @@ export default function ProductsClient() {
 
       <section style={{ maxWidth: '1200px', margin: '0 auto', padding: '1.5rem' }}>
         <div style={{ marginBottom: '1.15rem' }}>
-          <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: '22px', textTransform: 'uppercase', color: 'var(--text)', marginBottom: '6px' }}>
+          <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: '22px', color: 'var(--text)', marginBottom: '6px' }}>
             Trusted <span style={{ color: 'var(--accent)' }}>Brands</span>
           </h2>
           <div className="products-brand-wall" style={{ display: 'grid', gridTemplateColumns: 'repeat(6, minmax(0, 1fr))', gap: '10px' }}>
@@ -248,7 +248,7 @@ export default function ProductsClient() {
                     {product.is_premium_pick && <span style={{ fontSize: '0.58rem', background: 'rgba(245,200,66,0.14)', color: 'var(--gold)', padding: '0.2rem 0.4rem', borderRadius: '3px', fontWeight: 700, letterSpacing: '0.08em' }}>PREMIUM</span>}
                   </div>
                 </div>
-                <h3 style={{ margin: 0, fontFamily: 'var(--font-barlow-condensed)', fontSize: '1.25rem', textTransform: 'uppercase', lineHeight: 1.05 }}>
+                <h3 style={{ margin: 0, fontFamily: 'var(--font-barlow-condensed)', fontSize: '1.25rem', lineHeight: 1.05 }}>
                   {product.name}
                 </h3>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>

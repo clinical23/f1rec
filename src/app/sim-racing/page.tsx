@@ -277,7 +277,6 @@ export default async function SimRacingPage() {
             fontFamily: 'var(--font-display)',
             fontWeight: 800,
             fontSize: '24px',
-            textTransform: 'uppercase',
             color: 'var(--text)',
           }}>
             Top <span style={{ color: 'var(--accent)' }}>picks</span>
@@ -367,7 +366,6 @@ export default async function SimRacingPage() {
           fontFamily: 'var(--font-display)',
           fontWeight: 800,
           fontSize: '24px',
-          textTransform: 'uppercase',
           color: 'var(--text)',
           marginBottom: '24px',
         }}>

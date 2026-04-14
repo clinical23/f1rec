@@ -66,7 +66,7 @@ export default async function SimResourcesPage() {
     <main className="min-h-screen bg-[var(--bg)] text-[var(--text)]">
       <section className="border-b border-[var(--border)] bg-gradient-to-b from-[color-mix(in_srgb,var(--accent)_10%,transparent)] to-transparent px-6 py-12 text-center">
         <p className="font-display text-xs font-bold uppercase tracking-[0.2em] text-[var(--accent)]">Sim Racing Hub</p>
-        <h1 className="mt-2 font-display text-[clamp(2rem,5vw,3.25rem)] font-black uppercase leading-tight text-[var(--text)]">
+        <h1 className="mt-2 font-display text-[clamp(2rem,5vw,3.25rem)] font-black leading-tight text-[var(--text)]">
           Sim Racing Resources
         </h1>
         <p className="mx-auto mt-4 max-w-3xl text-sm text-[var(--muted)]">
@@ -89,7 +89,7 @@ export default async function SimResourcesPage() {
 
           return (
             <section key={section} className="mb-10">
-              <h2 className="mb-4 font-display text-xl font-extrabold uppercase tracking-wide text-[var(--text)]">
+              <h2 className="mb-4 font-display text-xl font-extrabold tracking-wide text-[var(--text)]">
                 {section}
               </h2>
               {section === 'Modding' ? (

@@ -169,7 +169,7 @@ export default async function SeasonDetailPage({ params }: PageProps) {
       </section>
 
       <section style={{ maxWidth: '1200px', margin: '0 auto', padding: '2rem 1.5rem 3rem' }}>
-        <h2 style={{ fontFamily: 'var(--font-barlow-condensed)', textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: '1.1rem', fontWeight: 700, marginBottom: '0.8rem' }}>
+        <h2 style={{ fontFamily: 'var(--font-barlow-condensed)', letterSpacing: '0.1em', fontSize: '1.1rem', fontWeight: 700, marginBottom: '0.8rem' }}>
           Race Winners
         </h2>
         {raceWinners.length > 0 ? (
@@ -220,7 +220,7 @@ export default async function SeasonDetailPage({ params }: PageProps) {
           <p style={{ color: 'var(--muted)', marginBottom: '2rem' }}>No race winner data available for this season.</p>
         )}
 
-        <h2 style={{ fontFamily: 'var(--font-barlow-condensed)', textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: '1.1rem', fontWeight: 700, marginBottom: '0.8rem' }}>
+        <h2 style={{ fontFamily: 'var(--font-barlow-condensed)', letterSpacing: '0.1em', fontSize: '1.1rem', fontWeight: 700, marginBottom: '0.8rem' }}>
           Driver Standings
         </h2>
         <div style={{ overflowX: 'auto', borderRadius: '8px', border: '1px solid var(--border)', marginBottom: '2rem' }}>
@@ -265,7 +265,7 @@ export default async function SeasonDetailPage({ params }: PageProps) {
           </table>
         </div>
 
-        <h2 style={{ fontFamily: 'var(--font-barlow-condensed)', textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: '1.1rem', fontWeight: 700, marginBottom: '0.8rem' }}>
+        <h2 style={{ fontFamily: 'var(--font-barlow-condensed)', letterSpacing: '0.1em', fontSize: '1.1rem', fontWeight: 700, marginBottom: '0.8rem' }}>
           Constructor Standings
         </h2>
         <div style={{ overflowX: 'auto', borderRadius: '8px', border: '1px solid var(--border)' }}>

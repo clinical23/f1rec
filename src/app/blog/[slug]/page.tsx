@@ -179,7 +179,6 @@ function renderMarkdownWithAd(content: string) {
             fontFamily: font.display,
             fontSize: isTop ? 32 : 28,
             lineHeight: 1.15,
-            textTransform: 'uppercase',
             letterSpacing: '-0.02em',
             color: tokens.text,
             fontWeight: 800,
@@ -199,7 +198,6 @@ function renderMarkdownWithAd(content: string) {
             fontFamily: font.display,
             fontSize: 24,
             lineHeight: 1.2,
-            textTransform: 'uppercase',
             letterSpacing: '-0.01em',
             color: tokens.text,
             fontWeight: 800,
@@ -304,7 +302,7 @@ export default async function BlogArticlePage({ params }: PageProps) {
     return (
       <main style={{ fontFamily: font.body, background: tokens.bg, color: tokens.text, minHeight: '100vh', display: 'grid', placeItems: 'center', padding: '24px' }}>
         <div style={{ maxWidth: '560px', width: '100%', border: `1px solid ${tokens.border}`, background: tokens.bg2, borderRadius: '12px', padding: '24px', textAlign: 'center' }}>
-          <h1 style={{ margin: '0 0 10px', fontFamily: font.display, fontSize: '40px', textTransform: 'uppercase' }}>Article Not Found</h1>
+          <h1 style={{ margin: '0 0 10px', fontFamily: font.display, fontSize: '40px', }}>Article Not Found</h1>
           <p style={{ margin: '0 0 18px', color: tokens.muted }}>The article you are looking for is unavailable or unpublished.</p>
           <Link href="/blog" style={{ display: 'inline-block', background: tokens.accent, color: '#fff', textDecoration: 'none', padding: '10px 16px', borderRadius: '8px', fontFamily: font.display, textTransform: 'uppercase', letterSpacing: '0.8px', fontWeight: 700 }}>
             Back to Blog
@@ -381,7 +379,7 @@ export default async function BlogArticlePage({ params }: PageProps) {
               <div style={{ color: tokens.accent, fontFamily: font.display, textTransform: 'uppercase', fontWeight: 800, letterSpacing: '1px', fontSize: '12px', marginBottom: '8px' }}>
                 {categoryLabel(post.category)}
               </div>
-              <h1 style={{ margin: '0 0 10px', fontFamily: font.display, fontWeight: 900, fontSize: 'clamp(34px,5vw,56px)', lineHeight: 0.95, textTransform: 'uppercase' }}>
+              <h1 style={{ margin: '0 0 10px', fontFamily: font.display, fontWeight: 900, fontSize: 'clamp(34px,5vw,56px)', lineHeight: 0.95, }}>
                 {cleanTitle(post.title)}
               </h1>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '14px', color: tokens.muted, fontSize: '13px' }}>
@@ -412,7 +410,7 @@ export default async function BlogArticlePage({ params }: PageProps) {
             </div>
 
             <section>
-              <h2 style={{ margin: '0 0 12px', fontFamily: font.display, fontSize: '28px', textTransform: 'uppercase' }}>
+              <h2 style={{ margin: '0 0 12px', fontFamily: font.display, fontSize: '28px', }}>
                 Related <span style={{ color: tokens.accent }}>Articles</span>
               </h2>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '12px' }}>
@@ -421,7 +419,7 @@ export default async function BlogArticlePage({ params }: PageProps) {
                     <div style={{ color: tokens.accent, fontFamily: font.display, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.8px', marginBottom: '6px' }}>
                       {categoryLabel(item.category as string | null)}
                     </div>
-                    <h3 style={{ margin: '0 0 8px', fontFamily: font.display, fontSize: '22px', lineHeight: 1, textTransform: 'uppercase' }}>{item.title as string}</h3>
+                    <h3 style={{ margin: '0 0 8px', fontFamily: font.display, fontSize: '22px', lineHeight: 1, }}>{item.title as string}</h3>
                     <p style={{ margin: 0, color: tokens.muted, fontSize: '13px', lineHeight: 1.5 }}>{(item.excerpt as string | null) ?? ''}</p>
                   </Link>
                 ))}

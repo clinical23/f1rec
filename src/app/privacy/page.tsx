@@ -10,14 +10,14 @@ export default function PrivacyPage() {
   return (
     <main className="min-h-screen bg-[var(--bg)] px-6 py-12 text-[var(--text)] md:py-16">
       <article className="mx-auto max-w-3xl">
-        <h1 className="font-display text-3xl font-black uppercase tracking-tight text-[var(--text)] md:text-4xl">
+        <h1 className="font-display text-3xl font-black tracking-tight text-[var(--text)] md:text-4xl">
           Privacy Policy
         </h1>
         <p className="mt-2 text-sm text-[var(--muted)]">Last updated: April 2026</p>
 
         <div className="mt-10 space-y-10 text-[15px] leading-relaxed text-[var(--text)]">
           <section>
-            <h2 className="mb-3 font-display text-xl font-bold uppercase tracking-wide text-[var(--text)]">
+            <h2 className="mb-3 font-display text-xl font-bold tracking-wide text-[var(--text)]">
               Who we are
             </h2>
             <p className="text-[var(--text)]">
@@ -46,7 +46,7 @@ export default function PrivacyPage() {
           </section>
 
           <section>
-            <h2 className="mb-3 font-display text-xl font-bold uppercase tracking-wide text-[var(--text)]">
+            <h2 className="mb-3 font-display text-xl font-bold tracking-wide text-[var(--text)]">
               What data we collect
             </h2>
             <ul className="list-inside list-disc space-y-2 text-[var(--muted)]">
@@ -67,7 +67,7 @@ export default function PrivacyPage() {
           </section>
 
           <section>
-            <h2 className="mb-3 font-display text-xl font-bold uppercase tracking-wide text-[var(--text)]">
+            <h2 className="mb-3 font-display text-xl font-bold tracking-wide text-[var(--text)]">
               Cookies we use
             </h2>
             <p className="mb-4 text-[var(--muted)]">
@@ -127,7 +127,7 @@ export default function PrivacyPage() {
           </section>
 
           <section>
-            <h2 className="mb-3 font-display text-xl font-bold uppercase tracking-wide text-[var(--text)]">
+            <h2 className="mb-3 font-display text-xl font-bold tracking-wide text-[var(--text)]">
               How we use your data
             </h2>
             <ul className="list-inside list-disc space-y-2 text-[var(--muted)]">
@@ -139,7 +139,7 @@ export default function PrivacyPage() {
           </section>
 
           <section>
-            <h2 className="mb-3 font-display text-xl font-bold uppercase tracking-wide text-[var(--text)]">
+            <h2 className="mb-3 font-display text-xl font-bold tracking-wide text-[var(--text)]">
               Third-party services
             </h2>
             <ul className="space-y-2 text-[var(--muted)]">
@@ -202,7 +202,7 @@ export default function PrivacyPage() {
           </section>
 
           <section>
-            <h2 className="mb-3 font-display text-xl font-bold uppercase tracking-wide text-[var(--text)]">
+            <h2 className="mb-3 font-display text-xl font-bold tracking-wide text-[var(--text)]">
               Your rights (UK GDPR / EU GDPR)
             </h2>
             <ul className="list-inside list-disc space-y-2 text-[var(--muted)]">
@@ -227,7 +227,7 @@ export default function PrivacyPage() {
           </section>
 
           <section>
-            <h2 className="mb-3 font-display text-xl font-bold uppercase tracking-wide text-[var(--text)]">
+            <h2 className="mb-3 font-display text-xl font-bold tracking-wide text-[var(--text)]">
               Data retention
             </h2>
             <ul className="list-inside list-disc space-y-2 text-[var(--muted)]">
@@ -246,7 +246,7 @@ export default function PrivacyPage() {
           </section>
 
           <section>
-            <h2 className="mb-3 font-display text-xl font-bold uppercase tracking-wide text-[var(--text)]">
+            <h2 className="mb-3 font-display text-xl font-bold tracking-wide text-[var(--text)]">
               Children&apos;s privacy
             </h2>
             <p className="text-[var(--muted)]">
@@ -255,7 +255,7 @@ export default function PrivacyPage() {
           </section>
 
           <section>
-            <h2 className="mb-3 font-display text-xl font-bold uppercase tracking-wide text-[var(--text)]">
+            <h2 className="mb-3 font-display text-xl font-bold tracking-wide text-[var(--text)]">
               Changes to this policy
             </h2>
             <p className="text-[var(--muted)]">

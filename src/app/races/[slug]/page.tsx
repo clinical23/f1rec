@@ -227,7 +227,6 @@ export default async function RacePage({ params }: PageProps) {
             fontSize: '18px',
             fontWeight: 800,
             letterSpacing: '1px',
-            textTransform: 'uppercase',
             color: '#fff',
             marginBottom: '12px',
           }}

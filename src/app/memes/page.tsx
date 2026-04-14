@@ -334,7 +334,7 @@ export default function MemesPage() {
         <p style={{ fontFamily: 'var(--font-barlow-condensed, "Barlow Condensed", sans-serif)', textTransform: 'uppercase', letterSpacing: '0.2em', fontSize: '0.75rem', color: 'var(--accent, #e8002d)', marginBottom: '0.5rem' }}>
           F1Rec Culture
         </p>
-        <h1 style={{ fontFamily: 'var(--font-barlow-condensed, "Barlow Condensed", sans-serif)', fontSize: 'clamp(2.5rem, 5vw, 4rem)', fontWeight: 800, textTransform: 'uppercase', margin: 0, lineHeight: 1.1 }}>
+        <h1 style={{ fontFamily: 'var(--font-barlow-condensed, "Barlow Condensed", sans-serif)', fontSize: 'clamp(2.5rem, 5vw, 4rem)', fontWeight: 800, margin: 0, lineHeight: 1.1 }}>
           Memes &<br /><span style={{ color: 'var(--accent, #e8002d)' }}>Humour</span>
         </h1>
         <p style={{ color: 'var(--muted, #889)', maxWidth: '620px', margin: '1rem auto 0', fontSize: '0.95rem' }}>
@@ -390,7 +390,7 @@ export default function MemesPage() {
                       </span>
                       {meme.is_featured ? <span style={{ fontSize: '0.62rem', background: 'rgba(245,200,66,0.12)', color: 'var(--gold)', padding: '0.18rem 0.45rem', borderRadius: '3px', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 700 }}>Featured</span> : null}
                     </div>
-                    <h2 style={{ margin: 0, fontFamily: 'var(--font-barlow-condensed)', fontSize: '1.05rem', fontWeight: 800, textTransform: 'uppercase', lineHeight: 1.1 }}>{title}</h2>
+                    <h2 style={{ margin: 0, fontFamily: 'var(--font-barlow-condensed)', fontSize: '1.05rem', fontWeight: 800, lineHeight: 1.1 }}>{title}</h2>
                     {href ? (
                       <a href={href} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none', color: 'var(--accent)', fontFamily: 'var(--font-barlow-condensed)', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 700, fontSize: '0.74rem' }}>
                         Open / Share →

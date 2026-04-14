@@ -110,7 +110,7 @@ export default function ReviewsPage() {
       }} />
       <section style={{ padding: '4rem 1.5rem 2rem', textAlign: 'center', borderBottom: '1px solid var(--border)', background: 'linear-gradient(180deg, rgba(232,0,45,0.06) 0%, transparent 100%)' }}>
         <p style={{ fontFamily: 'var(--font-barlow-condensed, "Barlow Condensed", sans-serif)', textTransform: 'uppercase', letterSpacing: '0.2em', fontSize: '0.75rem', color: 'var(--accent, #e8002d)', marginBottom: '0.5rem' }}>Sim Racing</p>
-        <h1 style={{ fontFamily: 'var(--font-barlow-condensed, "Barlow Condensed", sans-serif)', fontSize: 'clamp(2.5rem, 5vw, 4rem)', fontWeight: 800, textTransform: 'uppercase', margin: 0, lineHeight: 1.1 }}>
+        <h1 style={{ fontFamily: 'var(--font-barlow-condensed, "Barlow Condensed", sans-serif)', fontSize: 'clamp(2.5rem, 5vw, 4rem)', fontWeight: 800, margin: 0, lineHeight: 1.1 }}>
           Hardware<br /><span style={{ color: 'var(--accent, #e8002d)' }}>Reviews</span>
         </h1>
         <p style={{ color: 'var(--muted, #889)', maxWidth: '500px', margin: '1rem auto 0', fontSize: '0.95rem' }}>
@@ -151,7 +151,7 @@ export default function ReviewsPage() {
                       <span style={{ fontSize: '0.7rem', color: 'var(--muted)', fontFamily: 'var(--font-barlow-condensed)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>{r.brand}</span>
                     )}
                   </div>
-                  <h3 style={{ fontFamily: 'var(--font-barlow-condensed)', fontSize: '1.15rem', fontWeight: 700, textTransform: 'uppercase', lineHeight: 1.15, marginBottom: '0.6rem' }}>{r.title}</h3>
+                  <h3 style={{ fontFamily: 'var(--font-barlow-condensed)', fontSize: '1.15rem', fontWeight: 700, lineHeight: 1.15, marginBottom: '0.6rem' }}>{r.title}</h3>
                   <p style={{ fontSize: '0.82rem', color: 'var(--muted)', lineHeight: 1.5, marginBottom: '1rem', flex: 1 }}>{r.excerpt || ''}</p>
                   <RatingBar rating={r.rating} />
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.75rem', fontSize: '0.7rem', color: 'var(--muted)' }}>

@@ -581,7 +581,7 @@ export default async function TeamDetailPage({ params }: PageProps) {
               <p className="font-display text-xs font-bold uppercase tracking-[0.2em]" style={{ color: accent }}>
                 Constructor
               </p>
-              <h1 className="mt-1 font-display text-[clamp(2rem,5vw,3.25rem)] font-black uppercase leading-tight text-[var(--text)]">
+              <h1 className="mt-1 font-display text-[clamp(2rem,5vw,3.25rem)] font-black leading-tight text-[var(--text)]">
                 {name}
               </h1>
               <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-[var(--muted)]">
@@ -623,7 +623,7 @@ export default async function TeamDetailPage({ params }: PageProps) {
 
       <div className="mx-auto max-w-6xl px-6 py-10 md:py-14">
         <section className="mb-12">
-          <h2 className="mb-4 font-display text-lg font-extrabold uppercase tracking-wide text-[var(--text)]">
+          <h2 className="mb-4 font-display text-lg font-extrabold tracking-wide text-[var(--text)]">
             Career <span className="text-[var(--accent)]">totals</span>
           </h2>
           <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
@@ -652,7 +652,7 @@ export default async function TeamDetailPage({ params }: PageProps) {
 
         {titleSeasons.length > 0 ? (
           <section className="mb-12">
-            <h2 className="mb-4 font-display text-lg font-extrabold uppercase tracking-wide text-[var(--text)]">
+            <h2 className="mb-4 font-display text-lg font-extrabold tracking-wide text-[var(--text)]">
               Constructor <span className="text-[var(--gold)]">Championships</span>
             </h2>
             <ul className="flex flex-wrap gap-2">
@@ -669,7 +669,7 @@ export default async function TeamDetailPage({ params }: PageProps) {
         ) : null}
 
         <section className="mb-12">
-          <h2 className="mb-4 font-display text-lg font-extrabold uppercase tracking-wide text-[var(--text)]">
+          <h2 className="mb-4 font-display text-lg font-extrabold tracking-wide text-[var(--text)]">
             Team <span className="text-[var(--accent)]">records</span>
           </h2>
           <dl className="rounded-xl border border-[var(--border)] bg-[var(--bg2)] px-4 md:px-6">
@@ -721,7 +721,7 @@ export default async function TeamDetailPage({ params }: PageProps) {
         </section>
 
         <section className="mb-12">
-          <h2 className="mb-4 font-display text-lg font-extrabold uppercase tracking-wide text-[var(--text)]">
+          <h2 className="mb-4 font-display text-lg font-extrabold tracking-wide text-[var(--text)]">
             Season by <span className="text-[var(--accent)]">season</span>
             <span className="ml-2 font-body text-xs font-normal normal-case tracking-normal text-[var(--muted)]">
               {teamSeasonRows.length} season{teamSeasonRows.length !== 1 ? 's' : ''}
@@ -809,7 +809,7 @@ export default async function TeamDetailPage({ params }: PageProps) {
 
         {driversCurrentYear.length > 0 ? (
           <section className="mb-12">
-            <h2 className="mb-4 font-display text-lg font-extrabold uppercase tracking-wide text-[var(--text)]">
+            <h2 className="mb-4 font-display text-lg font-extrabold tracking-wide text-[var(--text)]">
               {thisYear} <span className="text-[var(--accent)]">drivers</span>
             </h2>
             <div className="grid gap-4 sm:grid-cols-2">
@@ -855,13 +855,13 @@ export default async function TeamDetailPage({ params }: PageProps) {
         ) : null}
 
         <section className="mb-12">
-          <h2 className="mb-4 font-display text-lg font-extrabold uppercase tracking-wide text-[var(--text)]">
+          <h2 className="mb-4 font-display text-lg font-extrabold tracking-wide text-[var(--text)]">
             Notable <span className="text-[var(--accent)]">drivers</span>
           </h2>
 
           {champions.length > 0 ? (
             <div className="mb-8">
-              <h3 className="mb-2 font-display text-sm font-bold uppercase tracking-wider text-[var(--gold)]">
+              <h3 className="mb-2 font-display text-sm font-bold tracking-wider text-[var(--gold)]">
                 World champions who drove for {name}
               </h3>
               <ul className="space-y-2">
@@ -881,7 +881,7 @@ export default async function TeamDetailPage({ params }: PageProps) {
 
           {topScorers.length > 0 ? (
             <div className="mb-8">
-              <h3 className="mb-2 font-display text-sm font-bold uppercase tracking-wider text-[var(--muted)]">
+              <h3 className="mb-2 font-display text-sm font-bold tracking-wider text-[var(--muted)]">
                 Top scorers (points for {name})
               </h3>
               <div className="grid gap-2 sm:grid-cols-2">
@@ -942,7 +942,7 @@ export default async function TeamDetailPage({ params }: PageProps) {
 
         {relatedPosts.length > 0 ? (
           <section className="mb-12">
-            <h2 className="mb-4 font-display text-lg font-extrabold uppercase tracking-wide text-[var(--text)]">
+            <h2 className="mb-4 font-display text-lg font-extrabold tracking-wide text-[var(--text)]">
               Articles mentioning <span className="text-[var(--accent)]">{name}</span>
             </h2>
             <div className="grid gap-4 sm:grid-cols-2">

@@ -486,7 +486,7 @@ export default async function HomePage() {
         <div className="mb-12 grid gap-8 lg:grid-cols-3">
           <section className="rounded-lg border border-[var(--border)] bg-[var(--bg2)] lg:col-span-1">
             <div className="border-b border-[var(--border)] bg-[var(--bg3)] px-4 py-3">
-              <h2 className="font-display text-sm font-extrabold uppercase tracking-wider text-[var(--text)]">
+              <h2 className="font-display text-sm font-extrabold tracking-wider text-[var(--text)]">
                 Reigning champion · 2025
               </h2>
             </div>
@@ -537,7 +537,7 @@ export default async function HomePage() {
 
           <section className="lg:col-span-2">
             <div className="mb-4 flex flex-wrap items-end justify-between gap-2">
-              <h2 className="font-display text-xl font-extrabold uppercase tracking-wide text-[var(--text)]">
+              <h2 className="font-display text-xl font-extrabold tracking-wide text-[var(--text)]">
                 2026 season <span className="text-[var(--accent)]">live</span>
               </h2>
               <Link
@@ -550,7 +550,7 @@ export default async function HomePage() {
             <div className="grid gap-6 md:grid-cols-2">
               <div className="rounded-lg border border-[var(--border)] bg-[var(--bg2)]">
                 <div className="border-b border-[var(--border)] px-4 py-2">
-                  <h3 className="font-display text-xs font-bold uppercase tracking-wider text-[var(--muted)]">
+                  <h3 className="font-display text-xs font-bold tracking-wider text-[var(--muted)]">
                     WDC · Top 10
                   </h3>
                 </div>
@@ -591,7 +591,7 @@ export default async function HomePage() {
               </div>
               <div className="rounded-lg border border-[var(--border)] bg-[var(--bg2)]">
                 <div className="border-b border-[var(--border)] px-4 py-2">
-                  <h3 className="font-display text-xs font-bold uppercase tracking-wider text-[var(--muted)]">
+                  <h3 className="font-display text-xs font-bold tracking-wider text-[var(--muted)]">
                     WCC · Top 10
                   </h3>
                 </div>
@@ -623,7 +623,7 @@ export default async function HomePage() {
         {/* Recent races */}
         <section className="mb-12">
           <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
-            <h2 className="font-display text-xl font-extrabold uppercase text-[var(--text)]">
+            <h2 className="font-display text-xl font-extrabold text-[var(--text)]">
               Recent <span className="text-[var(--accent)]">races</span> · 2026
             </h2>
             <Link href="/races" className="text-xs font-semibold uppercase tracking-wide text-[var(--accent)] no-underline hover:underline">
@@ -674,7 +674,7 @@ export default async function HomePage() {
 
         {/* Quick links */}
         <section className="mb-12">
-          <h2 className="mb-4 font-display text-xl font-extrabold uppercase text-[var(--text)]">
+          <h2 className="mb-4 font-display text-xl font-extrabold text-[var(--text)]">
             Explore
           </h2>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -707,7 +707,7 @@ export default async function HomePage() {
           <p className="mb-2 font-display text-[0.62rem] font-bold uppercase tracking-[0.14em] text-[var(--accent)]">
             Sim Racing Section
           </p>
-          <h2 className="font-display text-2xl font-black uppercase text-[var(--text)] md:text-3xl">
+          <h2 className="font-display text-2xl font-black text-[var(--text)] md:text-3xl">
             Sim Racing Hub — Reviews, Setups, and Gear
           </h2>
           <p className="mx-auto mt-3 max-w-lg text-sm text-[var(--muted)]">

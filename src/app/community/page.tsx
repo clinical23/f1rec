@@ -151,7 +151,7 @@ export default function CommunityPage() {
       {/* Hero */}
       <section style={{ padding: '4rem 1.5rem 2rem', textAlign: 'center', borderBottom: '1px solid var(--border)', background: 'linear-gradient(180deg, rgba(232,0,45,0.06) 0%, transparent 100%)' }}>
         <p style={{ fontFamily: 'var(--font-barlow-condensed, "Barlow Condensed", sans-serif)', textTransform: 'uppercase', letterSpacing: '0.2em', fontSize: '0.75rem', color: 'var(--accent, #e8002d)', marginBottom: '0.5rem' }}>Curated by F1Rec</p>
-        <h1 style={{ fontFamily: 'var(--font-barlow-condensed, "Barlow Condensed", sans-serif)', fontSize: 'clamp(2.5rem, 5vw, 4rem)', fontWeight: 800, textTransform: 'uppercase', margin: 0, lineHeight: 1.1 }}>
+        <h1 style={{ fontFamily: 'var(--font-barlow-condensed, "Barlow Condensed", sans-serif)', fontSize: 'clamp(2.5rem, 5vw, 4rem)', fontWeight: 800, margin: 0, lineHeight: 1.1 }}>
           The F1<br /><span style={{ color: 'var(--accent, #e8002d)' }}>Community</span>
         </h1>
         <p style={{ color: 'var(--muted, #889)', maxWidth: '500px', margin: '1rem auto 0', fontSize: '0.95rem' }}>
@@ -172,7 +172,7 @@ export default function CommunityPage() {
               <p style={{ margin: 0, color: 'var(--accent)', fontFamily: 'var(--font-barlow-condensed)', textTransform: 'uppercase', letterSpacing: '0.12em', fontSize: '0.7rem', fontWeight: 700 }}>
                 Trending Now
               </p>
-              <h2 style={{ margin: '0.45rem 0', fontFamily: 'var(--font-barlow-condensed)', textTransform: 'uppercase', fontSize: '1.5rem', lineHeight: 1, fontWeight: 800 }}>
+              <h2 style={{ margin: '0.45rem 0', fontFamily: 'var(--font-barlow-condensed)', fontSize: '1.5rem', lineHeight: 1, fontWeight: 800 }}>
                 This Week&apos;s Pick
               </h2>
               <p style={{ margin: 0, color: 'var(--muted)', fontSize: '0.9rem', lineHeight: 1.5 }}>
@@ -185,7 +185,7 @@ export default function CommunityPage() {
         {/* YouTube */}
         <div style={{ marginBottom: '3rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.25rem' }}>
-            <h2 style={{ fontFamily: 'var(--font-barlow-condensed)', fontSize: '1.3rem', fontWeight: 800, textTransform: 'uppercase', margin: 0 }}>
+            <h2 style={{ fontFamily: 'var(--font-barlow-condensed)', fontSize: '1.3rem', fontWeight: 800, margin: 0 }}>
               F1 <span style={{ color: '#ff4444' }}>YouTube</span>
             </h2>
             <PlatformBadge platform="YouTube" />
@@ -210,7 +210,7 @@ export default function CommunityPage() {
         {/* Sim Racing Creators */}
         <div style={{ marginBottom: '3rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.25rem', flexWrap: 'wrap' }}>
-            <h2 style={{ fontFamily: 'var(--font-barlow-condensed)', fontSize: '1.3rem', fontWeight: 800, textTransform: 'uppercase', margin: 0 }}>
+            <h2 style={{ fontFamily: 'var(--font-barlow-condensed)', fontSize: '1.3rem', fontWeight: 800, margin: 0 }}>
               Sim Racing <span style={{ color: 'var(--green, #00d4a0)' }}>Creators</span>
             </h2>
             <PlatformBadge platform="Sim Racing" />
@@ -238,7 +238,7 @@ export default function CommunityPage() {
         {/* Social */}
         <div style={{ marginBottom: '3rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.25rem' }}>
-            <h2 style={{ fontFamily: 'var(--font-barlow-condensed)', fontSize: '1.3rem', fontWeight: 800, textTransform: 'uppercase', margin: 0 }}>
+            <h2 style={{ fontFamily: 'var(--font-barlow-condensed)', fontSize: '1.3rem', fontWeight: 800, margin: 0 }}>
               F1 <span style={{ color: 'var(--accent)' }}>Social</span>
             </h2>
           </div>
@@ -263,7 +263,7 @@ export default function CommunityPage() {
         {/* Podcasts */}
         <div style={{ marginBottom: '3rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1.25rem' }}>
-            <h2 style={{ fontFamily: 'var(--font-barlow-condensed)', fontSize: '1.3rem', fontWeight: 800, textTransform: 'uppercase', margin: 0 }}>
+            <h2 style={{ fontFamily: 'var(--font-barlow-condensed)', fontSize: '1.3rem', fontWeight: 800, margin: 0 }}>
               F1 <span style={{ color: '#9b6dff' }}>Podcasts</span>
             </h2>
             <PlatformBadge platform="Podcast" />

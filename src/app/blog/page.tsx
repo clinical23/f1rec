@@ -145,7 +145,7 @@ export default async function BlogIndexPage() {
               </span>
               <span style={{ fontSize: '12px', color: tokens.muted }}>{formatDate(featured.published_at)} • {readingTime(featured)} min read</span>
             </div>
-            <h2 style={{ margin: '0 0 10px', fontFamily: font.display, fontSize: 'clamp(28px,4vw,42px)', textTransform: 'uppercase', lineHeight: 1 }}>
+            <h2 style={{ margin: '0 0 10px', fontFamily: font.display, fontSize: 'clamp(28px,4vw,42px)', lineHeight: 1 }}>
               {cleanTitle(featured.title)}
             </h2>
             <p style={{ margin: 0, color: tokens.muted, fontSize: '15px', lineHeight: 1.6 }}>{featured.excerpt ?? 'Read full article.'}</p>
@@ -173,7 +173,7 @@ export default async function BlogIndexPage() {
                 <span style={{ display: 'inline-block', marginBottom: '10px', padding: '4px 8px', borderRadius: '6px', background: meta.bg, color: meta.color, fontSize: '11px', fontWeight: 700, letterSpacing: '0.5px', textTransform: 'uppercase' }}>
                   {meta.label}
                 </span>
-                <h3 style={{ margin: '0 0 8px', fontFamily: font.display, fontSize: '25px', lineHeight: 1, textTransform: 'uppercase' }}>{cleanTitle(post.title)}</h3>
+                <h3 style={{ margin: '0 0 8px', fontFamily: font.display, fontSize: '25px', lineHeight: 1, }}>{cleanTitle(post.title)}</h3>
                 <p style={{ margin: '0 0 12px', color: tokens.muted, lineHeight: 1.55, fontSize: '14px' }}>{post.excerpt ?? ''}</p>
                 <div style={{ display: 'flex', justifyContent: 'space-between', gap: '8px', flexWrap: 'wrap', fontSize: '12px', color: tokens.muted }}>
                   <span>{formatDate(post.published_at)}</span>

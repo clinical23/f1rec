@@ -555,7 +555,7 @@ export default async function DriverProfilePage({ params }: PageProps) {
                     {String(driver.code)}
                   </p>
                 ) : null}
-                <h1 className="font-display text-[clamp(2rem,5vw,3.5rem)] font-extrabold uppercase leading-[1.05] tracking-tight text-[var(--text)]">
+                <h1 className="font-display text-[clamp(2rem,5vw,3.5rem)] font-extrabold leading-[1.05] tracking-tight text-[var(--text)]">
                   {name}
                 </h1>
                 <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-[var(--muted)]">
@@ -609,7 +609,7 @@ export default async function DriverProfilePage({ params }: PageProps) {
       <div className="mx-auto max-w-6xl px-6 py-10 md:py-14">
         {/* Career stat cards */}
         <section className="mb-12">
-          <h2 className="mb-4 font-display text-lg font-extrabold uppercase tracking-wide text-[var(--text)]">
+          <h2 className="mb-4 font-display text-lg font-extrabold tracking-wide text-[var(--text)]">
             Career <span className="text-[var(--accent)]">totals</span>
           </h2>
           <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-3">
@@ -635,7 +635,7 @@ export default async function DriverProfilePage({ params }: PageProps) {
 
         {profile ? (
           <section className="mb-12 rounded-xl border border-[var(--border)] bg-[var(--bg2)] p-5 md:p-6">
-            <h2 className="font-display text-lg font-extrabold uppercase tracking-wide text-[var(--text)]">
+            <h2 className="font-display text-lg font-extrabold tracking-wide text-[var(--text)]">
               Beyond the <span className="text-[var(--accent)]">Stats</span>
             </h2>
 
@@ -647,7 +647,7 @@ export default async function DriverProfilePage({ params }: PageProps) {
 
             {profile.fun_facts && profile.fun_facts.length > 0 ? (
               <div className="mt-5">
-                <h3 className="font-display text-sm font-bold uppercase tracking-wider text-[var(--text)]">Fun Facts</h3>
+                <h3 className="font-display text-sm font-bold tracking-wider text-[var(--text)]">Fun Facts</h3>
                 <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-[var(--muted)]">
                   {profile.fun_facts.filter(Boolean).map((fact) => (
                     <li key={fact}>{fact}</li>
@@ -658,13 +658,13 @@ export default async function DriverProfilePage({ params }: PageProps) {
 
             {profile.hobbies ? (
               <div className="mt-5">
-                <h3 className="font-display text-sm font-bold uppercase tracking-wider text-[var(--text)]">Off Track</h3>
+                <h3 className="font-display text-sm font-bold tracking-wider text-[var(--text)]">Off Track</h3>
                 <p className="mt-2 text-sm text-[var(--muted)]">{profile.hobbies}</p>
               </div>
             ) : null}
 
             <div className="mt-5">
-              <h3 className="font-display text-sm font-bold uppercase tracking-wider text-[var(--text)]">Social Media</h3>
+              <h3 className="font-display text-sm font-bold tracking-wider text-[var(--text)]">Social Media</h3>
               <div className="mt-2 flex flex-wrap gap-2">
                 {profile.social_twitter ? (
                   <a href={`https://twitter.com/${profile.social_twitter}`} target="_blank" rel="noopener noreferrer" className="rounded border border-[var(--border)] bg-[var(--bg3)] px-3 py-1 text-xs font-semibold uppercase tracking-wide text-[var(--text)] no-underline hover:border-[var(--accent)] hover:text-[var(--accent)]">
@@ -696,7 +696,7 @@ export default async function DriverProfilePage({ params }: PageProps) {
 
             {profile.fan_community_name || profile.fan_base_region ? (
               <div className="mt-5">
-                <h3 className="font-display text-sm font-bold uppercase tracking-wider text-[var(--text)]">Fan Community</h3>
+                <h3 className="font-display text-sm font-bold tracking-wider text-[var(--text)]">Fan Community</h3>
                 <div className="mt-2 flex flex-wrap items-center gap-2">
                   {profile.fan_community_name && profile.fan_community_url ? (
                     <a href={profile.fan_community_url} target="_blank" rel="noopener noreferrer" className="text-sm font-semibold text-[var(--accent)] no-underline hover:underline">
@@ -716,7 +716,7 @@ export default async function DriverProfilePage({ params }: PageProps) {
 
         {videos.length > 0 ? (
           <section className="mb-12">
-            <h2 className="mb-4 font-display text-lg font-extrabold uppercase tracking-wide text-[var(--text)]">
+            <h2 className="mb-4 font-display text-lg font-extrabold tracking-wide text-[var(--text)]">
               Best Moments <span className="text-[var(--accent)]">🎬</span>
             </h2>
             <div className="grid gap-4 md:grid-cols-2">
@@ -741,7 +741,7 @@ export default async function DriverProfilePage({ params }: PageProps) {
                       <span className="text-xs font-mono text-[var(--muted)]">{video.season_year}</span>
                     ) : null}
                   </div>
-                  <h3 className="mt-2 font-display text-base font-bold uppercase text-[var(--text)]">
+                  <h3 className="mt-2 font-display text-base font-bold text-[var(--text)]">
                     {video.title}
                   </h3>
                 </a>
@@ -753,7 +753,7 @@ export default async function DriverProfilePage({ params }: PageProps) {
         {/* World championships */}
         {titleSeasonRows.length > 0 ? (
           <section className="mb-12">
-            <h2 className="mb-4 font-display text-lg font-extrabold uppercase tracking-wide text-[var(--text)]">
+            <h2 className="mb-4 font-display text-lg font-extrabold tracking-wide text-[var(--text)]">
               World <span className="text-[var(--gold)]">Championships</span>
             </h2>
             <ul className="space-y-2">
@@ -781,7 +781,7 @@ export default async function DriverProfilePage({ params }: PageProps) {
 
         {/* Career records */}
         <section className="mb-12">
-          <h2 className="mb-4 font-display text-lg font-extrabold uppercase tracking-wide text-[var(--text)]">
+          <h2 className="mb-4 font-display text-lg font-extrabold tracking-wide text-[var(--text)]">
             Career <span className="text-[var(--accent)]">records</span>
           </h2>
           <dl className="rounded-xl border border-[var(--border)] bg-[var(--bg2)] px-4 md:px-6">
@@ -838,7 +838,7 @@ export default async function DriverProfilePage({ params }: PageProps) {
 
         {/* Season table */}
         <section className="mb-12">
-          <h2 className="mb-4 font-display text-lg font-extrabold uppercase tracking-wide text-[var(--text)]">
+          <h2 className="mb-4 font-display text-lg font-extrabold tracking-wide text-[var(--text)]">
             Season by <span className="text-[var(--accent)]">season</span>
             <span className="ml-2 font-body text-xs font-normal normal-case tracking-normal text-[var(--muted)]">
               {seasonRows.length} season{seasonRows.length !== 1 ? 's' : ''}
@@ -937,7 +937,7 @@ export default async function DriverProfilePage({ params }: PageProps) {
         {/* Teammates */}
         {teammates.length > 0 ? (
           <section className="mb-12">
-            <h2 className="mb-3 font-display text-lg font-extrabold uppercase tracking-wide text-[var(--text)]">
+            <h2 className="mb-3 font-display text-lg font-extrabold tracking-wide text-[var(--text)]">
               Teammates
             </h2>
             <p className="mb-3 text-sm text-[var(--muted)]">Drivers who raced as teammates in the same race weekend lineup.</p>
@@ -976,7 +976,7 @@ export default async function DriverProfilePage({ params }: PageProps) {
         {/* Related posts */}
         {relatedPosts.length > 0 ? (
           <section className="mb-12">
-            <h2 className="mb-4 font-display text-lg font-extrabold uppercase tracking-wide text-[var(--text)]">
+            <h2 className="mb-4 font-display text-lg font-extrabold tracking-wide text-[var(--text)]">
               Articles about <span className="text-[var(--accent)]">{name}</span>
             </h2>
             <div className="grid gap-4 sm:grid-cols-2">

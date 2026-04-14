@@ -32,7 +32,7 @@ export default function BrandsWall() {
 
   return (
     <section style={{ maxWidth: '1200px', margin: '0 auto', padding: '38px 24px 20px' }}>
-      <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: '24px', textTransform: 'uppercase', color: '#e8e8f0', marginBottom: '6px' }}>
+      <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: '24px', color: '#e8e8f0', marginBottom: '6px' }}>
         Brands <span style={{ color: 'var(--accent)' }}>we cover</span>
       </h2>
       <p style={{ margin: '0 0 18px', color: '#888899', fontSize: '14px' }}>
