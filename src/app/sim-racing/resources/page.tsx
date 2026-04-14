@@ -64,7 +64,7 @@ export default async function SimResourcesPage() {
 
   return (
     <main className="min-h-screen bg-[var(--bg)] text-[var(--text)]">
-      <section className="border-b border-[var(--border)] bg-gradient-to-b from-[color-mix(in_srgb,var(--accent)_10%,transparent)] to-transparent px-6 py-12 text-center">
+      <section className="border-b border-[var(--border)] bg-gradient-to-b from-[color-mix(in_srgb,var(--accent)_10%,transparent)] to-transparent px-6 py-16 text-center">
         <p className="font-display text-xs font-bold uppercase tracking-[0.2em] text-[var(--accent)]">Sim Racing Hub</p>
         <h1 className="mt-2 font-display text-[clamp(2rem,5vw,3.25rem)] font-black leading-tight text-[var(--text)]">
           Sim Racing Resources
@@ -82,14 +82,14 @@ export default async function SimResourcesPage() {
         </div>
       </section>
 
-      <div className="mx-auto max-w-6xl px-6 py-10">
+      <div className="mx-auto max-w-7xl px-6 py-16">
         {SECTION_ORDER.map((section) => {
           const entries = grouped.get(section) ?? []
           if (entries.length === 0) return null
 
           return (
-            <section key={section} className="mb-10">
-              <h2 className="mb-4 font-display text-xl font-extrabold tracking-wide text-[var(--text)]">
+            <section key={section} className="mb-12 border-t border-[#2a2a3a] pt-12">
+              <h2 className="mb-8 font-display text-xl font-extrabold tracking-wide text-[var(--text)]">
                 {section}
               </h2>
               {section === 'Modding' ? (
@@ -97,9 +97,9 @@ export default async function SimResourcesPage() {
                   Content Manager + Custom Shaders Patch is still the go-to combo for a modernized AC modding stack.
                 </p>
               ) : null}
-              <div className="grid gap-4 md:grid-cols-2">
+              <div className="grid gap-6 md:grid-cols-2">
                 {entries.map((item) => (
-                  <article key={item.id} className="rounded-xl border border-[var(--border)] bg-[var(--bg2)] p-4">
+                  <article key={item.id} className="rounded-xl border border-[var(--border)] bg-[var(--bg2)] p-6">
                     <div className="mb-2 flex flex-wrap items-center gap-2">
                       <span className="font-display text-sm font-bold uppercase tracking-wide text-[var(--text)]">
                         {item.name ?? 'Resource'}

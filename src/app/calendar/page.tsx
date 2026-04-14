@@ -131,7 +131,7 @@ export default async function CalendarPage() {
 
   return (
     <main className="min-h-screen bg-[var(--bg)] text-[var(--text)]">
-      <section className="border-b border-[var(--border)] bg-gradient-to-b from-[color-mix(in_srgb,var(--accent)_10%,transparent)] to-transparent px-6 py-12 text-center">
+      <section className="border-b border-[var(--border)] bg-gradient-to-b from-[color-mix(in_srgb,var(--accent)_10%,transparent)] to-transparent px-6 py-16 text-center">
         <p className="font-display text-xs font-bold uppercase tracking-[0.2em] text-[var(--accent)]">2026 Season</p>
         <h1 className="mt-2 font-display text-[clamp(2rem,5vw,3.25rem)] font-black leading-tight text-[var(--text)]">
           2026 Race Calendar
@@ -141,7 +141,7 @@ export default async function CalendarPage() {
         </p>
       </section>
 
-      <section className="mx-auto max-w-6xl px-6 py-10">
+      <section className="mx-auto max-w-7xl px-6 py-16">
         <CalendarBoard races={cards} broadcasts={broadcasts} />
       </section>
     </main>

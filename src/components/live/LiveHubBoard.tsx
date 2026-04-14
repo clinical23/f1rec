@@ -53,34 +53,36 @@ function StreamerSection({
   subtitle: string
   streamers: Streamer[]
 }) {
+  const [showAll, setShowAll] = useState(false)
   if (streamers.length === 0) return null
+  const visible = showAll ? streamers : streamers.slice(0, 4)
   return (
-    <section className="mb-10">
-      <h2 className="font-display text-xl font-extrabold uppercase tracking-wide text-[var(--text)]">{title}</h2>
-      <p className="mb-4 mt-1 text-sm text-[var(--muted)]">{subtitle}</p>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {streamers.map((streamer) => {
+    <section className="border-t border-[#2a2a3a] py-12">
+      <h2 className="font-display text-xl font-extrabold tracking-wide text-[var(--text)]">{title}</h2>
+      <p className="mb-8 mt-2 text-sm text-[#8888aa]">{subtitle}</p>
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {visible.map((streamer) => {
           const platform = platformBadge(streamer.platform)
           return (
-            <article key={streamer.id} className="rounded-xl border border-[var(--border)] bg-[var(--bg2)] p-4">
-              <div className="mb-2 flex flex-wrap items-center gap-2">
+            <article key={streamer.id} className="rounded-xl border border-[#2a2a3a] bg-[var(--bg2)] p-6">
+              <div className="mb-3 flex flex-wrap items-center gap-2">
                 <span className={`rounded px-2 py-1 font-display text-[0.6rem] font-bold uppercase tracking-wider ${platform.className}`}>
                   {platform.label}
                 </span>
                 {streamer.avg_viewers != null ? (
-                  <span className="text-xs font-mono text-[var(--muted)]">~{streamer.avg_viewers.toLocaleString()} avg viewers</span>
+                  <span className="rounded bg-[var(--bg3)] px-2 py-1 text-xs font-mono text-[var(--muted)]">~{streamer.avg_viewers.toLocaleString()} viewers</span>
                 ) : null}
               </div>
-              <h3 className="font-display text-lg font-bold uppercase text-[var(--text)]">{streamer.name ?? 'Unnamed Streamer'}</h3>
-              <p className="mt-2 text-sm text-[var(--muted)]">{streamer.description ?? 'No description provided.'}</p>
-              <div className="mt-3 flex flex-wrap gap-2">
+              <h3 className="font-display text-lg font-bold text-[var(--text)]">{streamer.name ?? 'Unnamed Streamer'}</h3>
+              <p className="mt-3 text-sm leading-relaxed text-[#8888aa]">{streamer.description ?? 'No description provided.'}</p>
+              <div className="mt-4 flex flex-wrap gap-2">
                 {(streamer.languages ?? []).map((language) => (
                   <span key={language} className="rounded bg-[var(--bg3)] px-2 py-1 text-[0.65rem] font-semibold uppercase tracking-wide text-[var(--muted)]">
                     {language}
                   </span>
                 ))}
               </div>
-              <div className="mt-3 flex flex-wrap items-center gap-3">
+              <div className="mt-6 flex flex-wrap items-center gap-4">
                 {streamer.channel_url ? (
                   <a
                     href={streamer.channel_url}
@@ -101,6 +103,15 @@ function StreamerSection({
           )
         })}
       </div>
+      {streamers.length > 4 ? (
+        <button
+          type="button"
+          onClick={() => setShowAll((prev) => !prev)}
+          className="mt-8 rounded border border-[var(--border)] px-4 py-2 text-sm font-semibold text-[var(--muted)] hover:text-[var(--text)]"
+        >
+          {showAll ? 'Show fewer streamers' : `Show all ${streamers.length} streamers`}
+        </button>
+      ) : null}
     </section>
   )
 }
@@ -119,7 +130,7 @@ export default function LiveHubBoard({ streamers }: { streamers: Streamer[] }) {
 
   return (
     <>
-      <div className="mb-5 flex flex-wrap gap-2">
+      <div className="mb-8 flex flex-wrap gap-3">
         {PLATFORMS.map((entry) => (
           <button
             key={entry.key}

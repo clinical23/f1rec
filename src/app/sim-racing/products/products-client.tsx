@@ -152,7 +152,7 @@ export default function ProductsClient() {
 
   return (
     <main style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--text)' }}>
-      <section style={{ padding: '4rem 1.5rem 2rem', textAlign: 'center', borderBottom: '1px solid var(--border)', background: 'linear-gradient(180deg, rgba(232,0,45,0.06) 0%, transparent 100%)' }}>
+      <section style={{ padding: '5rem 1.5rem 3rem', textAlign: 'center', borderBottom: '1px solid var(--border)', background: 'linear-gradient(180deg, rgba(232,0,45,0.06) 0%, transparent 100%)' }}>
         <p style={{ fontFamily: 'var(--font-barlow-condensed, "Barlow Condensed", sans-serif)', textTransform: 'uppercase', letterSpacing: '0.2em', fontSize: '0.75rem', color: 'var(--accent, #e8002d)', marginBottom: '0.5rem' }}>
           Sim Racing Hardware
         </p>
@@ -164,8 +164,8 @@ export default function ProductsClient() {
         </p>
       </section>
 
-      <section style={{ maxWidth: '1200px', margin: '0 auto', padding: '1.5rem' }}>
-        <div style={{ marginBottom: '1.15rem' }}>
+      <section style={{ maxWidth: '1280px', margin: '0 auto', padding: '4rem 1.5rem' }}>
+        <div style={{ marginBottom: '2rem' }}>
           <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: '22px', color: 'var(--text)', marginBottom: '6px' }}>
             Trusted <span style={{ color: 'var(--accent)' }}>Brands</span>
           </h2>
@@ -201,7 +201,7 @@ export default function ProductsClient() {
           </div>
         </div>
 
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '1rem' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem', marginBottom: '2rem' }}>
           <p style={{ margin: 0, color: 'var(--muted)', fontSize: '0.82rem' }}>
             {products.length} products from {new Set(products.map((p) => p.brand).filter(Boolean)).size} brands
           </p>
@@ -220,7 +220,7 @@ export default function ProductsClient() {
           </div>
         </div>
 
-        <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap', marginBottom: '1.25rem' }}>
+        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '2rem' }}>
           {CATEGORY_PILLS.map((pill) => (
             <button key={pill.value} onClick={() => { playSound('click'); setCategory(pill.value) }} style={{ padding: '0.45rem 0.8rem', fontSize: '0.75rem', fontFamily: 'var(--font-barlow-condensed)', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600, border: '1px solid', borderColor: category === pill.value ? 'var(--accent)' : 'var(--border)', background: category === pill.value ? 'rgba(232,0,45,0.15)' : 'transparent', color: category === pill.value ? 'var(--accent)' : 'var(--muted)', borderRadius: '4px', cursor: 'pointer' }}>
               {pill.label}
@@ -235,9 +235,9 @@ export default function ProductsClient() {
             <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
           </div>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(290px, 1fr))', gap: '0.75rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(290px, 1fr))', gap: '1.5rem' }}>
             {filteredAndSorted.map((product) => (
-              <div key={product.id} style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: '8px', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+              <div key={product.id} style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: '8px', padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '0.5rem' }}>
                   <span style={{ fontFamily: 'var(--font-barlow-condensed)', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--muted)', fontSize: '0.68rem' }}>
                     {product.brand || 'Unknown brand'}

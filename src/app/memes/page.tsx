@@ -330,7 +330,7 @@ export default function MemesPage() {
 
   return (
     <main style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--text)' }}>
-      <section style={{ padding: '4rem 1.5rem 2rem', textAlign: 'center', borderBottom: '1px solid var(--border)', background: 'linear-gradient(180deg, rgba(232,0,45,0.08) 0%, transparent 100%)' }}>
+      <section style={{ padding: '5rem 1.5rem 3rem', textAlign: 'center', borderBottom: '1px solid var(--border)', background: 'linear-gradient(180deg, rgba(232,0,45,0.08) 0%, transparent 100%)' }}>
         <p style={{ fontFamily: 'var(--font-barlow-condensed, "Barlow Condensed", sans-serif)', textTransform: 'uppercase', letterSpacing: '0.2em', fontSize: '0.75rem', color: 'var(--accent, #e8002d)', marginBottom: '0.5rem' }}>
           F1Rec Culture
         </p>
@@ -342,8 +342,8 @@ export default function MemesPage() {
         </p>
       </section>
 
-      <section style={{ maxWidth: '1200px', margin: '0 auto', padding: '1.6rem 1.5rem 2.8rem' }}>
-        <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap', marginBottom: '1rem' }}>
+      <section style={{ maxWidth: '1280px', margin: '0 auto', padding: '4rem 1.5rem 5rem' }}>
+        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '2rem' }}>
           {categories.map((cat) => (
             <button
               key={cat}
@@ -375,13 +375,13 @@ export default function MemesPage() {
             <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
           </div>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '0.85rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '1.5rem' }}>
             {visible.map((meme) => {
               const title = meme.title || meme.name || 'Untitled meme'
               const category = normalizeCategory(meme.category)
               const href = meme.url || meme.source_url || null
               return (
-                <article key={meme.id} style={{ background: 'transparent', border: '1px solid var(--border)', borderRadius: '10px', overflow: 'hidden', display: 'flex', flexDirection: 'column', padding: '0.5rem' }}>
+                <article key={meme.id} style={{ background: 'transparent', border: '1px solid var(--border)', borderRadius: '10px', overflow: 'hidden', display: 'flex', flexDirection: 'column', padding: '1rem' }}>
                   <MemeVisual meme={meme} />
                   <div style={{ padding: '0.65rem 0.25rem 0.2rem', display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>

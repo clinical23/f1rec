@@ -100,7 +100,7 @@ export default function TeamsPage() {
         </p>
       </section>
 
-      <section style={{ maxWidth: '1400px', margin: '0 auto', padding: '1.5rem' }}>
+      <section style={{ maxWidth: '1400px', margin: '0 auto', padding: '4rem 1.5rem' }}>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', alignItems: 'center', marginBottom: '1.5rem' }}>
           <div style={{ position: 'relative', flex: '1 1 300px', minWidth: '200px' }}>
             <input type="text" placeholder="Search teams..." value={search}
@@ -146,8 +146,8 @@ export default function TeamsPage() {
                   <tr key={t.id} style={{ borderBottom: '1px solid var(--border)' }}
                     onMouseEnter={e => (e.currentTarget.style.background = 'var(--bg2)')}
                     onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
-                    <td style={{ padding: '0.6rem 1rem', color: 'var(--muted)', fontSize: '0.75rem', fontFamily: 'var(--font-jetbrains, monospace)' }}>{i + 1}</td>
-                    <td style={{ padding: '0.6rem 0.75rem' }}>
+                    <td style={{ padding: '0.85rem 1rem', color: 'var(--muted)', fontSize: '0.75rem', fontFamily: 'var(--font-jetbrains, monospace)' }}>{i + 1}</td>
+                    <td style={{ padding: '0.85rem 0.75rem' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
                         {t.primary_color && (
                           <span style={{ display: 'inline-block', width: '10px', height: '10px', borderRadius: '2px', background: t.primary_color, flexShrink: 0 }} />
@@ -162,11 +162,11 @@ export default function TeamsPage() {
                         </div>
                       </div>
                     </td>
-                    <td style={{ padding: '0.6rem 0.75rem', textAlign: 'right' }}>
+                    <td style={{ padding: '0.85rem 0.75rem', textAlign: 'right' }}>
                       {t.championships > 0 ? <span style={{ color: 'var(--gold, #f5c842)', fontWeight: 700, fontFamily: 'var(--font-barlow-condensed)' }}>{t.championships}×🏆</span> : <span style={{ color: 'var(--muted)', fontSize: '0.8rem' }}>—</span>}
                     </td>
-                    <td style={{ padding: '0.6rem 0.75rem', textAlign: 'right', fontFamily: 'var(--font-jetbrains, monospace)', color: 'var(--muted)' }}>{t.founded_year || '—'}</td>
-                    <td style={{ padding: '0.6rem 0.75rem', textAlign: 'left', color: 'var(--muted)', fontSize: '0.82rem' }}>{t.base || '—'}</td>
+                    <td style={{ padding: '0.85rem 0.75rem', textAlign: 'right', fontFamily: 'var(--font-jetbrains, monospace)', color: 'var(--muted)' }}>{t.founded_year || '—'}</td>
+                    <td style={{ padding: '0.85rem 0.75rem', textAlign: 'left', color: 'var(--muted)', fontSize: '0.82rem' }}>{t.base || '—'}</td>
                   </tr>
                 ))}
               </tbody>

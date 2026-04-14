@@ -86,13 +86,13 @@ export default function CalendarBoard({
 
   return (
     <>
-      <section className="mb-12 space-y-4">
+      <section className="mb-16 space-y-6">
         {races.map((race) => {
           const isPast = race.raceDate ? new Date(race.raceDate) < today : false
           const until = race.raceDate ? daysUntil(race.raceDate) : null
           const isNext = nextRaceId === race.id
           return (
-            <article key={race.id} className="rounded-xl border border-[var(--border)] bg-[var(--bg2)] p-4 md:p-5">
+            <article key={race.id} className="rounded-xl border border-[var(--border)] bg-[var(--bg2)] p-6">
               <div className="flex flex-wrap items-center gap-2">
                 <span className="font-display text-xs font-bold uppercase tracking-wider text-[var(--muted)]">Round {race.round}</span>
                 {isNext ? (
@@ -130,11 +130,11 @@ export default function CalendarBoard({
         })}
       </section>
 
-      <section>
-        <h2 className="mb-4 font-display text-xl font-extrabold uppercase tracking-wide text-[var(--text)]">
+      <section className="border-t border-[#2a2a3a] pt-12">
+        <h2 className="mb-8 font-display text-xl font-extrabold tracking-wide text-[var(--text)]">
           Where to <span className="text-[var(--accent)]">Watch</span>
         </h2>
-        <div className="space-y-3">
+        <div className="space-y-6">
           {groupedBroadcasts.map(([country, rows]) => {
             const isOpen = openCountries[country] ?? false
             return (
@@ -150,7 +150,7 @@ export default function CalendarBoard({
                   <span className="text-xs text-[var(--muted)]">{isOpen ? 'Hide' : 'Show'}</span>
                 </button>
                 {isOpen ? (
-                  <div className="space-y-2 border-t border-[var(--border)] px-4 py-3">
+                  <div className="space-y-4 border-t border-[var(--border)] px-4 py-4">
                     {rows.map((row) => (
                       <div key={row.id} className="rounded border border-[var(--border)] bg-[var(--bg3)] px-3 py-2">
                         <div className="flex flex-wrap items-center gap-2">

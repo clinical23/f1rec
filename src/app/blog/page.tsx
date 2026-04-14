@@ -90,14 +90,14 @@ export default async function BlogIndexPage() {
 
   return (
     <main style={{ fontFamily: font.body, background: tokens.bg, color: tokens.text, minHeight: '100vh' }}>
-      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '32px 24px 56px' }}>
+      <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '64px 24px 80px' }}>
         <section
           style={{
             border: `1px solid ${tokens.border}`,
             borderRadius: '12px',
             background: `linear-gradient(135deg, ${tokens.bg} 0%, ${tokens.bg2} 45%, #171722 100%)`,
-            padding: '32px 28px',
-            marginBottom: '20px',
+            padding: '40px 32px',
+            marginBottom: '32px',
           }}
         >
           <h1 style={{ margin: 0, fontFamily: font.display, fontWeight: 900, fontSize: 'clamp(38px,7vw,74px)', lineHeight: 0.95, letterSpacing: '-1px' }}>
@@ -108,7 +108,7 @@ export default async function BlogIndexPage() {
           </p>
         </section>
 
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginBottom: '24px' }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginBottom: '32px' }}>
           {['All', 'Race Reviews', 'Driver Analysis', 'Season Preview', 'History', 'Tech'].map((pill, idx) => (
             <button
               key={pill}
@@ -141,8 +141,8 @@ export default async function BlogIndexPage() {
               border: `1px solid ${tokens.border}`,
               borderRadius: '12px',
               background: tokens.bg2,
-              padding: '24px',
-              marginBottom: '20px',
+              padding: '32px',
+              marginBottom: '32px',
             }}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', gap: '12px', flexWrap: 'wrap', marginBottom: '12px' }}>
@@ -158,7 +158,7 @@ export default async function BlogIndexPage() {
           </Link>
         )}
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '14px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '24px' }}>
           {rest.map((post) => {
             const meta = categoryMeta[post.category ?? ''] ?? { label: 'Analysis', color: tokens.muted, bg: tokens.bg2 }
             const related = post.related_driver_slug ?? post.related_race_slug
@@ -173,7 +173,7 @@ export default async function BlogIndexPage() {
                   border: `1px solid ${tokens.border}`,
                   borderRadius: '10px',
                   background: tokens.bg2,
-                  padding: '16px',
+                  padding: '24px',
                   transition: 'border-color 160ms ease',
                 }}
               >

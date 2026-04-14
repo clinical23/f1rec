@@ -56,8 +56,8 @@ export default function LeaderboardsClient({
         <p className="section-eyebrow mb-2 text-[var(--accent)]">F1 Database</p>
         <h1>All-Time Records</h1>
       </section>
-      <section className="mx-auto max-w-6xl px-4 py-10 md:px-6">
-        <div className="mb-6 flex gap-2">
+      <section className="mx-auto max-w-7xl px-6 py-16">
+        <div className="mb-8 flex gap-3">
           {(['drivers', 'constructors', 'records'] as Tab[]).map((key) => (
             <button key={key} onClick={() => setTab(key)} className={`category-pill rounded-md border px-3 py-2 ${tab === key ? 'border-[var(--accent)] text-[var(--accent)]' : 'border-[var(--border)] text-[var(--muted)]'}`}>
               {key}
@@ -120,7 +120,7 @@ export default function LeaderboardsClient({
         )}
 
         {tab === 'records' && (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {records.map((r) => (
               <div key={r.title} className="card p-6">
                 <p className="section-eyebrow mb-2 text-[var(--accent)]">{r.title}</p>

@@ -108,7 +108,7 @@ export default function ReviewsPage() {
           url: `https://f1rec.com/sim-racing/reviews#${r.slug || r.id}`,
         })),
       }} />
-      <section style={{ padding: '4rem 1.5rem 2rem', textAlign: 'center', borderBottom: '1px solid var(--border)', background: 'linear-gradient(180deg, rgba(232,0,45,0.06) 0%, transparent 100%)' }}>
+      <section style={{ padding: '5rem 1.5rem 3rem', textAlign: 'center', borderBottom: '1px solid var(--border)', background: 'linear-gradient(180deg, rgba(232,0,45,0.06) 0%, transparent 100%)' }}>
         <p style={{ fontFamily: 'var(--font-barlow-condensed, "Barlow Condensed", sans-serif)', textTransform: 'uppercase', letterSpacing: '0.2em', fontSize: '0.75rem', color: 'var(--accent, #e8002d)', marginBottom: '0.5rem' }}>Sim Racing</p>
         <h1 style={{ fontFamily: 'var(--font-barlow-condensed, "Barlow Condensed", sans-serif)', fontSize: 'clamp(2.5rem, 5vw, 4rem)', fontWeight: 800, margin: 0, lineHeight: 1.1 }}>
           Hardware<br /><span style={{ color: 'var(--accent, #e8002d)' }}>Reviews</span>
@@ -118,8 +118,8 @@ export default function ReviewsPage() {
         </p>
       </section>
 
-      <section style={{ maxWidth: '1200px', margin: '0 auto', padding: '1.5rem' }}>
-        <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap', marginBottom: '1.5rem' }}>
+      <section style={{ maxWidth: '1280px', margin: '0 auto', padding: '4rem 1.5rem' }}>
+        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '2rem' }}>
           {CATEGORIES.map(c => (
             <button key={c.value} onClick={() => setFilter(c.value)}
               style={{ padding: '0.45rem 0.8rem', fontSize: '0.75rem', fontFamily: 'var(--font-barlow-condensed)', textTransform: 'uppercase', letterSpacing: '0.05em', fontWeight: 600, border: '1px solid', borderColor: filter === c.value ? 'var(--accent)' : 'var(--border)', background: filter === c.value ? 'rgba(232,0,45,0.15)' : 'transparent', color: filter === c.value ? 'var(--accent)' : 'var(--muted)', borderRadius: '4px', cursor: 'pointer' }}>
@@ -135,12 +135,12 @@ export default function ReviewsPage() {
             <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
           </div>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '0.75rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '1.5rem' }}>
             {filtered.map(r => {
               const catStyle = categoryColors[r.category] ?? { bg: 'var(--bg3)', text: 'var(--muted)' }
               return (
                 <Link key={r.id} href={`/sim-racing/reviews/${r.slug}`}
-                  style={{ textDecoration: 'none', color: 'inherit', display: 'flex', flexDirection: 'column', padding: '1.25rem', background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: '8px', transition: 'border-color 0.2s' }}
+                  style={{ textDecoration: 'none', color: 'inherit', display: 'flex', flexDirection: 'column', padding: '1.5rem', background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: '8px', transition: 'border-color 0.2s' }}
                   onMouseEnter={e => (e.currentTarget.style.borderColor = 'var(--accent)')}
                   onMouseLeave={e => (e.currentTarget.style.borderColor = 'var(--border)')}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '0.75rem', gap: '0.5rem' }}>

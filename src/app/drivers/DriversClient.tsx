@@ -60,7 +60,7 @@ export default function DriversClient({ initialDrivers }: { initialDrivers: Driv
         <p className="mx-auto mt-3 max-w-xl text-[var(--muted)]">{initialDrivers.length} drivers from 1950 to today.</p>
       </section>
 
-      <section className="mx-auto max-w-6xl px-4 py-10 md:px-6">
+      <section className="mx-auto max-w-7xl px-6 py-16">
         <input
           type="text"
           placeholder="Search drivers..."
@@ -83,17 +83,17 @@ export default function DriversClient({ initialDrivers }: { initialDrivers: Driv
             <tbody>
               {filtered.map((driver) => (
                 <tr key={driver.id} className="border-t border-[var(--border)]">
-                  <td className="px-3 py-3">
+                  <td className="px-3 py-4">
                     <Link href={`/drivers/${driver.slug}`} className="font-semibold text-[var(--text)] no-underline hover:text-[var(--accent)]">
                       {driver.full_name}
                     </Link>
                   </td>
-                  <td className="px-3 py-3 text-right font-mono">{driver.championships}</td>
-                  <td className="px-3 py-3 text-right font-mono">{driver.career_wins}</td>
-                  <td className="px-3 py-3 text-right font-mono">{driver.career_podiums}</td>
-                  <td className="px-3 py-3 text-right font-mono">{driver.career_poles}</td>
-                  <td className="px-3 py-3 text-right font-mono">{Number(driver.career_points).toLocaleString()}</td>
-                  <td className="px-3 py-3 text-right font-mono">{driver.career_starts}</td>
+                  <td className="px-3 py-4 text-right font-mono">{driver.championships}</td>
+                  <td className="px-3 py-4 text-right font-mono">{driver.career_wins}</td>
+                  <td className="px-3 py-4 text-right font-mono">{driver.career_podiums}</td>
+                  <td className="px-3 py-4 text-right font-mono">{driver.career_poles}</td>
+                  <td className="px-3 py-4 text-right font-mono">{Number(driver.career_points).toLocaleString()}</td>
+                  <td className="px-3 py-4 text-right font-mono">{driver.career_starts}</td>
                 </tr>
               ))}
             </tbody>

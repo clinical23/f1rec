@@ -82,7 +82,7 @@ export default function RacesPage() {
 
   return (
     <main style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--text)' }}>
-      <section style={{ padding: '4rem 1.5rem 2rem', textAlign: 'center', borderBottom: '1px solid var(--border)', background: 'linear-gradient(180deg, rgba(232,0,45,0.06) 0%, transparent 100%)' }}>
+      <section style={{ padding: '5rem 1.5rem 3rem', textAlign: 'center', borderBottom: '1px solid var(--border)', background: 'linear-gradient(180deg, rgba(232,0,45,0.06) 0%, transparent 100%)' }}>
         <p style={{ fontFamily: 'var(--font-barlow-condensed, "Barlow Condensed", sans-serif)', textTransform: 'uppercase', letterSpacing: '0.2em', fontSize: '0.75rem', color: 'var(--accent, #e8002d)', marginBottom: '0.5rem' }}>F1 Database</p>
         <h1 style={{ fontFamily: 'var(--font-barlow-condensed, "Barlow Condensed", sans-serif)', fontSize: 'clamp(2.5rem, 5vw, 4rem)', fontWeight: 800, margin: 0, lineHeight: 1.1 }}>
           Every Race.<br /><span style={{ color: 'var(--accent, #e8002d)' }}>Every Winner.</span>
@@ -92,7 +92,7 @@ export default function RacesPage() {
         </p>
       </section>
 
-      <section style={{ maxWidth: '1400px', margin: '0 auto', padding: '1.5rem' }}>
+      <section style={{ maxWidth: '1400px', margin: '0 auto', padding: '4rem 1.5rem' }}>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', alignItems: 'center', marginBottom: '1.5rem' }}>
           <div style={{ position: 'relative', flex: '1 1 300px', minWidth: '200px' }}>
             <input type="text" placeholder="Search races, winners, or years..." value={search}
@@ -110,13 +110,13 @@ export default function RacesPage() {
             <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
           </div>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
             {grouped.map(([year, yearRaces]) => {
               const expanded = expandedYears.has(year)
               return (
                 <div key={year} style={{ border: '1px solid var(--border)', borderRadius: '8px', overflow: 'hidden' }}>
                   <button onClick={() => toggleYear(year)}
-                    style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.85rem 1.25rem', background: 'var(--bg2)', border: 'none', cursor: 'pointer', color: 'var(--text)' }}>
+                    style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1rem 1.25rem', background: 'var(--bg2)', border: 'none', cursor: 'pointer', color: 'var(--text)' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                       <span style={{ fontFamily: 'var(--font-barlow-condensed)', fontSize: '1.5rem', fontWeight: 800, color: expanded ? 'var(--accent)' : 'var(--text)' }}>{year}</span>
                       <span style={{ fontFamily: 'var(--font-barlow-condensed)', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--muted)', fontWeight: 600 }}>{yearRaces.length} race{yearRaces.length !== 1 ? 's' : ''}</span>
@@ -138,15 +138,15 @@ export default function RacesPage() {
                             <tr key={`${race.season_year}-${race.round}`} style={{ borderBottom: '1px solid var(--border)' }}
                               onMouseEnter={e => (e.currentTarget.style.background = 'var(--bg2)')}
                               onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
-                              <td style={{ padding: '0.55rem 1rem', textAlign: 'center', fontFamily: 'var(--font-jetbrains, monospace)', fontSize: '0.75rem', color: 'var(--muted)' }}>R{race.round}</td>
-                              <td style={{ padding: '0.55rem 0.75rem' }}>
+                              <td style={{ padding: '0.75rem 1rem', textAlign: 'center', fontFamily: 'var(--font-jetbrains, monospace)', fontSize: '0.75rem', color: 'var(--muted)' }}>R{race.round}</td>
+                              <td style={{ padding: '0.75rem 0.75rem' }}>
                                 <Link href={`/races/${race.race_slug}`} style={{ color: 'var(--text)', textDecoration: 'none', fontWeight: 600 }}
                                   onMouseEnter={e => (e.currentTarget.style.color = 'var(--accent)')}
                                   onMouseLeave={e => (e.currentTarget.style.color = 'var(--text)')}>
                                   {race.race_name}
                                 </Link>
                               </td>
-                              <td style={{ padding: '0.55rem 0.75rem', color: 'var(--text)', fontWeight: 500 }}>
+                              <td style={{ padding: '0.75rem 0.75rem', color: 'var(--text)', fontWeight: 500 }}>
                                 <span style={{ color: 'var(--gold, #f5c842)', marginRight: '0.4rem', fontSize: '0.8rem' }}>P1</span>
                                 {race.driver_name}
                               </td>

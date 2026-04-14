@@ -53,7 +53,7 @@ export default function PaddockBoard({ items }: { items: PaddockItem[] }) {
 
   return (
     <>
-      <div className="mb-5 flex flex-wrap gap-2">
+      <div className="mb-8 flex flex-wrap gap-3">
         {TABS.map((entry) => (
           <button
             key={entry.key}
@@ -71,14 +71,14 @@ export default function PaddockBoard({ items }: { items: PaddockItem[] }) {
       </div>
 
       {visible.length > 0 ? (
-        <div className="grid gap-4 md:grid-cols-2">
+        <div className="grid gap-6 md:grid-cols-2">
           {visible.map((item) => {
             const isTed = normalizeCategory(item.category) === 'teds-notebook'
             const isOpen = expanded[item.id] === true
             return (
               <article
                 key={item.id}
-                className={`rounded-xl border bg-[var(--bg2)] p-4 ${
+                className={`rounded-xl border bg-[var(--bg2)] p-6 ${
                   isTed
                     ? 'border-[color-mix(in_srgb,var(--gold)_60%,transparent)]'
                     : 'border-[var(--border)]'
@@ -95,7 +95,7 @@ export default function PaddockBoard({ items }: { items: PaddockItem[] }) {
                     {item.category ?? 'paddock'}
                   </span>
                 </div>
-                <h3 className="font-display text-lg font-bold uppercase text-[var(--text)]">{item.title ?? 'Untitled'}</h3>
+                <h3 className="font-display text-lg font-bold text-[var(--text)]">{item.title ?? 'Untitled'}</h3>
                 {item.youtube_id ? (
                   <a
                     href={`https://youtube.com/watch?v=${item.youtube_id}`}
