@@ -337,8 +337,9 @@ async function loadHomePageData() {
     let recentRaces2026 = empty.recentRaces2026
     const racesRes = await supabase
       .from('races')
-      .select('name, slug, round, race_date, circuit_slug')
+      .select('name, slug, round, race_date, circuit_slug, winner_driver_id')
       .eq('season_year', 2026)
+      .not('winner_driver_id', 'is', null)
       .order('round', { ascending: false })
       .limit(3)
 
@@ -348,6 +349,7 @@ async function loadHomePageData() {
       round: number | null
       race_date: string | null
       circuit_slug: string | null
+      winner_driver_id: string | null
     }>
 
     const circuitSlugs = [...new Set(raceList.map((r) => r.circuit_slug).filter(Boolean))] as string[]
@@ -725,13 +727,6 @@ export default async function HomePage() {
           <EmailCapture source="homepage" />
         </div>
 
-        {/* Ad placeholder */}
-        <div className="mb-12">
-          <p className="mb-1 text-center font-mono text-[10px] uppercase tracking-widest text-[var(--muted)] opacity-70">Advertisement</p>
-          <div className="flex h-[90px] items-center justify-center rounded-md border border-dashed border-[color-mix(in_srgb,var(--border)_60%,transparent)] bg-transparent font-mono text-xs text-[var(--muted)] opacity-50">
-            728 × 90 — Ad space
-          </div>
-        </div>
       </div>
     </main>
   )

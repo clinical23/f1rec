@@ -52,6 +52,12 @@ function cleanTitle(title: string): string {
   return title.replace(/^Title:\s*/i, '')
 }
 
+function formatSlug(slug: string): string {
+  return slug
+    .replace(/-/g, ' ')
+    .replace(/\b\w/g, (char) => char.toUpperCase())
+}
+
 export async function generateMetadata(): Promise<Metadata> {
   return {
     title: 'F1 Blog — Analysis, Previews & History | F1Rec',
@@ -156,6 +162,7 @@ export default async function BlogIndexPage() {
           {rest.map((post) => {
             const meta = categoryMeta[post.category ?? ''] ?? { label: 'Analysis', color: tokens.muted, bg: tokens.bg2 }
             const related = post.related_driver_slug ?? post.related_race_slug
+            const relatedLabel = related ? formatSlug(related) : null
             return (
               <Link
                 key={post.slug}
@@ -179,9 +186,9 @@ export default async function BlogIndexPage() {
                   <span>{formatDate(post.published_at)}</span>
                   <span>{readingTime(post)} min read</span>
                 </div>
-                {related && (
-                  <div style={{ marginTop: '10px', fontSize: '11px', color: tokens.accent, textTransform: 'uppercase', letterSpacing: '0.6px', fontWeight: 700 }}>
-                    Related: {related}
+                {relatedLabel && (
+                  <div style={{ marginTop: '10px', fontSize: '12px', color: tokens.accent, fontWeight: 600 }}>
+                    Related: {relatedLabel}
                   </div>
                 )}
               </Link>
