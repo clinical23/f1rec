@@ -431,71 +431,70 @@ export default async function HomePage() {
 
   return (
     <main className="min-h-screen bg-[var(--bg)] text-[var(--text)]">
-      {/* Hero */}
-      <section className="relative overflow-hidden bg-[radial-gradient(ellipse_at_center_top,rgba(232,0,45,0.08),transparent_60%)] px-6 py-16 text-center md:py-20">
-        <p className="font-display mb-4 inline-block rounded-full border border-[color-mix(in_srgb,var(--accent)_30%,transparent)] px-3 py-1 text-[11px] font-bold uppercase tracking-[0.2em] text-[var(--accent)]">
-          The F1 database
-        </p>
-        <h1
-          className="font-display mx-auto max-w-4xl text-[clamp(2.25rem,6vw,4rem)] font-black leading-[0.95] tracking-tight hero-title"
-          style={{ color: '#e8e8f0' }}
-        >
-          Every Stat. Every Race. Every Era.
-        </h1>
-        <p className="mx-auto mt-5 max-w-xl text-[17px] text-[var(--muted)]">{heroSubtitle}</p>
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-          <Link
-            href="/drivers"
-            className="font-display rounded border border-transparent bg-[var(--accent)] px-7 py-3 text-sm font-bold uppercase tracking-wide text-white no-underline transition-opacity hover:opacity-90"
+      <div className="mx-auto max-w-7xl px-6">
+        {/* Hero */}
+        <section className="relative overflow-hidden bg-[radial-gradient(ellipse_at_center_top,rgba(232,0,45,0.08),transparent_60%)] py-16 text-center md:py-20">
+          <p className="font-display mb-4 inline-block rounded-full border border-[color-mix(in_srgb,var(--accent)_30%,transparent)] px-3 py-1 text-[11px] font-bold uppercase tracking-[0.2em] text-[var(--accent)]">
+            The F1 database
+          </p>
+          <h1
+            className="font-display mx-auto max-w-4xl text-[clamp(2.25rem,6vw,4rem)] font-black leading-[0.95] tracking-tight hero-title"
+            style={{ color: '#e8e8f0' }}
           >
-            Explore Drivers
-          </Link>
-          <Link
-            href="/compare"
-            className="font-display rounded border border-[var(--border)] bg-transparent px-7 py-3 text-sm font-bold uppercase tracking-wide text-[var(--text)] no-underline transition-colors hover:border-[var(--accent)] hover:text-[var(--accent)]"
-          >
-            Compare Head-to-Head
-          </Link>
-        </div>
-      </section>
-
-      {/* Stats bar */}
-      <div className="mt-8 grid grid-cols-2 border-y border-[var(--border)] bg-[var(--bg2)] md:grid-cols-4">
-        {[
-          { num: counts.drivers.toLocaleString(), label: 'Drivers' },
-          { num: counts.results.toLocaleString(), label: 'Results' },
-          { num: counts.seasons.toLocaleString(), label: 'Seasons' },
-          { num: counts.teams.toLocaleString(), label: 'Teams' },
-        ].map((stat, i) => (
-          <div
-            key={stat.label}
-            className={`px-4 py-5 text-center md:px-6 ${i % 2 === 0 ? 'border-r border-[var(--border)] md:border-r' : ''} ${i < 2 ? 'border-b border-[var(--border)] md:border-b-0' : ''} md:border-r md:border-[var(--border)] md:[&:nth-child(4)]:border-r-0`}
-          >
-            <div className="font-mono text-3xl font-black leading-none text-[var(--text)] md:text-4xl">{stat.num}</div>
-            <div className="mx-auto mt-2 h-px w-8 bg-[var(--border)]" />
-            <div className="mt-2 text-[11px] font-semibold uppercase tracking-wider text-[var(--muted)]">{stat.label}</div>
+            Every Stat. Every Race. Every Era.
+          </h1>
+          <p className="mx-auto mt-5 max-w-xl text-[17px] text-[var(--muted)]">{heroSubtitle}</p>
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+            <Link
+              href="/drivers"
+              className="rounded-lg bg-[#e8002d] px-6 py-3 text-sm font-semibold text-white no-underline transition-opacity hover:opacity-90"
+            >
+              Explore Drivers
+            </Link>
+            <Link
+              href="/compare"
+              className="rounded-lg border border-[#2a2a3a] px-6 py-3 text-sm font-semibold text-[#e8e8f0] no-underline transition-colors hover:border-[var(--accent)] hover:text-[var(--accent)]"
+            >
+              Compare Head-to-Head
+            </Link>
           </div>
-        ))}
-      </div>
+        </section>
 
-      <div className="mx-auto max-w-6xl px-6 py-10 md:py-14">
+        {/* Stats bar */}
+        <section className="py-16">
+          <div className="rounded-xl border border-[#2a2a3a] bg-[var(--bg2)] py-6">
+            <div className="flex flex-wrap items-center justify-center gap-10 md:gap-12">
+              {[
+                { num: counts.drivers.toLocaleString(), label: 'Drivers' },
+                { num: counts.results.toLocaleString(), label: 'Results' },
+                { num: counts.seasons.toLocaleString(), label: 'Seasons' },
+                { num: counts.teams.toLocaleString(), label: 'Teams' },
+              ].map((stat, i) => (
+                <div key={stat.label} className={`px-4 text-center ${i < 3 ? 'md:border-r md:border-[#2a2a3a]' : ''}`}>
+                  <div className="font-mono text-3xl font-black leading-none text-[var(--text)] md:text-4xl">{stat.num}</div>
+                  <div className="mx-auto mt-2 h-px w-8 bg-[var(--border)]" />
+                  <div className="mt-2 text-[11px] font-semibold uppercase tracking-wider text-[var(--muted)]">{stat.label}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
         {/* Reigning champion + 2026 live */}
-        <div className="mb-12 grid gap-8 lg:grid-cols-3">
-          <section className="rounded-lg border border-[var(--border)] bg-[var(--bg2)] lg:col-span-1">
-            <div className="border-b border-[var(--border)] bg-[var(--bg3)] px-4 py-3">
+        <section className="py-16">
+          <div className="grid gap-8 lg:grid-cols-3">
+            <section className="rounded-xl border border-[#2a2a3a] bg-[#111118] p-8 text-center lg:col-span-1">
               <h2 className="font-display text-sm font-extrabold uppercase tracking-wider text-[var(--text)]">
                 Reigning champion · 2025
               </h2>
-            </div>
-            <div className="p-6 text-center">
-              <div className="mb-3 text-4xl" aria-hidden>
+              <div className="mt-4 text-4xl" aria-hidden>
                 🏆
               </div>
               {champion2025 ? (
                 <>
                   <Link
                     href={`/drivers/${champion2025.slug}`}
-                    className="font-display text-2xl font-black uppercase text-[var(--text)] no-underline hover:text-[var(--accent)]"
+                    className="mt-3 block font-display text-2xl font-black uppercase text-[var(--text)] no-underline hover:text-[var(--accent)]"
                   >
                     {champion2025.fullName}
                   </Link>
@@ -511,7 +510,7 @@ export default async function HomePage() {
                       <p className="mt-2 text-sm text-[var(--muted)]">{champion2025.teamName}</p>
                     )
                   ) : null}
-                  <dl className="mt-4 grid grid-cols-3 gap-2 text-center font-mono text-sm">
+                  <dl className="mt-6 grid grid-cols-3 gap-2 text-center font-mono text-sm">
                     <div>
                       <dt className="text-[10px] uppercase tracking-wider text-[var(--muted)]">Wins</dt>
                       <dd className="font-semibold text-[var(--text)]">{champion2025.wins}</dd>
@@ -527,24 +526,23 @@ export default async function HomePage() {
                   </dl>
                 </>
               ) : (
-                <p className="text-sm text-[var(--muted)]">2025 champion data unavailable.</p>
+                <p className="mt-4 text-sm text-[var(--muted)]">2025 champion data unavailable.</p>
               )}
-            </div>
-          </section>
+            </section>
 
-          <section className="lg:col-span-2">
-            <div className="mb-4 flex flex-wrap items-end justify-between gap-2">
-              <h2 className="font-display text-xl font-extrabold uppercase tracking-wide text-[var(--text)]">
-                2026 season <span className="text-[var(--accent)]">live</span>
-              </h2>
-              <Link
-                href={season2026Slug ? `/seasons/${season2026Slug}` : '/seasons'}
-                className="text-xs font-semibold uppercase tracking-wide text-[var(--accent)] no-underline hover:underline"
-              >
-                Full season →
-              </Link>
-            </div>
-            <div className="grid gap-6 md:grid-cols-2">
+            <section className="rounded-xl border border-[#2a2a3a] bg-[#111118] p-8 lg:col-span-2">
+              <div className="mb-6 flex flex-wrap items-end justify-between gap-2">
+                <h2 className="font-display text-xl font-extrabold uppercase tracking-wide text-[var(--text)]">
+                  2026 season <span className="text-[var(--accent)]">live</span>
+                </h2>
+                <Link
+                  href={season2026Slug ? `/seasons/${season2026Slug}` : '/seasons'}
+                  className="text-xs font-semibold uppercase tracking-wide text-[var(--accent)] no-underline hover:underline"
+                >
+                  Full season →
+                </Link>
+              </div>
+              <div className="grid gap-6 md:grid-cols-2">
               <div className="rounded-lg border border-[var(--border)] bg-[var(--bg2)]">
                 <div className="border-b border-[var(--border)] px-4 py-2">
                   <h3 className="font-display text-xs font-bold tracking-wider text-[var(--muted)]">
@@ -615,10 +613,11 @@ export default async function HomePage() {
               </div>
             </div>
           </section>
-        </div>
+          </div>
+        </section>
 
         {/* Recent races */}
-        <section className="mb-12">
+        <section className="py-16">
           <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
             <h2 className="font-display text-xl font-extrabold text-[var(--text)]">
               Recent <span className="text-[var(--accent)]">races</span> · 2026
@@ -667,10 +666,12 @@ export default async function HomePage() {
           </div>
         </section>
 
-        <DidYouKnowWidget initialStat={randomStat} />
+        <section className="py-16">
+          <DidYouKnowWidget initialStat={randomStat} />
+        </section>
 
         {/* Quick links */}
-        <section className="mb-12">
+        <section className="py-16">
           <h2 className="mb-4 font-display text-xl font-extrabold text-[var(--text)]">
             Explore
           </h2>
@@ -700,7 +701,8 @@ export default async function HomePage() {
         </section>
 
         {/* Sim racing teaser */}
-        <section className="mb-12 rounded-xl border border-[var(--border)] border-t-4 border-t-[var(--accent)] bg-[radial-gradient(circle_at_top_right,rgba(232,0,45,0.22),transparent_50%),linear-gradient(120deg,var(--bg2),rgba(17,17,24,0.65))] p-8 text-center md:p-10">
+        <section className="py-16">
+          <div className="rounded-xl border border-[var(--border)] border-t-4 border-t-[var(--accent)] bg-[radial-gradient(circle_at_top_right,rgba(232,0,45,0.22),transparent_50%),linear-gradient(120deg,var(--bg2),rgba(17,17,24,0.65))] p-8 text-center md:p-10">
           <p className="mb-2 font-display text-[0.62rem] font-bold uppercase tracking-[0.14em] text-[var(--accent)]">
             Sim Racing Section
           </p>
@@ -716,12 +718,12 @@ export default async function HomePage() {
           >
             Open Sim Racing
           </Link>
+          </div>
         </section>
 
-        <div className="mb-12 max-w-3xl mx-auto">
+        <div className="max-w-3xl mx-auto py-16">
           <EmailCapture source="homepage" />
         </div>
-
       </div>
     </main>
   )
