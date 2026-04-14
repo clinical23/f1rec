@@ -68,7 +68,7 @@ function splitItems(text: string) {
   return text
     .split(/\r?\n|;/)
     .map((line) => line.trim())
-    .filter(Boolean)
+    .filter((line) => line.length > 0)
 }
 
 function parseTierMap(text: string) {
@@ -170,25 +170,61 @@ function MemeVisual({ meme }: { meme: MemeRow }) {
 
   if (format === 'comparison') {
     const lines = splitItems(body)
-    const mid = Math.ceil(lines.length / 2)
-    const left = lines.slice(0, mid)
-    const right = lines.slice(mid)
+    const labelled = lines
+      .map((line) => {
+        const parts = line.split(':')
+        if (parts.length < 2) return null
+        const header = parts[0].trim()
+        const value = parts.slice(1).join(':').trim()
+        if (!header || !value) return null
+        return { header, value }
+      })
+      .filter((entry): entry is { header: string; value: string } => entry != null)
+
+    const hasLabelledRows = labelled.length >= 2
+    const fallbackMid = Math.ceil(lines.length / 2)
+    const fallbackLeft = lines.slice(0, fallbackMid).filter((line) => line.trim().length > 0)
+    const fallbackRight = lines.slice(fallbackMid).filter((line) => line.trim().length > 0)
+
+    const leftHeader = hasLabelledRows ? labelled[0].header.toUpperCase() : 'SIDE A'
+    const rightHeader = hasLabelledRows ? labelled[1].header.toUpperCase() : 'SIDE B'
+    const left = hasLabelledRows
+      ? labelled.slice(0, Math.ceil(labelled.length / 2)).map((entry) => entry.value)
+      : fallbackLeft
+    const right = hasLabelledRows ? labelled.slice(Math.ceil(labelled.length / 2)).map((entry) => entry.value) : fallbackRight
+
     return (
-      <div style={{ aspectRatio: '4 / 5', background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: '8px', display: 'grid', gridTemplateColumns: '1fr 28px 1fr', overflow: 'hidden', position: 'relative' }}>
-        <div style={{ background: 'rgba(232,0,45,0.22)', padding: '0.55rem' }}>
-          <div style={{ fontFamily: 'var(--font-barlow-condensed)', textTransform: 'uppercase', fontSize: '0.74rem', letterSpacing: '0.06em', marginBottom: '0.3rem', fontWeight: 800 }}>Side A</div>
-          <ul style={{ margin: 0, paddingLeft: '1rem', fontSize: '0.72rem', lineHeight: 1.35 }}>
-            {left.map((l) => <li key={l}>{l.replace(/^[^:]+:\s*/, '')}</li>)}
-          </ul>
+      <div style={{ aspectRatio: '4 / 5', background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: '8px', overflow: 'hidden', position: 'relative', display: 'flex', flexDirection: 'column' }}>
+        <div style={{ padding: '0.5rem 0.7rem', borderBottom: '1px solid rgba(255,255,255,0.12)', background: 'rgba(255,255,255,0.04)' }}>
+          <div style={{ fontFamily: 'var(--font-barlow-condensed)', textTransform: 'uppercase', fontSize: '0.9rem', lineHeight: 1.1, fontWeight: 800, textAlign: 'center' }}>
+            {title}
+          </div>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-barlow-condensed)', fontWeight: 900, color: 'var(--text)', background: 'rgba(255,255,255,0.06)' }}>VS</div>
-        <div style={{ background: 'rgba(59,130,246,0.2)', padding: '0.55rem' }}>
-          <div style={{ fontFamily: 'var(--font-barlow-condensed)', textTransform: 'uppercase', fontSize: '0.74rem', letterSpacing: '0.06em', marginBottom: '0.3rem', fontWeight: 800 }}>Side B</div>
-          <ul style={{ margin: 0, paddingLeft: '1rem', fontSize: '0.72rem', lineHeight: 1.35 }}>
-            {right.map((l) => <li key={l}>{l.replace(/^[^:]+:\s*/, '')}</li>)}
-          </ul>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', flex: 1, position: 'relative' }}>
+          <div style={{ background: 'rgba(232,0,45,0.22)', padding: '0.55rem', borderRight: '1px solid rgba(255,255,255,0.14)' }}>
+            <div style={{ fontFamily: 'var(--font-barlow-condensed)', textTransform: 'uppercase', fontSize: '0.74rem', letterSpacing: '0.06em', marginBottom: '0.3rem', fontWeight: 800, textAlign: 'center' }}>
+              {leftHeader}
+            </div>
+            <ul style={{ margin: 0, paddingLeft: '1rem', fontSize: '0.72rem', lineHeight: 1.35 }}>
+              {left.map((l, idx) => (
+                <li key={`left-${idx}-${l}`}>{l}</li>
+              ))}
+            </ul>
+          </div>
+          <div style={{ background: 'rgba(59,130,246,0.2)', padding: '0.55rem' }}>
+            <div style={{ fontFamily: 'var(--font-barlow-condensed)', textTransform: 'uppercase', fontSize: '0.74rem', letterSpacing: '0.06em', marginBottom: '0.3rem', fontWeight: 800, textAlign: 'center' }}>
+              {rightHeader}
+            </div>
+            <ul style={{ margin: 0, paddingLeft: '1rem', fontSize: '0.72rem', lineHeight: 1.35 }}>
+              {right.map((l, idx) => (
+                <li key={`right-${idx}-${l}`}>{l}</li>
+              ))}
+            </ul>
+          </div>
+          <div style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)', width: '34px', height: '34px', borderRadius: '999px', background: 'var(--accent)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-barlow-condensed)', fontWeight: 900, fontSize: '0.72rem', border: '2px solid rgba(255,255,255,0.3)' }}>
+            VS
+          </div>
         </div>
-        <div style={{ position: 'absolute', top: '0.45rem', left: '0.55rem', fontFamily: 'var(--font-barlow-condensed)', textTransform: 'uppercase', fontSize: '0.8rem', fontWeight: 800 }}>{title}</div>
         {watermark()}
       </div>
     )
