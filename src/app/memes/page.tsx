@@ -256,17 +256,26 @@ export default function MemesPage() {
     document.title = 'F1 Memes, Tier Lists & Sim Racing Humour | F1Rec'
 
     async function fetchMemes() {
-      const { data, error } = await supabase
-        .from('memes')
-        .select('*')
-        .order('created_at', { ascending: false })
+      try {
+        const { data, error } = await supabase
+          .from('memes')
+          .select('*')
+          .order('created_at', { ascending: false })
 
-      if (!error && data && data.length > 0) {
-        setMemes(data as MemeRow[])
-      } else {
+        if (!error && data && data.length > 0) {
+          setMemes(data as MemeRow[])
+        } else {
+          if (error) {
+            console.error('[memes] failed to load memes', error)
+          }
+          setMemes(FALLBACK_MEMES)
+        }
+      } catch (error) {
+        console.error('[memes] unexpected fetch error', error)
         setMemes(FALLBACK_MEMES)
+      } finally {
+        setLoading(false)
       }
-      setLoading(false)
     }
 
     fetchMemes()

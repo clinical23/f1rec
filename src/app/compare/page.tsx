@@ -105,11 +105,21 @@ function CompareContent() {
 
   useEffect(() => {
     async function fetchDrivers() {
-      const { data } = await supabase.from('drivers')
-        .select('id, slug, full_name, code, championships, career_wins, career_podiums, career_poles, career_points, career_starts, career_dnfs, career_fastest_laps, first_season, last_season, nationality')
-        .order('career_wins', { ascending: false })
-      if (data) setDrivers(data)
-      setLoading(false)
+      try {
+        const { data, error } = await supabase.from('drivers')
+          .select('id, slug, full_name, code, championships, career_wins, career_podiums, career_poles, career_points, career_starts, career_dnfs, career_fastest_laps, first_season, last_season, nationality')
+          .order('career_wins', { ascending: false })
+
+        if (error) {
+          console.error('[compare] failed to load drivers', error)
+        }
+
+        if (data) setDrivers(data)
+      } catch (error) {
+        console.error('[compare] unexpected fetch error', error)
+      } finally {
+        setLoading(false)
+      }
     }
     fetchDrivers()
   }, [])

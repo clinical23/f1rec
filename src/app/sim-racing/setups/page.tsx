@@ -119,12 +119,22 @@ export default function SetupsPage() {
 
   useEffect(() => {
     async function fetch() {
-      const { data } = await supabase
-        .from('sim_setups')
-        .select('*')
-        .order('download_count', { ascending: false })
-      if (data) setSetups(data)
-      setLoading(false)
+      try {
+        const { data, error } = await supabase
+          .from('sim_setups')
+          .select('*')
+          .order('download_count', { ascending: false })
+
+        if (error) {
+          console.error('[sim-setups] failed to load setups', error)
+        }
+
+        if (data) setSetups(data)
+      } catch (error) {
+        console.error('[sim-setups] unexpected fetch error', error)
+      } finally {
+        setLoading(false)
+      }
     }
     fetch()
   }, [])

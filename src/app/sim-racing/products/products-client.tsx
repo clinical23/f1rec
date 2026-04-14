@@ -69,43 +69,51 @@ export default function ProductsClient() {
 
   useEffect(() => {
     async function fetchProducts() {
-      const [{ data: productData }, { data: brandData }] = await Promise.all([
-        supabase
-          .from('sim_products')
-          .select('id, name, brand, price_gbp, rating, short_description, affiliate_url, is_featured, is_budget_pick, is_premium_pick, pros, cons, category_id, sim_product_categories(name, slug)')
-          .order('brand', { ascending: true })
-          .order('price_gbp', { ascending: false }),
-        supabase
-          .from('sim_brands')
-          .select('id, name, sort_order')
-          .eq('is_featured', true)
-          .order('sort_order', { ascending: true }),
-      ])
+      try {
+        const [{ data: productData, error: productError }, { data: brandData, error: brandError }] = await Promise.all([
+          supabase
+            .from('sim_products')
+            .select('id, name, brand, price_gbp, rating, short_description, affiliate_url, is_featured, is_budget_pick, is_premium_pick, pros, cons, category_id, sim_product_categories(name, slug)')
+            .order('brand', { ascending: true })
+            .order('price_gbp', { ascending: false }),
+          supabase
+            .from('sim_brands')
+            .select('id, name, sort_order')
+            .eq('is_featured', true)
+            .order('sort_order', { ascending: true }),
+        ])
 
-      if (productData) {
-        setProducts(
-          productData.map((row: any) => ({
-            id: row.id,
-            brand: row.brand ?? null,
-            name: row.name,
-            category_name: row.sim_product_categories?.name ?? null,
-            category_slug: row.sim_product_categories?.slug ?? null,
-            price_gbp: row.price_gbp != null ? Number(row.price_gbp) : null,
-            rating: row.rating != null ? Number(row.rating) : null,
-            short_description: row.short_description ?? null,
-            affiliate_url: row.affiliate_url ?? null,
-            is_featured: Boolean(row.is_featured),
-            is_budget_pick: Boolean(row.is_budget_pick),
-            is_premium_pick: Boolean(row.is_premium_pick),
-            pros: Array.isArray(row.pros) ? row.pros : null,
-            cons: Array.isArray(row.cons) ? row.cons : null,
-          }))
-        )
+        if (productError) console.error('[sim-products] failed to load products', productError)
+        if (brandError) console.error('[sim-products] failed to load brands', brandError)
+
+        if (productData) {
+          setProducts(
+            productData.map((row: any) => ({
+              id: row.id,
+              brand: row.brand ?? null,
+              name: row.name,
+              category_name: row.sim_product_categories?.name ?? null,
+              category_slug: row.sim_product_categories?.slug ?? null,
+              price_gbp: row.price_gbp != null ? Number(row.price_gbp) : null,
+              rating: row.rating != null ? Number(row.rating) : null,
+              short_description: row.short_description ?? null,
+              affiliate_url: row.affiliate_url ?? null,
+              is_featured: Boolean(row.is_featured),
+              is_budget_pick: Boolean(row.is_budget_pick),
+              is_premium_pick: Boolean(row.is_premium_pick),
+              pros: Array.isArray(row.pros) ? row.pros : null,
+              cons: Array.isArray(row.cons) ? row.cons : null,
+            }))
+          )
+        }
+        if (brandData) {
+          setFeaturedBrands(brandData as SimBrand[])
+        }
+      } catch (error) {
+        console.error('[sim-products] unexpected fetch error', error)
+      } finally {
+        setLoading(false)
       }
-      if (brandData) {
-        setFeaturedBrands(brandData as SimBrand[])
-      }
-      setLoading(false)
     }
 
     fetchProducts()

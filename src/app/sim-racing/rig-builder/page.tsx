@@ -45,12 +45,17 @@ async function loadData() {
     supabase
       .from('sim_products')
       .select(
-        'id, name, slug, brand, price_gbp, rating, short_description, description, affiliate_url, image_url, sim_product_categories(name, slug)'
+        'id, name, slug, brand, price_gbp, rating, short_description, affiliate_url, image_url, sim_product_categories(name, slug)'
       ),
     supabase.from('sim_brands').select('id, name, website_url'),
-    supabase.from('rig_presets').select('*').order('sort_order', { ascending: true }),
+    supabase.from('rig_presets').select('*').order('name', { ascending: true }),
     supabase.from('sim_reviews').select('product_id, rating'),
   ])
+
+  if (productsRes.error) console.error('[rig-builder] failed to load sim_products', productsRes.error)
+  if (brandsRes.error) console.error('[rig-builder] failed to load sim_brands', brandsRes.error)
+  if (presetsRes.error) console.error('[rig-builder] failed to load rig_presets', presetsRes.error)
+  if (reviewsRes.error) console.error('[rig-builder] failed to load sim_reviews', reviewsRes.error)
 
   const reviewMax = new Map<string, number>()
   for (const r of reviewsRes.data ?? []) {
@@ -76,7 +81,7 @@ async function loadData() {
       slug: row.slug ?? null,
       brand: row.brand ?? null,
       price_gbp: row.price_gbp != null ? Number(row.price_gbp) : null,
-      short_description: row.short_description ?? row.description ?? null,
+      short_description: row.short_description ?? null,
       affiliate_url: row.affiliate_url ?? null,
       image_url: row.image_url ?? null,
       rating: row.rating != null ? Number(row.rating) : null,
@@ -109,7 +114,7 @@ async function loadData() {
       total_price: row.total_price != null ? Number(row.total_price) : null,
       currency: (row.currency as string) ?? null,
       product_ids: Array.isArray(row.product_ids) ? (row.product_ids as string[]) : null,
-      sort_order: row.sort_order != null ? Number(row.sort_order) : null,
+      sort_order: null,
     }))
   }
 

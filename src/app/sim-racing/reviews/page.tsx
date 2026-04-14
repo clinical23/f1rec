@@ -56,23 +56,33 @@ export default function ReviewsPage() {
 
   useEffect(() => {
     async function fetch() {
-      const { data } = await supabase
-        .from('sim_reviews')
-        .select('id, slug, title, excerpt, category, rating, featured, published_at, view_count, product_id, sim_products!inner(name, brand, price_gbp)')
-        .eq('is_published', true)
-        .order('featured', { ascending: false })
-        .order('rating', { ascending: false })
-      if (data) {
-        setReviews(data.map((r: any) => ({
-          id: r.id, slug: r.slug, title: r.title, excerpt: r.excerpt,
-          category: r.category, rating: Number(r.rating), featured: r.featured,
-          published_at: r.published_at, view_count: r.view_count,
-          product_name: r.sim_products?.name ?? null,
-          brand: r.sim_products?.brand ?? null,
-          price_gbp: r.sim_products?.price_gbp ? Number(r.sim_products.price_gbp) : null,
-        })))
+      try {
+        const { data, error } = await supabase
+          .from('sim_reviews')
+          .select('id, slug, title, excerpt, category, rating, featured, published_at, view_count, product_id, sim_products!inner(name, brand, price_gbp)')
+          .eq('is_published', true)
+          .order('featured', { ascending: false })
+          .order('rating', { ascending: false })
+
+        if (error) {
+          console.error('[sim-reviews] failed to load reviews', error)
+        }
+
+        if (data) {
+          setReviews(data.map((r: any) => ({
+            id: r.id, slug: r.slug, title: r.title, excerpt: r.excerpt,
+            category: r.category, rating: Number(r.rating), featured: r.featured,
+            published_at: r.published_at, view_count: r.view_count,
+            product_name: r.sim_products?.name ?? null,
+            brand: r.sim_products?.brand ?? null,
+            price_gbp: r.sim_products?.price_gbp ? Number(r.sim_products.price_gbp) : null,
+          })))
+        }
+      } catch (error) {
+        console.error('[sim-reviews] unexpected fetch error', error)
+      } finally {
+        setLoading(false)
       }
-      setLoading(false)
     }
     fetch()
   }, [])

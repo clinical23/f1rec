@@ -69,8 +69,22 @@ function DriversTab() {
   const [visibleCount, setVisibleCount] = useState(50)
 
   useEffect(() => {
-    supabase.from('v_driver_leaderboard').select('*').order('career_wins', { ascending: false })
-      .then(({ data }) => { if (data) setData(data); setLoading(false) })
+    supabase
+      .from('v_driver_leaderboard')
+      .select('*')
+      .order('career_wins', { ascending: false })
+      .then(({ data, error }) => {
+        if (error) {
+          console.error('[leaderboards] failed to load driver leaderboard', error)
+        }
+        if (data) setData(data)
+      })
+      .catch((error) => {
+        console.error('[leaderboards] unexpected driver leaderboard fetch error', error)
+      })
+      .finally(() => {
+        setLoading(false)
+      })
   }, [])
 
   const sorted = useMemo(() => {
@@ -153,8 +167,22 @@ function ConstructorsTab() {
   const [visibleCount, setVisibleCount] = useState(50)
 
   useEffect(() => {
-    supabase.from('v_constructor_leaderboard').select('*').order('race_wins', { ascending: false })
-      .then(({ data }) => { if (data) setData(data); setLoading(false) })
+    supabase
+      .from('v_constructor_leaderboard')
+      .select('*')
+      .order('race_wins', { ascending: false })
+      .then(({ data, error }) => {
+        if (error) {
+          console.error('[leaderboards] failed to load constructor leaderboard', error)
+        }
+        if (data) setData(data)
+      })
+      .catch((error) => {
+        console.error('[leaderboards] unexpected constructor leaderboard fetch error', error)
+      })
+      .finally(() => {
+        setLoading(false)
+      })
   }, [])
 
   const sorted = useMemo(() => {
@@ -233,55 +261,69 @@ function RecordsTab() {
 
   useEffect(() => {
     async function fetchRecords() {
-      const [
-        seasonWinsRes,
-        mostWinsRes,
-        mostChampsRes,
-        mostPointsRes,
-        mostPodiumsRes,
-        mostPolesRes,
-        mostStartsRes,
-        mostConstructorWinsRes,
-      ] = await Promise.all([
-        supabase.from('driver_season_stats').select('wins, season_id, driver_id, seasons!inner(year), drivers!inner(full_name, slug)')
-          .order('wins', { ascending: false }).limit(1),
-        supabase.from('drivers').select('full_name, slug, career_wins').order('career_wins', { ascending: false }).limit(1),
-        supabase.from('drivers').select('full_name, slug, championships').order('championships', { ascending: false }).limit(1),
-        supabase.from('drivers').select('full_name, slug, career_points').order('career_points', { ascending: false }).limit(1),
-        supabase.from('drivers').select('full_name, slug, career_podiums').order('career_podiums', { ascending: false }).limit(1),
-        supabase.from('drivers').select('full_name, slug, career_poles').order('career_poles', { ascending: false }).limit(1),
-        supabase.from('drivers').select('full_name, slug, career_starts').order('career_starts', { ascending: false }).limit(1),
-        supabase.from('v_constructor_leaderboard').select('name, slug, race_wins').order('race_wins', { ascending: false }).limit(1),
-      ])
+      try {
+        const [
+          seasonWinsRes,
+          mostWinsRes,
+          mostChampsRes,
+          mostPointsRes,
+          mostPodiumsRes,
+          mostPolesRes,
+          mostStartsRes,
+          mostConstructorWinsRes,
+        ] = await Promise.all([
+          supabase.from('driver_season_stats').select('wins, season_id, driver_id, seasons!inner(year), drivers!inner(full_name, slug)')
+            .order('wins', { ascending: false }).limit(1),
+          supabase.from('drivers').select('full_name, slug, career_wins').order('career_wins', { ascending: false }).limit(1),
+          supabase.from('drivers').select('full_name, slug, championships').order('championships', { ascending: false }).limit(1),
+          supabase.from('drivers').select('full_name, slug, career_points').order('career_points', { ascending: false }).limit(1),
+          supabase.from('drivers').select('full_name, slug, career_podiums').order('career_podiums', { ascending: false }).limit(1),
+          supabase.from('drivers').select('full_name, slug, career_poles').order('career_poles', { ascending: false }).limit(1),
+          supabase.from('drivers').select('full_name, slug, career_starts').order('career_starts', { ascending: false }).limit(1),
+          supabase.from('v_constructor_leaderboard').select('name, slug, race_wins').order('race_wins', { ascending: false }).limit(1),
+        ])
 
-      const cards: RecordCard[] = []
+        if (seasonWinsRes.error) console.error('[leaderboards] season wins query failed', seasonWinsRes.error)
+        if (mostWinsRes.error) console.error('[leaderboards] most wins query failed', mostWinsRes.error)
+        if (mostChampsRes.error) console.error('[leaderboards] most championships query failed', mostChampsRes.error)
+        if (mostPointsRes.error) console.error('[leaderboards] most points query failed', mostPointsRes.error)
+        if (mostPodiumsRes.error) console.error('[leaderboards] most podiums query failed', mostPodiumsRes.error)
+        if (mostPolesRes.error) console.error('[leaderboards] most poles query failed', mostPolesRes.error)
+        if (mostStartsRes.error) console.error('[leaderboards] most starts query failed', mostStartsRes.error)
+        if (mostConstructorWinsRes.error) console.error('[leaderboards] constructor wins query failed', mostConstructorWinsRes.error)
 
-      const sw = seasonWinsRes.data?.[0] as any
-      if (sw) cards.push({ title: 'Most Wins in a Season', holder: sw.drivers.full_name, slug: sw.drivers.slug, value: String(sw.wins), context: `${sw.seasons.year} Season`, linkBase: '/drivers' })
+        const cards: RecordCard[] = []
 
-      const mw = mostWinsRes.data?.[0]
-      if (mw) cards.push({ title: 'Most Career Wins', holder: mw.full_name, slug: mw.slug, value: String(mw.career_wins), context: 'All-time record', linkBase: '/drivers' })
+        const sw = seasonWinsRes.data?.[0] as any
+        if (sw) cards.push({ title: 'Most Wins in a Season', holder: sw.drivers.full_name, slug: sw.drivers.slug, value: String(sw.wins), context: `${sw.seasons.year} Season`, linkBase: '/drivers' })
 
-      const mc = mostChampsRes.data?.[0]
-      if (mc) cards.push({ title: 'Most Championships', holder: mc.full_name, slug: mc.slug, value: String(mc.championships), context: 'World titles', linkBase: '/drivers' })
+        const mw = mostWinsRes.data?.[0]
+        if (mw) cards.push({ title: 'Most Career Wins', holder: mw.full_name, slug: mw.slug, value: String(mw.career_wins), context: 'All-time record', linkBase: '/drivers' })
 
-      const mp = mostPointsRes.data?.[0]
-      if (mp) cards.push({ title: 'Most Career Points', holder: mp.full_name, slug: mp.slug, value: Number(mp.career_points).toLocaleString(), context: 'All-time record', linkBase: '/drivers' })
+        const mc = mostChampsRes.data?.[0]
+        if (mc) cards.push({ title: 'Most Championships', holder: mc.full_name, slug: mc.slug, value: String(mc.championships), context: 'World titles', linkBase: '/drivers' })
 
-      const mpod = mostPodiumsRes.data?.[0]
-      if (mpod) cards.push({ title: 'Most Podiums', holder: mpod.full_name, slug: mpod.slug, value: String(mpod.career_podiums), context: 'All-time record', linkBase: '/drivers' })
+        const mp = mostPointsRes.data?.[0]
+        if (mp) cards.push({ title: 'Most Career Points', holder: mp.full_name, slug: mp.slug, value: Number(mp.career_points).toLocaleString(), context: 'All-time record', linkBase: '/drivers' })
 
-      const mpol = mostPolesRes.data?.[0]
-      if (mpol) cards.push({ title: 'Most Pole Positions', holder: mpol.full_name, slug: mpol.slug, value: String(mpol.career_poles), context: 'All-time record', linkBase: '/drivers' })
+        const mpod = mostPodiumsRes.data?.[0]
+        if (mpod) cards.push({ title: 'Most Podiums', holder: mpod.full_name, slug: mpod.slug, value: String(mpod.career_podiums), context: 'All-time record', linkBase: '/drivers' })
 
-      const ms = mostStartsRes.data?.[0]
-      if (ms) cards.push({ title: 'Most Race Starts', holder: ms.full_name, slug: ms.slug, value: String(ms.career_starts), context: 'All-time record', linkBase: '/drivers' })
+        const mpol = mostPolesRes.data?.[0]
+        if (mpol) cards.push({ title: 'Most Pole Positions', holder: mpol.full_name, slug: mpol.slug, value: String(mpol.career_poles), context: 'All-time record', linkBase: '/drivers' })
 
-      const mcw = mostConstructorWinsRes.data?.[0]
-      if (mcw) cards.push({ title: 'Most Constructor Wins', holder: mcw.name, slug: mcw.slug, value: String(mcw.race_wins), context: 'All-time record', linkBase: '/teams' })
+        const ms = mostStartsRes.data?.[0]
+        if (ms) cards.push({ title: 'Most Race Starts', holder: ms.full_name, slug: ms.slug, value: String(ms.career_starts), context: 'All-time record', linkBase: '/drivers' })
 
-      setRecords(cards)
-      setLoading(false)
+        const mcw = mostConstructorWinsRes.data?.[0]
+        if (mcw) cards.push({ title: 'Most Constructor Wins', holder: mcw.name, slug: mcw.slug, value: String(mcw.race_wins), context: 'All-time record', linkBase: '/teams' })
+
+        setRecords(cards)
+      } catch (error) {
+        console.error('[leaderboards] unexpected records fetch error', error)
+      } finally {
+        setLoading(false)
+      }
     }
     fetchRecords()
   }, [])

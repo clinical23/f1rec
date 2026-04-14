@@ -1,0 +1,15 @@
+{
+  "generatedAt": "2026-04-14T07:03:38.045Z",
+  "baseUrl": "http://localhost:3000",
+  "concurrency": 10,
+  "delayMs": 75,
+  "summary": {
+    "totalUrlsChecked": 1130,
+    "http200Count": 1130,
+    "httpErrors": [],
+    "undefinedFindings": [],
+    "nullFindings": [],
+    "missingJsonLd": [],
+    "invalidJsonLd": []
+  }
+}
