@@ -2,6 +2,7 @@ import Link from 'next/link'
 import BrandsWall from './brands-wall'
 import SoundLink from '@/components/SoundLink'
 import EmailCapture from '@/components/EmailCapture'
+import { createServerClient } from '@/lib/supabase/server'
 
 const categories = [
   {
@@ -48,12 +49,11 @@ const featuredProducts = [
   { name: 'Trak Racer TR120', category: 'Rig', price: '£399', rating: 8.8, tag: 'Best rig' },
 ]
 
-const games = [
-  { name: 'iRacing', desc: 'The gold standard of online sim racing', guides: 24, setups: 156 },
-  { name: 'ACC', desc: 'GT3 racing perfection', guides: 18, setups: 89 },
-  { name: 'Assetto Corsa Evo', desc: 'The next generation of sim racing', guides: 12, setups: 34 },
-  { name: 'F1 25', desc: 'Official F1 game', guides: 15, setups: 45 },
-]
+const gameMeta: Record<string, { name: string; desc: string }> = {
+  iracing: { name: 'iRacing', desc: 'The gold standard of online sim racing' },
+  acc: { name: 'ACC', desc: 'GT3 racing perfection' },
+  ace: { name: 'Assetto Corsa Evo', desc: 'The next generation of sim racing' },
+}
 
 export const metadata = {
   title: 'Sim Racing Hardware, Reviews & Setups | F1Rec',
@@ -72,7 +72,29 @@ export const metadata = {
   },
 }
 
-export default function SimRacingPage() {
+export default async function SimRacingPage() {
+  const supabase = createServerClient()
+  const { data: setupRows, error: setupError } = await supabase.from('sim_setups').select('game')
+  if (setupError) {
+    console.error('[sim-racing] failed to load setup counts', setupError)
+  }
+
+  const counts = new Map<string, number>()
+  for (const row of setupRows ?? []) {
+    const game = String(row.game ?? '').trim().toLowerCase()
+    if (!game) continue
+    counts.set(game, (counts.get(game) ?? 0) + 1)
+  }
+
+  const games = Object.entries(gameMeta)
+    .map(([slug, meta]) => ({
+      slug,
+      name: meta.name,
+      desc: meta.desc,
+      setups: counts.get(slug) ?? 0,
+    }))
+    .filter((game) => game.setups > 0)
+
   return (
     <main>
       {/* Hero */}
@@ -112,7 +134,7 @@ export default function SimRacingPage() {
           margin: '20px auto 32px',
           lineHeight: 1.6,
         }}>
-          Expert hardware reviews, an interactive rig builder, game guides, and
+          Expert hardware reviews, an interactive rig builder, and
           downloadable setups — everything you need to race faster.
         </p>
         <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
@@ -364,14 +386,17 @@ export default function SimRacingPage() {
           color: 'var(--text)',
           marginBottom: '24px',
         }}>
-          Game <span style={{ color: 'var(--accent)' }}>guides & setups</span>
+          Setups <span style={{ color: 'var(--accent)' }}>available</span>
         </h2>
+        <p style={{ color: 'var(--muted)', fontSize: '14px', marginBottom: '20px' }}>
+          Live setup counts by game. Guides coming soon.
+        </p>
         <div style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
           gap: '16px',
         }}>
-          {games.map((game) => (
+          {games.length > 0 ? games.map((game) => (
             <div key={game.name} style={{
               background: 'var(--bg2)',
               border: '1px solid var(--border)',
@@ -391,18 +416,7 @@ export default function SimRacingPage() {
               <p style={{ color: 'var(--muted)', fontSize: '13px', marginBottom: '16px' }}>
                 {game.desc}
               </p>
-              <div style={{ display: 'flex', gap: '12px' }}>
-                <span style={{
-                  background: 'var(--bg3)',
-                  color: 'var(--blue)',
-                  fontSize: '12px',
-                  fontFamily: 'var(--font-display)',
-                  fontWeight: 600,
-                  padding: '4px 10px',
-                  borderRadius: '4px',
-                }}>
-                  {game.guides} guides
-                </span>
+              <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
                 <span style={{
                   background: 'var(--bg3)',
                   color: 'var(--green)',
@@ -414,9 +428,31 @@ export default function SimRacingPage() {
                 }}>
                   {game.setups} setups
                 </span>
+                <Link href="/sim-racing/setups" style={{
+                  color: 'var(--accent)',
+                  textDecoration: 'none',
+                  fontFamily: 'var(--font-display)',
+                  fontSize: '12px',
+                  fontWeight: 700,
+                  letterSpacing: '0.04em',
+                  textTransform: 'uppercase',
+                }}>
+                  Browse →
+                </Link>
               </div>
             </div>
-          ))}
+          )) : (
+            <div style={{
+              background: 'var(--bg2)',
+              border: '1px solid var(--border)',
+              borderRadius: '8px',
+              padding: '24px',
+              color: 'var(--muted)',
+              fontSize: '14px',
+            }}>
+              No setup files are published yet.
+            </div>
+          )}
         </div>
       </section>
 
