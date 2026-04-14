@@ -62,6 +62,30 @@ type RpcTeammateRow = {
   team_name: string | null
 }
 
+type DriverProfileRow = {
+  driver_slug: string
+  nickname: string | null
+  fun_facts: string[] | null
+  social_twitter: string | null
+  social_instagram: string | null
+  social_youtube: string | null
+  social_twitch: string | null
+  social_tiktok: string | null
+  fan_community_url: string | null
+  fan_community_name: string | null
+  fan_base_region: string | null
+  hobbies: string | null
+}
+
+type DriverVideoRow = {
+  id: string
+  youtube_id: string | null
+  title: string | null
+  category: string | null
+  season_year: number | null
+  driver_slug: string | null
+}
+
 function unwrapRelation<T>(rel: T | T[] | null | undefined): T | null {
   if (rel == null) return null
   return Array.isArray(rel) ? rel[0] ?? null : rel
@@ -194,7 +218,7 @@ async function loadDriverProfileData(slug: string) {
   const d = driver as DriverRow
   const driverId = d.id
 
-  const [seasonStatsRes, postsRes, countriesRes] = await Promise.all([
+  const [seasonStatsRes, postsRes, countriesRes, profileRes, videosRes] = await Promise.all([
     supabase
       .from('driver_season_stats')
       .select(
@@ -221,6 +245,13 @@ async function loadDriverProfileData(slug: string) {
       .select('title, slug, category, published_at, body, related_driver_slug')
       .eq('is_published', true),
     supabase.from('countries').select('name, flag_emoji'),
+    supabase.from('driver_profiles').select('*').eq('driver_slug', slug).maybeSingle(),
+    supabase
+      .from('driver_videos')
+      .select('id, youtube_id, title, category, season_year, driver_slug')
+      .eq('driver_slug', slug)
+      .eq('is_active', true)
+      .order('sort_order', { ascending: true }),
   ])
 
   const seasonRows = ((seasonStatsRes.data ?? []) as SeasonStatRow[]).sort((a, b) => {
@@ -349,6 +380,8 @@ async function loadDriverProfileData(slug: string) {
   })
 
   const titleSeasonRows = seasonRows.filter((r) => unwrapRelation(r.seasons)?.champion_driver_id === driverId)
+  const profile = (profileRes.data as DriverProfileRow | null) ?? null
+  const videos = ((videosRes.data ?? []) as DriverVideoRow[]).filter((video) => video.youtube_id && video.title)
 
   return {
     driver: d,
@@ -367,6 +400,8 @@ async function loadDriverProfileData(slug: string) {
     careerEndLabel,
     relatedPosts: relatedPosts.slice(0, 8),
     titleSeasonRows,
+    profile,
+    videos,
   }
 }
 
@@ -457,6 +492,8 @@ export default async function DriverProfilePage({ params }: PageProps) {
     careerEndLabel,
     relatedPosts,
     titleSeasonRows,
+    profile,
+    videos,
   } = data
 
   const affiliationName =
@@ -487,6 +524,11 @@ export default async function DriverProfilePage({ params }: PageProps) {
     'season-preview': 'bg-[color-mix(in_srgb,var(--blue)_18%,transparent)] text-[var(--blue)]',
     history: 'bg-[color-mix(in_srgb,var(--gold)_18%,transparent)] text-[var(--gold)]',
     tech: 'bg-[color-mix(in_srgb,#ce93d8_18%,transparent)] text-[#ce93d8]',
+  }
+
+  const videoCategoryLabel = (category: string | null): string => {
+    if (!category) return 'Highlight'
+    return category.replace(/-/g, ' ')
   }
 
   return (
@@ -590,6 +632,123 @@ export default async function DriverProfilePage({ params }: PageProps) {
             />
           </div>
         </section>
+
+        {profile ? (
+          <section className="mb-12 rounded-xl border border-[var(--border)] bg-[var(--bg2)] p-5 md:p-6">
+            <h2 className="font-display text-lg font-extrabold uppercase tracking-wide text-[var(--text)]">
+              Beyond the <span className="text-[var(--accent)]">Stats</span>
+            </h2>
+
+            {profile.nickname ? (
+              <div className="mt-3 inline-flex rounded bg-[color-mix(in_srgb,var(--accent)_15%,transparent)] px-3 py-1 font-display text-xs font-bold uppercase tracking-wider text-[var(--accent)]">
+                {profile.nickname}
+              </div>
+            ) : null}
+
+            {profile.fun_facts && profile.fun_facts.length > 0 ? (
+              <div className="mt-5">
+                <h3 className="font-display text-sm font-bold uppercase tracking-wider text-[var(--text)]">Fun Facts</h3>
+                <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-[var(--muted)]">
+                  {profile.fun_facts.filter(Boolean).map((fact) => (
+                    <li key={fact}>{fact}</li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
+
+            {profile.hobbies ? (
+              <div className="mt-5">
+                <h3 className="font-display text-sm font-bold uppercase tracking-wider text-[var(--text)]">Off Track</h3>
+                <p className="mt-2 text-sm text-[var(--muted)]">{profile.hobbies}</p>
+              </div>
+            ) : null}
+
+            <div className="mt-5">
+              <h3 className="font-display text-sm font-bold uppercase tracking-wider text-[var(--text)]">Social Media</h3>
+              <div className="mt-2 flex flex-wrap gap-2">
+                {profile.social_twitter ? (
+                  <a href={`https://twitter.com/${profile.social_twitter}`} target="_blank" rel="noopener noreferrer" className="rounded border border-[var(--border)] bg-[var(--bg3)] px-3 py-1 text-xs font-semibold uppercase tracking-wide text-[var(--text)] no-underline hover:border-[var(--accent)] hover:text-[var(--accent)]">
+                    X
+                  </a>
+                ) : null}
+                {profile.social_instagram ? (
+                  <a href={`https://instagram.com/${profile.social_instagram}`} target="_blank" rel="noopener noreferrer" className="rounded border border-[var(--border)] bg-[var(--bg3)] px-3 py-1 text-xs font-semibold uppercase tracking-wide text-[var(--text)] no-underline hover:border-[var(--accent)] hover:text-[var(--accent)]">
+                    Instagram
+                  </a>
+                ) : null}
+                {profile.social_youtube ? (
+                  <a href={`https://youtube.com/${profile.social_youtube}`} target="_blank" rel="noopener noreferrer" className="rounded border border-[var(--border)] bg-[var(--bg3)] px-3 py-1 text-xs font-semibold uppercase tracking-wide text-[var(--text)] no-underline hover:border-[var(--accent)] hover:text-[var(--accent)]">
+                    YouTube
+                  </a>
+                ) : null}
+                {profile.social_twitch ? (
+                  <a href={`https://twitch.tv/${profile.social_twitch}`} target="_blank" rel="noopener noreferrer" className="rounded border border-[var(--border)] bg-[var(--bg3)] px-3 py-1 text-xs font-semibold uppercase tracking-wide text-[var(--text)] no-underline hover:border-[var(--accent)] hover:text-[var(--accent)]">
+                    Twitch
+                  </a>
+                ) : null}
+                {profile.social_tiktok ? (
+                  <a href={`https://tiktok.com/@${profile.social_tiktok}`} target="_blank" rel="noopener noreferrer" className="rounded border border-[var(--border)] bg-[var(--bg3)] px-3 py-1 text-xs font-semibold uppercase tracking-wide text-[var(--text)] no-underline hover:border-[var(--accent)] hover:text-[var(--accent)]">
+                    TikTok
+                  </a>
+                ) : null}
+              </div>
+            </div>
+
+            {profile.fan_community_name || profile.fan_base_region ? (
+              <div className="mt-5">
+                <h3 className="font-display text-sm font-bold uppercase tracking-wider text-[var(--text)]">Fan Community</h3>
+                <div className="mt-2 flex flex-wrap items-center gap-2">
+                  {profile.fan_community_name && profile.fan_community_url ? (
+                    <a href={profile.fan_community_url} target="_blank" rel="noopener noreferrer" className="text-sm font-semibold text-[var(--accent)] no-underline hover:underline">
+                      Join the {profile.fan_community_name}
+                    </a>
+                  ) : null}
+                  {profile.fan_base_region ? (
+                    <span className="rounded bg-[var(--bg3)] px-2 py-1 text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">
+                      {profile.fan_base_region}
+                    </span>
+                  ) : null}
+                </div>
+              </div>
+            ) : null}
+          </section>
+        ) : null}
+
+        {videos.length > 0 ? (
+          <section className="mb-12">
+            <h2 className="mb-4 font-display text-lg font-extrabold uppercase tracking-wide text-[var(--text)]">
+              Best Moments <span className="text-[var(--accent)]">🎬</span>
+            </h2>
+            <div className="grid gap-4 md:grid-cols-2">
+              {videos.map((video) => (
+                <a
+                  key={video.id}
+                  href={`https://youtube.com/watch?v=${video.youtube_id}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="rounded-xl border border-[var(--border)] bg-[var(--bg2)] p-3 no-underline transition-colors hover:border-[var(--accent)]"
+                >
+                  <img
+                    src={`https://img.youtube.com/vi/${video.youtube_id}/mqdefault.jpg`}
+                    alt={video.title ?? 'Driver video'}
+                    className="h-auto w-full rounded-lg border border-[var(--border)]"
+                  />
+                  <div className="mt-3 flex items-center gap-2">
+                    <span className="rounded bg-[color-mix(in_srgb,var(--accent)_15%,transparent)] px-2 py-1 font-display text-[0.6rem] font-bold uppercase tracking-wider text-[var(--accent)]">
+                      {videoCategoryLabel(video.category)}
+                    </span>
+                    {video.season_year ? (
+                      <span className="text-xs font-mono text-[var(--muted)]">{video.season_year}</span>
+                    ) : null}
+                  </div>
+                  <h3 className="mt-2 font-display text-base font-bold uppercase text-[var(--text)]">
+                    {video.title}
+                  </h3>
+                </a>
+              ))}
+            </div>
+          </section>
+        ) : null}
 
         {/* World championships */}
         {titleSeasonRows.length > 0 ? (
