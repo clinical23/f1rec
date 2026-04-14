@@ -57,6 +57,15 @@ type Post = {
   og_image_url: string | null
 }
 
+function safeText(value: unknown, fallback = ''): string {
+  if (typeof value === 'string') {
+    const trimmed = value.trim()
+    return trimmed.length > 0 ? trimmed : fallback
+  }
+  if (typeof value === 'number' && Number.isFinite(value)) return String(value)
+  return fallback
+}
+
 function categoryLabel(value: string | null) {
   const map: Record<string, string> = {
     'race-review': 'Race Reviews',
@@ -255,7 +264,10 @@ function renderMarkdownWithAd(content: string) {
 export async function generateStaticParams() {
   const supabase = createServerClient()
   const { data } = await supabase.from('posts').select('slug').eq('is_published', true)
-  return (data ?? []).map((post) => ({ slug: String(post.slug) }))
+  return (data ?? [])
+    .map((post) => safeText(post.slug))
+    .filter(Boolean)
+    .map((slug) => ({ slug }))
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -269,12 +281,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     }
   }
   const post = data as Post
+  const metaDescription = safeText(post.meta_description) || safeText(post.excerpt) || 'F1Rec editorial insight.'
   return {
     title: `${cleanTitle(post.title) || 'Article'} | F1Rec`,
-    description: post.meta_description ?? post.excerpt ?? 'F1Rec editorial insight.',
+    description: metaDescription,
     openGraph: {
       title: cleanTitle(post.title) || 'Article',
-      description: post.meta_description ?? post.excerpt ?? 'F1Rec editorial insight.',
+      description: metaDescription,
       type: 'article',
       url: `/blog/${post.slug}`,
       images: post.og_image_url ? [post.og_image_url] : [],
@@ -310,6 +323,9 @@ export default async function BlogArticlePage({ params }: PageProps) {
   ])
 
   let standings: Array<{ driver: string; points: number }> = []
+  const relatedRaceName = safeText(relatedRace?.name) || safeText(relatedRace?.slug) || 'Unknown race'
+  const relatedRaceYear = safeText(relatedRace?.season_year)
+  const relatedRaceRound = safeText(relatedRace?.round)
   const seasonForStandings = typeof relatedRace?.season_year === 'number' ? relatedRace.season_year : null
   if (seasonForStandings) {
     const { data: rows } = await supabase.from('results').select('driver_name,driver_slug,points').eq('season_year', seasonForStandings)
@@ -331,7 +347,7 @@ export default async function BlogArticlePage({ params }: PageProps) {
     '@context': 'https://schema.org',
     '@type': 'Article',
     headline,
-    description: (post.excerpt ?? post.meta_description ?? headline).trim() || 'F1Rec editorial article.',
+    description: safeText(post.excerpt) || safeText(post.meta_description) || headline || 'F1Rec editorial article.',
     url: shareUrl,
     ...(post.published_at ? { datePublished: post.published_at, dateModified: post.published_at } : {}),
     publisher: {
@@ -418,9 +434,9 @@ export default async function BlogArticlePage({ params }: PageProps) {
               <div style={{ fontFamily: font.display, textTransform: 'uppercase', letterSpacing: '0.9px', fontWeight: 800, marginBottom: '10px' }}>Related Race</div>
               {relatedRace ? (
                 <div style={{ fontSize: '13px' }}>
-                  <div style={{ fontWeight: 700 }}>{String(relatedRace.name ?? relatedRace.slug)}</div>
+                  <div style={{ fontWeight: 700 }}>{relatedRaceName}</div>
                   <div style={{ color: tokens.muted, marginTop: '4px' }}>
-                    {String(relatedRace.season_year ?? '')} • Round {String(relatedRace.round ?? '')}
+                    {[relatedRaceYear, relatedRaceRound ? `Round ${relatedRaceRound}` : ''].filter(Boolean).join(' • ')}
                   </div>
                 </div>
               ) : (

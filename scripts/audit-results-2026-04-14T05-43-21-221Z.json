@@ -1,0 +1,4443 @@
+{
+  "generatedAt": "2026-04-14T05:43:21.221Z",
+  "baseUrl": "https://f1rec.com",
+  "concurrency": 10,
+  "delayMs": 75,
+  "summary": {
+    "totalUrlsChecked": 1130,
+    "http200Count": 1128,
+    "httpErrors": [
+      {
+        "path": "/sim-racing/rig-builder",
+        "status": 404,
+        "detail": "HTTP 404 Not Found"
+      },
+      {
+        "path": "/privacy",
+        "status": 404,
+        "detail": "HTTP 404 Not Found"
+      }
+    ],
+    "undefinedFindings": [],
+    "nullFindings": [],
+    "missingJsonLd": [
+      {
+        "path": "/",
+        "expectedType": "WebSite"
+      },
+      {
+        "path": "/sim-racing/rig-builder",
+        "expectedType": "WebApplication"
+      },
+      {
+        "path": "/sim-racing/reviews",
+        "expectedType": "ItemList"
+      },
+      {
+        "path": "/drivers/baghetti",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/alboreto",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/lindblad",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/alliot",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/allison",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/hamilton",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/mieres",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/lewis-evans",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/bira",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/bailey",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/barilla",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/ader",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/ashmore",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/elford",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/andrews",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/prost",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/michael_schumacher",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/hailwood",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/blundell",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/vettel",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/fittipaldi",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/lauda",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/belso",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/collins",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/albon",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/moss",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/colapinto",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/hadjar",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/bottas",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/sainz",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/gasly",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/norris",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/leclerc",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/hulkenberg",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/ralf_schumacher",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/brabham",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/diniz",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/bandini",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/fisichella",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/capelli",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/behra",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/vandoorne",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/latifi",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/perez",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/keke_rosberg",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/regazzoni",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/herbert",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/barrichello",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/magnussen",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/coulthard",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/jack_brabham",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/surtees",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/hawthorn",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/montoya",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/piquet",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/fangio",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/hill",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/mansell",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/hakkinen",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/ascari",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/senna",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/hulme",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/clark",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/stewart",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/rosberg",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/ocon",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/damon_hill",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/button",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/jolyon_palmer",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/resta",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/raikkonen",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/arnoux",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/max_verstappen",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/oliver",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/danner",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/musso",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/giovinazzi",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/davidson",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/brambilla",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/fabi",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/mick_schumacher",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/stuck",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/caffi",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/trips",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/jabouille",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/bourdais",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/wurz",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/ericsson",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/surer",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/pic",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/trintignant",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/modena",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/streiff",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/nannini",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/revson",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/nilsson",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/gonzalez",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/panis",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/moreno",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/bruno_senna",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/ginther",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/johansson",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/piquet_jr",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/pace",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/sirotkin",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/maldonado",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/karthikeyan",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/sato",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/nakajima",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/katayama",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/suzuki",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/brendon_hartley",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/petrov",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/monteiro",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/stroll",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/bearman",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/mass",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/russell",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/andretti",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/antonelli",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/alonso",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/piastri",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/doohan",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/verstappen",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/sweikert",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/agabashian",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/tolan",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/keegan",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/larreta",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/macdowel",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/bernard",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/martini",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/abate",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/loyer",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/walter",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/villota",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/grosjean",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/thorne",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/kevin_magnussen",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/vyver",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/vos",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/mario_andretti",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/toshio_suzuki",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/wietzes",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/tingelstad",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/vonlanthen",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/mcnish",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/schoeller",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/titterington",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/taylor",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/taruffi",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/unser",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/williamson",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/piotti",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/lagorce",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/henry_taylor",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/brown",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/inoue",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/hesnault",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/borgudd",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/Cannoc",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/nicholson",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/sullivan",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/amon",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/gaillard",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/bucci",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/perdisa",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/hart",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/larini",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/chilton",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/rigsby",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/liuzzi",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/scotti",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/wendlinger",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/pescarolo",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/harris",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/edmunds",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/lawrence",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/jarier",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/bob_scott",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/kuhnke",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/george",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/keizan",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/lammers",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/cordts",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/guerrero",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/bridger",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/birger",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/hasemi",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/klodwig",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/george_amick",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/fisher",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/rossi",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/fohr",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/bernoldi",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/kling",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/scarfiotti",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/hall",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/comas",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/neve",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/corrado_fabi",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/marr",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/kladis",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/pantano",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/emery",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/connor",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/cheesbourg",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/hawkins",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/opel",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/spence",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/starrabba",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/tarquini",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/grassi",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/mazzacane",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/bussinello",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/murray",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/pollet",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/dochnal",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/chandhok",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/hansgen",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/mcwithey",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/foitek",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/natili",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/serrurier",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/daly",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/hobbs",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/owen",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/seiffert",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/grignard",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/armi",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/fushida",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/kubica",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/de_vries",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/hutchison",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/mackey",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/constantine",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/tomaso",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/tambay",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/macklin",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/beretta",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/fabre",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/aston",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/charlton",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/guy_mairesse",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/ricardo_rodriguez",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/adolff",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/blignaut",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/naylor",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/crook",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/noda",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/fonder",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/cade",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/salo",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/monarch",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/godia",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/daigh",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/krause",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/jimmy_stewart",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/takagi",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/bueb",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/garde",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/deletraz",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/redman",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/jean",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/enge",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/guerra",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/sanesi",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/lehto",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/kobayashi",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/phil_hill",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/gurney",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/russo",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/kelly",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/needell",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/claes",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/griffith",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/johnstone",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/dempsey_wilson",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/hoshino",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/mcrae",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/magee",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/brundle",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/england",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/klerk",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/brudes",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/quester",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/cecotto",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/jackson",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/chapman",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/roig",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/leston",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/bucknum",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/chiron",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/ramos",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/reed",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/schneider",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/fagioli",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/thompson",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/morgan",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/pian",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/tingle",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/rothengatter",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/heeks",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/frentzen",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/bell",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/berg",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/chimeri",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/thomson",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/blokdyk",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/lees",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/holmes",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/merzario",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/force",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/andersson",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/menditeguy",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/levegh",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/laurent",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/drake",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/fitch",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/schenken",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/ide",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/thiele",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/gugelmin",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/chitwood",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/sutil",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/driver",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/bayol",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/mantovani",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/jover",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/emerson_fittipaldi",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/rodriguez",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/schell",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/montagny",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/pilette",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/teague",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/guelfi",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/bordeu",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/parker",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/manzon",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/swaters",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/edwards",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/prophet",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/moser",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/filippis",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/ongais",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/sala",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/matta",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/rathmann",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/simon",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/bechem",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/bonomi",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/ligier",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/lewis",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/heidfeld",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/ruttman",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/dinsmore",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/monteverdi",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/harrison",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/paletti",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/fairman",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/larrousse",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/herrmann",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/holland",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/lippi",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/cantrell",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/mitter",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/riess",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/campos",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/forini",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/drogo",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/parnell",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/martin",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/georges_berger",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/ireland",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/dalmas",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/ashdown",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/kiesa",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/schlesser",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/gilles_villeneuve",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/depailler",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/bellof",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/may",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/branson",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/duncan_hamilton",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/gibson",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/reventlow",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/slotemaker",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/hans_stuck",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/ribeiro",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/arundell",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/nuckey",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/larrauri",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/laffite",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/duncan",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/doornbos",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/ian_scheckter",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/pease",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/lucas",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/rees",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/donohue",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/john_james",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/lovely",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/louveau",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/perkins",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/sarrazin",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/goethals",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/settember",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/pagani",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/thackwell",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/purley",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/sachs",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/brack",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/mike_taylor",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/etancelin",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/mcgrath",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/nazaruk",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/ray_crawford",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/kinnunen",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/grouillard",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/rebaque",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/ryan",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/forberg",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/duke",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/alan_brown",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/zunino",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/stuppacher",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/boutsen",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/ambrosio",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/wharton",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/speed",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/alesi",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/jones",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/zorzi",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/irvine",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/zonta",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/zanardi",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/satoru_nakajima",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/tsunoda",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/yoong",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/nasr",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/villeneuve",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/wilson_fittipaldi",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/beltoise",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/berger",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/villoresi",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/wunderink",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/hirt",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/paul_russo",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/gardner",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/reece",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/ward",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/homeier",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/wacker",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/wallard",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/creus",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/crockett",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/davis",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/weyant",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/la_caze",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/adamich",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/hurtubise",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/maglioli",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/pon",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/seidel",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/barbazza",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/portago",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/beaufort",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/stacey",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/weidler",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/reg_parnell",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/crossley",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/peters",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/boesel",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/grim",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/geki",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/shawe_taylor",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/palm",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/adams",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/bruni",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/keller",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/gabbiani",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/bristow",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/boyd",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/cross",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/helfrich",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/nakano",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/watson",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/flinterman",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/papis",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/scarborough",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/attwood",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/blanchard",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/cabantous",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/johnson",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/parsons",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/serafini",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/sharp",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/ertl",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/gerini",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/elisian",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/love",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/mayer",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/milhoux",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/firman",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/dumfries",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/wilds",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/ken_miles",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/stommelen",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/oscar_gonzalez",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/alguersuari",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/sargeant",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/ulmen",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/gutierrez",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/abecassis",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/brise",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/fontes",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/botha",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/lunger",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/poele",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/loof",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/chamberlain",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/schindler",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/warwick",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/landi",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/mairesse",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/gachot",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/rahal",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/hayje",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/sparken",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/schuppan",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/flockhart",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/londono",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/gene",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/banks",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/galvez",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/salvadori",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/biondetti",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/piper",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/craft",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/palmer",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/roos",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/orey",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/said",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/ganley",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/schroeder",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/freeland",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/mantz",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/morbidelli",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/boffa",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/weiler",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/bianco",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/volonterio",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/beuttler",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/miller",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/picard",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/walker",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/broeker",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/ghinzani",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/balsa",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/cruz",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/iglesias",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/pironi",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/levrett",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/rooyen",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/rindt",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/anderson",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/jo_schlesser",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/pozzi",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/whitehouse",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/goldsmith",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/ricciardo",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/bonnier",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/belmondo",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/ickx",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/mackay-fraser",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/giunti",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/solana",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/branca",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/henton",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/schiller",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/markus_winkelhock",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/bortoleto",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/foyt",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/courage",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/stohr",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/pietro_fittipaldi",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/ruby",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/john_barber",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/manfred_winkelhock",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/dolhem",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/karch",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/fontana",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/barth",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/ratzenberger",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/hahne",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/lotterer",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/stevens",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/lombardi",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/gould",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/hampshire",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/wehrlein",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/baldi",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/tuero",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/irwin",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/downing",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/vaccarella",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/ashley",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/pretorius",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/pirocchi",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/friesacher",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/yamamoto",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/scott_Brown",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/sutton",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/marques",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/pesenti_rossi",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/glock",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/vergne",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/angelis",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/hunt",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/ayulo",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/scheckter",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/pietsch",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/shelby",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/james",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/fitzau",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/burgess",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/schiattarella",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/barber",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/green",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/kovalainen",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/scherrer",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/mccoy",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/rolt",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/gordini",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/faulkner",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/arnold",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/rose",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/hoffmann",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/hellings",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/tornaco",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/terra",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/gaze",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/veith",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/stevenson",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/bonetto",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/boullion",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/cantoni",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/miles",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/salazar",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/frere",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/bisch",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/lavaggi",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/marsh",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/takahara",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/raby",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/takahashi",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/mcalpine",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/evans",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/hanks",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/wisell",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/leoni",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/magill",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/cabral",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/bianchi",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/gethin",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/clapham",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/lang",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/patrese",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/siffert",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/peterson",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/lamy",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/mazepin",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/aitken",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/comotti",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/williams",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/shelly",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/naspetti",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/rosa",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/prinoth",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/flaherty",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/robarts",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/leslie_johnson",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/byrne",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/obrien",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/rosier",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/gendebien",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/davies",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/galli",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/christie",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/lederle",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/hocking",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/bondurant",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/nalon",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/migault",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/mccarthy",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/maggs",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/daywalt",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/lof",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/brooks",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/graffenried",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/pirro",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/amick",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/templeman",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/greene",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/trevor_taylor",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/marko",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/whitehead",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/giacomelli",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/bassi",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/vukovich",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/carini",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/poore",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/beauman",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/scarlatti",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/andre_pilette",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/trulli",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/widdows",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/herman",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/albers",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/hoyt",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/bauer",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/reutemann",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/marimon",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/gerard",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/pizzonia",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/webb",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/chaboud",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/uria",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/farina",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/niemann",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/daponte",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/munaron",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/koinigg",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/lennep",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/wilson",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/follmer",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/kessel",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/niday",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/campbell-jones",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/dick_rathmann",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/peter_walker",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/bueno",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/cabianca",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/fischer",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/riseley_prichard",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/mcdowell",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/posey",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/serra",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/cesaris",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/apicella",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/leclere",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/kvyat",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/richardson",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/parkes",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/ball",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/legat",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/merhi",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/halford",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/bettenhausen",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/penske",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/linden",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/jerry_unser",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/hartley",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/pieterse",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/estefano",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/fry",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/bleekemolen",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/acheson",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/graham_whitehead",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/gounon",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/walt_brown",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/eaton",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/crawford",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/vic_wilson",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/george_connor",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/turner",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/sommer",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/buemi",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/zhou",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/massa",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/pryce",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/klien",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/gavin",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/rhodes",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/raphanel",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/niedermayr",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/montermini",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/ian_stewart",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/mazet",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/larson",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/gartner",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/rol",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/cheever",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/rosset",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/gamble",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/tunmer",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/darter",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/gregory",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/garrett",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/ahrens",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/collomb",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/klenk",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/mclaren",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/bryan",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/donnelly",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/charrington",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/binder",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/castellotti",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/chiesa",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/brandon",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/badoer",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/baumgartner",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/jules_bianchi",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/haryanto",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/lawson",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/burti",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/cevert",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/drivers/webber",
+        "expectedType": "Person"
+      },
+      {
+        "path": "/teams/super_aguri",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/cooper-borgward",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/eagle-climax",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/scarab",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/era",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/kurtis_kraft",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/jbw",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/simtek",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/lancia",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/bmw_sauber",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/emeryson",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/penske",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/hrt",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/cooper-maserati",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/schroeder",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/surtees",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/brp",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/dunn",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/mf1",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/lotus-brm",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/mclaren-ford",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/lambo",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/frazer_nash",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/lesovsky",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/sutton",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/lds",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/shadow",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/nichels",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/kuzma",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/tecno",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/ats",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/veritas",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/re",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/snowberger",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/adams",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/lago",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/pawl",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/turner",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/hwm",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/stewart",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/bar",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/lotus_f1",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/rial",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/caterham",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/marchese",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/brabham-brm",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/manor",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/sherman",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/jaguar",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/toleman",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/porsche",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/brabham-ford",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/merzario",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/moore",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/dallara",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/rae",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/wetteroth",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/eagle-weslake",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/march-alfa_romeo",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/ags",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/mclaren-seren",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/pankratz",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/leyton",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/boro",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/brabham-alfa_romeo",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/fittipaldi",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/lotus_racing",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/de_tomaso-alfa_romeo",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/cooper-ats",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/pacific",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/jordan",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/zakspeed",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/alphatauri",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/cooper-brm",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/force_india",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/aston_martin",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/ewing",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/scirocco",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/spirit",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/spyker",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/watson",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/gordini",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/lola",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/fondmetal",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/alta",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/lotus-ford",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/prost",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/eurobrun",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/iso_marlboro",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/brabham-repco",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/brabham-climax",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/hesketh",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/footwork",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/elder",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/cooper-climax",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/amon",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/onyx",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/marussia",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/lotus-pw",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/lotus-climax",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/tomaso",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/lds-alfa_romeo",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/epperly",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/maserati",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/matra-ford",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/phillips",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/forti",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/parnelli",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/lds-climax",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/shadow-ford",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/vhristensen",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/osella",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/honda",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/trojan",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/rb",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/connaught",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/theodore",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/olson",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/shannon",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/simca",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/meskowski",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/coloni",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/wolf",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/afm",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/hall",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/de_tomaso-osca",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/stevens",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/ram",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/ensign",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/mclaren-brm",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/cooper-ferrari",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/virgin",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/hill",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/butterworth",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/deidt",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/larrousse",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/behra-porsche",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/haas",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/langley",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/toro_rosso",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/trevis",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/alfa",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/racing_point",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/march-ford",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/arrows",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/sauber",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/cooper-alfa_romeo",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/bugatti",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/cooper-castellotti",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/bmw",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/arzani-volpini",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/bellasi",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/connew",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/toyota",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/brm-ford",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/bromme",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/emw",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/derrington",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/ferguson",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/cooper-osca",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/lec",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/kojima",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/del_roy",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/gilby",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/klenk",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/enb",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/lyncar",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/moda",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/mclaren-alfa_romeo",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/mbm",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/martini",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/maki",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/milano",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/lotus-maserati",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/osca",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/lotus-borgward",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/spyker_mf1",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/politoys",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/protos",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/stebro",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/tec-mec",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/token",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/rebaque",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/shadow-matra",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/march",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/minardi",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/team_lotus",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/brawn",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/vanwall",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/brm",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/benetton",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/renault",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/matra",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/ligier",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/tyrrell",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/cadillac",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/audi",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/alpine",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/williams",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/racing_bulls",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/mclaren",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/brabham",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/cooper",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/mercedes",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/ferrari",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/teams/red_bull",
+        "expectedType": "SportsTeam"
+      },
+      {
+        "path": "/seasons/2026",
+        "expectedType": "WebPage"
+      },
+      {
+        "path": "/seasons/2025",
+        "expectedType": "WebPage"
+      },
+      {
+        "path": "/seasons/1958",
+        "expectedType": "WebPage"
+      },
+      {
+        "path": "/seasons/1959",
+        "expectedType": "WebPage"
+      },
+      {
+        "path": "/seasons/1975",
+        "expectedType": "WebPage"
+      },
+      {
+        "path": "/seasons/1964",
+        "expectedType": "WebPage"
+      },
+      {
+        "path": "/seasons/1982",
+        "expectedType": "WebPage"
+      },
+      {
+        "path": "/seasons/1977",
+        "expectedType": "WebPage"
+      },
+      {
+        "path": "/seasons/1966",
+        "expectedType": "WebPage"
+      },
+      {
+        "path": "/seasons/1960",
+        "expectedType": "WebPage"
+      },
+      {
+        "path": "/seasons/1956",
+        "expectedType": "WebPage"
+      },
+      {
+        "path": "/seasons/1973",
+        "expectedType": "WebPage"
+      },
+      {
+        "path": "/seasons/1969",
+        "expectedType": "WebPage"
+      },
+      {
+        "path": "/seasons/1951",
+        "expectedType": "WebPage"
+      },
+      {
+        "path": "/seasons/1954",
+        "expectedType": "WebPage"
+      },
+      {
+        "path": "/seasons/1955",
+        "expectedType": "WebPage"
+      },
+      {
+        "path": "/seasons/1967",
+        "expectedType": "WebPage"
+      },
+      {
+        "path": "/seasons/1957",
+        "expectedType": "WebPage"
+      },
+      {
+        "path": "/seasons/1971",
+        "expectedType": "WebPage"
+      },
+      {
+        "path": "/seasons/1981",
+        "expectedType": "WebPage"
+      },
+      {
+        "path": "/seasons/1972",
+        "expectedType": "WebPage"
+      },
+      {
+        "path": "/seasons/1963",
+        "expectedType": "WebPage"
+      },
+      {
+        "path": "/seasons/1965",
+        "expectedType": "WebPage"
+      },
+      {
+        "path": "/seasons/1962",
+        "expectedType": "WebPage"
+      },
+      {
+        "path": "/seasons/1983",
+        "expectedType": "WebPage"
+      },
+      {
+        "path": "/seasons/1961",
+        "expectedType": "WebPage"
+      },
+      {
+        "path": "/seasons/1953",
+        "expectedType": "WebPage"
+      },
+      {
+        "path": "/seasons/1978",
+        "expectedType": "WebPage"
+      },
+      {
+        "path": "/seasons/1968",
+        "expectedType": "WebPage"
+      },
+      {
+        "path": "/seasons/1952",
+        "expectedType": "WebPage"
+      },
+      {
+        "path": "/seasons/2000",
+        "expectedType": "WebPage"
+      },
+      {
+        "path": "/seasons/1970",
+        "expectedType": "WebPage"
+      },
+      {
+        "path": "/seasons/1980",
+        "expectedType": "WebPage"
+      },
+      {
+        "path": "/seasons/1976",
+        "expectedType": "WebPage"
+      },
+      {
+        "path": "/seasons/1974",
+        "expectedType": "WebPage"
+      },
+      {
+        "path": "/seasons/1950",
+        "expectedType": "WebPage"
+      },
+      {
+        "path": "/seasons/2004",
+        "expectedType": "WebPage"
+      },
+      {
+        "path": "/seasons/2001",
+        "expectedType": "WebPage"
+      },
+      {
+        "path": "/seasons/2002",
+        "expectedType": "WebPage"
+      },
+      {
+        "path": "/seasons/1979",
+        "expectedType": "WebPage"
+      },
+      {
+        "path": "/seasons/1997",
+        "expectedType": "WebPage"
+      },
+      {
+        "path": "/seasons/1999",
+        "expectedType": "WebPage"
+      },
+      {
+        "path": "/seasons/2003",
+        "expectedType": "WebPage"
+      },
+      {
+        "path": "/seasons/2009",
+        "expectedType": "WebPage"
+      },
+      {
+        "path": "/seasons/2008",
+        "expectedType": "WebPage"
+      },
+      {
+        "path": "/seasons/1994",
+        "expectedType": "WebPage"
+      },
+      {
+        "path": "/seasons/2007",
+        "expectedType": "WebPage"
+      },
+      {
+        "path": "/seasons/2010",
+        "expectedType": "WebPage"
+      },
+      {
+        "path": "/seasons/2011",
+        "expectedType": "WebPage"
+      },
+      {
+        "path": "/seasons/2012",
+        "expectedType": "WebPage"
+      },
+      {
+        "path": "/seasons/1996",
+        "expectedType": "WebPage"
+      },
+      {
+        "path": "/seasons/1985",
+        "expectedType": "WebPage"
+      },
+      {
+        "path": "/seasons/2022",
+        "expectedType": "WebPage"
+      },
+      {
+        "path": "/seasons/1992",
+        "expectedType": "WebPage"
+      },
+      {
+        "path": "/seasons/1989",
+        "expectedType": "WebPage"
+      },
+      {
+        "path": "/seasons/2013",
+        "expectedType": "WebPage"
+      },
+      {
+        "path": "/seasons/1987",
+        "expectedType": "WebPage"
+      },
+      {
+        "path": "/seasons/1993",
+        "expectedType": "WebPage"
+      },
+      {
+        "path": "/seasons/2023",
+        "expectedType": "WebPage"
+      },
+      {
+        "path": "/seasons/1986",
+        "expectedType": "WebPage"
+      },
+      {
+        "path": "/seasons/2014",
+        "expectedType": "WebPage"
+      },
+      {
+        "path": "/seasons/1995",
+        "expectedType": "WebPage"
+      },
+      {
+        "path": "/seasons/2006",
+        "expectedType": "WebPage"
+      },
+      {
+        "path": "/seasons/1988",
+        "expectedType": "WebPage"
+      },
+      {
+        "path": "/seasons/1990",
+        "expectedType": "WebPage"
+      },
+      {
+        "path": "/seasons/1984",
+        "expectedType": "WebPage"
+      },
+      {
+        "path": "/seasons/2024",
+        "expectedType": "WebPage"
+      },
+      {
+        "path": "/seasons/1991",
+        "expectedType": "WebPage"
+      },
+      {
+        "path": "/seasons/1998",
+        "expectedType": "WebPage"
+      },
+      {
+        "path": "/seasons/2005",
+        "expectedType": "WebPage"
+      },
+      {
+        "path": "/seasons/2020",
+        "expectedType": "WebPage"
+      },
+      {
+        "path": "/seasons/2018",
+        "expectedType": "WebPage"
+      },
+      {
+        "path": "/seasons/2016",
+        "expectedType": "WebPage"
+      },
+      {
+        "path": "/seasons/2015",
+        "expectedType": "WebPage"
+      },
+      {
+        "path": "/seasons/2019",
+        "expectedType": "WebPage"
+      },
+      {
+        "path": "/seasons/2021",
+        "expectedType": "WebPage"
+      },
+      {
+        "path": "/seasons/2017",
+        "expectedType": "WebPage"
+      }
+    ],
+    "invalidJsonLd": []
+  }
+}

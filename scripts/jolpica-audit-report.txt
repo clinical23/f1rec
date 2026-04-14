@@ -1,0 +1,50 @@
+F1REC vs JOLPICA CROSS-REFERENCE — 2026-04-13T20:12:24.605Z
+==========================================
+
+Jolpica HTTP requests used: 116 (limit 200)
+
+CHAMPIONSHIP WINNERS (seasons with champion_driver_id in DB):
+  60 of 74 match
+  ❌ 2005: F1Rec "Fernando Alonso" vs Jolpica "(no data)"
+  ❌ 2006: F1Rec "Fernando Alonso" vs Jolpica "(no data)"
+  ❌ 2008: F1Rec "Lewis Hamilton" vs Jolpica "(no data)"
+  ❌ 2009: F1Rec "Jenson Button" vs Jolpica "(no data)"
+  ❌ 2011: F1Rec "Sebastian Vettel" vs Jolpica "(no data)"
+  ❌ 2012: F1Rec "Sebastian Vettel" vs Jolpica "(no data)"
+  ❌ 2014: F1Rec "Lewis Hamilton" vs Jolpica "(no data)"
+  ❌ 2015: F1Rec "Lewis Hamilton" vs Jolpica "(no data)"
+  ❌ 2017: F1Rec "Lewis Hamilton" vs Jolpica "(no data)"
+  ❌ 2018: F1Rec "Lewis Hamilton" vs Jolpica "(no data)"
+  ❌ 2020: F1Rec "Lewis Hamilton" vs Jolpica "(no data)"
+  ❌ 2021: F1Rec "Max Verstappen" vs Jolpica "(no data)"
+  ❌ 2023: F1Rec "Max Verstappen" vs Jolpica "(no data)"
+  ❌ 2024: F1Rec "Max Verstappen" vs Jolpica "(no data)"
+
+CONSTRUCTOR CHAMPIONS:
+  20 of 42 match
+  ❌ 2004: F1Rec "Ferrari" vs Jolpica "(no data)"
+  ❌ 2005: F1Rec "Renault" vs Jolpica "(no data)"
+  ❌ 2006: F1Rec "Renault" vs Jolpica "(no data)"
+  ❌ 2007: F1Rec "Ferrari" vs Jolpica "(no data)"
+  ❌ 2008: F1Rec "Ferrari" vs Jolpica "(no data)"
+  ❌ 2009: F1Rec "Brawn" vs Jolpica "(no data)"
+  ❌ 2010: F1Rec "Red Bull" vs Jolpica "(no data)"
+  ❌ 2011: F1Rec "Red Bull" vs Jolpica "(no data)"
+  ❌ 2012: F1Rec "Red Bull" vs Jolpica "(no data)"
+  ❌ 2013: F1Rec "Red Bull" vs Jolpica "(no data)"
+  ❌ 2014: F1Rec "Mercedes" vs Jolpica "(no data)"
+  ❌ 2015: F1Rec "Mercedes" vs Jolpica "(no data)"
+  ❌ 2016: F1Rec "Mercedes" vs Jolpica "(no data)"
+  ❌ 2017: F1Rec "Mercedes" vs Jolpica "(no data)"
+  ❌ 2018: F1Rec "Mercedes" vs Jolpica "(no data)"
+  ❌ 2019: F1Rec "Mercedes" vs Jolpica "(no data)"
+  ❌ 2020: F1Rec "Mercedes" vs Jolpica "(no data)"
+  ❌ 2021: F1Rec "Mercedes" vs Jolpica "(no data)"
+  ❌ 2022: F1Rec "Red Bull" vs Jolpica "(no data)"
+  ❌ 2023: F1Rec "Red Bull" vs Jolpica "(no data)"
+  ❌ 2024: F1Rec "McLaren" vs Jolpica "(no data)"
+  ❌ 2025: F1Rec "McLaren" vs Jolpica "(no data)"
+
+SUMMARY:
+  Total Jolpica requests: 116
+  Mismatch rows (approx): 36

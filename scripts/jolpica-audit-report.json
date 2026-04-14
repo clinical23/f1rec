@@ -1,0 +1,708 @@
+{
+  "generatedAt": "2026-04-13T20:12:24.606Z",
+  "quick": true,
+  "jolpicaRequests": 116,
+  "jolpicaBudgetExceeded": false,
+  "wdc": [
+    {
+      "year": 1950,
+      "ours": "Nino Farina",
+      "jolpica": "Nino Farina",
+      "match": true
+    },
+    {
+      "year": 1951,
+      "ours": "Juan Fangio",
+      "jolpica": "Juan Fangio",
+      "match": true
+    },
+    {
+      "year": 1952,
+      "ours": "Alberto Ascari",
+      "jolpica": "Alberto Ascari",
+      "match": true
+    },
+    {
+      "year": 1953,
+      "ours": "Alberto Ascari",
+      "jolpica": "Alberto Ascari",
+      "match": true
+    },
+    {
+      "year": 1954,
+      "ours": "Juan Fangio",
+      "jolpica": "Juan Fangio",
+      "match": true
+    },
+    {
+      "year": 1955,
+      "ours": "Juan Fangio",
+      "jolpica": "Juan Fangio",
+      "match": true
+    },
+    {
+      "year": 1956,
+      "ours": "Juan Fangio",
+      "jolpica": "Juan Fangio",
+      "match": true
+    },
+    {
+      "year": 1957,
+      "ours": "Juan Fangio",
+      "jolpica": "Juan Fangio",
+      "match": true
+    },
+    {
+      "year": 1958,
+      "ours": "Mike Hawthorn",
+      "jolpica": "Mike Hawthorn",
+      "match": true
+    },
+    {
+      "year": 1959,
+      "ours": "Jack Brabham",
+      "jolpica": "Jack Brabham",
+      "match": true
+    },
+    {
+      "year": 1960,
+      "ours": "Jack Brabham",
+      "jolpica": "Jack Brabham",
+      "match": true
+    },
+    {
+      "year": 1961,
+      "ours": "Phil Hill",
+      "jolpica": "Phil Hill",
+      "match": true
+    },
+    {
+      "year": 1963,
+      "ours": "Jim Clark",
+      "jolpica": "Jim Clark",
+      "match": true
+    },
+    {
+      "year": 1964,
+      "ours": "John Surtees",
+      "jolpica": "John Surtees",
+      "match": true
+    },
+    {
+      "year": 1965,
+      "ours": "Jim Clark",
+      "jolpica": "Jim Clark",
+      "match": true
+    },
+    {
+      "year": 1966,
+      "ours": "Jack Brabham",
+      "jolpica": "Jack Brabham",
+      "match": true
+    },
+    {
+      "year": 1967,
+      "ours": "Denny Hulme",
+      "jolpica": "Denny Hulme",
+      "match": true
+    },
+    {
+      "year": 1969,
+      "ours": "Jackie Stewart",
+      "jolpica": "Jackie Stewart",
+      "match": true
+    },
+    {
+      "year": 1970,
+      "ours": "Jochen Rindt",
+      "jolpica": "Jochen Rindt",
+      "match": true
+    },
+    {
+      "year": 1971,
+      "ours": "Jackie Stewart",
+      "jolpica": "Jackie Stewart",
+      "match": true
+    },
+    {
+      "year": 1972,
+      "ours": "Emerson Fittipaldi",
+      "jolpica": "Emerson Fittipaldi",
+      "match": true
+    },
+    {
+      "year": 1973,
+      "ours": "Jackie Stewart",
+      "jolpica": "Jackie Stewart",
+      "match": true
+    },
+    {
+      "year": 1974,
+      "ours": "Emerson Fittipaldi",
+      "jolpica": "Emerson Fittipaldi",
+      "match": true
+    },
+    {
+      "year": 1975,
+      "ours": "Niki Lauda",
+      "jolpica": "Niki Lauda",
+      "match": true
+    },
+    {
+      "year": 1976,
+      "ours": "James Hunt",
+      "jolpica": "James Hunt",
+      "match": true
+    },
+    {
+      "year": 1977,
+      "ours": "Niki Lauda",
+      "jolpica": "Niki Lauda",
+      "match": true
+    },
+    {
+      "year": 1978,
+      "ours": "Mario Andretti",
+      "jolpica": "Mario Andretti",
+      "match": true
+    },
+    {
+      "year": 1979,
+      "ours": "Jody Scheckter",
+      "jolpica": "Jody Scheckter",
+      "match": true
+    },
+    {
+      "year": 1980,
+      "ours": "Alan Jones",
+      "jolpica": "Alan Jones",
+      "match": true
+    },
+    {
+      "year": 1981,
+      "ours": "Nelson Piquet",
+      "jolpica": "Nelson Piquet",
+      "match": true
+    },
+    {
+      "year": 1982,
+      "ours": "Keke Rosberg",
+      "jolpica": "Keke Rosberg",
+      "match": true
+    },
+    {
+      "year": 1983,
+      "ours": "Nelson Piquet",
+      "jolpica": "Nelson Piquet",
+      "match": true
+    },
+    {
+      "year": 1984,
+      "ours": "Niki Lauda",
+      "jolpica": "Niki Lauda",
+      "match": true
+    },
+    {
+      "year": 1985,
+      "ours": "Alain Prost",
+      "jolpica": "Alain Prost",
+      "match": true
+    },
+    {
+      "year": 1986,
+      "ours": "Alain Prost",
+      "jolpica": "Alain Prost",
+      "match": true
+    },
+    {
+      "year": 1987,
+      "ours": "Nelson Piquet",
+      "jolpica": "Nelson Piquet",
+      "match": true
+    },
+    {
+      "year": 1988,
+      "ours": "Ayrton Senna",
+      "jolpica": "Ayrton Senna",
+      "match": true
+    },
+    {
+      "year": 1989,
+      "ours": "Alain Prost",
+      "jolpica": "Alain Prost",
+      "match": true
+    },
+    {
+      "year": 1990,
+      "ours": "Ayrton Senna",
+      "jolpica": "Ayrton Senna",
+      "match": true
+    },
+    {
+      "year": 1991,
+      "ours": "Ayrton Senna",
+      "jolpica": "Ayrton Senna",
+      "match": true
+    },
+    {
+      "year": 1992,
+      "ours": "Nigel Mansell",
+      "jolpica": "Nigel Mansell",
+      "match": true
+    },
+    {
+      "year": 1993,
+      "ours": "Alain Prost",
+      "jolpica": "Alain Prost",
+      "match": true
+    },
+    {
+      "year": 1994,
+      "ours": "Michael Schumacher",
+      "jolpica": "Michael Schumacher",
+      "match": true
+    },
+    {
+      "year": 1995,
+      "ours": "Michael Schumacher",
+      "jolpica": "Michael Schumacher",
+      "match": true
+    },
+    {
+      "year": 1996,
+      "ours": "Damon Hill",
+      "jolpica": "Damon Hill",
+      "match": true
+    },
+    {
+      "year": 1997,
+      "ours": "Jacques Villeneuve",
+      "jolpica": "Jacques Villeneuve",
+      "match": true
+    },
+    {
+      "year": 1998,
+      "ours": "Mika Häkkinen",
+      "jolpica": "Mika Häkkinen",
+      "match": true
+    },
+    {
+      "year": 1999,
+      "ours": "Mika Häkkinen",
+      "jolpica": "Mika Häkkinen",
+      "match": true
+    },
+    {
+      "year": 2000,
+      "ours": "Michael Schumacher",
+      "jolpica": "Michael Schumacher",
+      "match": true
+    },
+    {
+      "year": 2001,
+      "ours": "Michael Schumacher",
+      "jolpica": "Michael Schumacher",
+      "match": true
+    },
+    {
+      "year": 2002,
+      "ours": "Michael Schumacher",
+      "jolpica": "Michael Schumacher",
+      "match": true
+    },
+    {
+      "year": 2003,
+      "ours": "Michael Schumacher",
+      "jolpica": "Michael Schumacher",
+      "match": true
+    },
+    {
+      "year": 2004,
+      "ours": "Michael Schumacher",
+      "jolpica": "Michael Schumacher",
+      "match": true
+    },
+    {
+      "year": 2005,
+      "ours": "Fernando Alonso",
+      "jolpica": "(no data)",
+      "match": false
+    },
+    {
+      "year": 2006,
+      "ours": "Fernando Alonso",
+      "jolpica": "(no data)",
+      "match": false
+    },
+    {
+      "year": 2007,
+      "ours": "Kimi Räikkönen",
+      "jolpica": "Kimi Räikkönen",
+      "match": true
+    },
+    {
+      "year": 2008,
+      "ours": "Lewis Hamilton",
+      "jolpica": "(no data)",
+      "match": false
+    },
+    {
+      "year": 2009,
+      "ours": "Jenson Button",
+      "jolpica": "(no data)",
+      "match": false
+    },
+    {
+      "year": 2010,
+      "ours": "Sebastian Vettel",
+      "jolpica": "Sebastian Vettel",
+      "match": true
+    },
+    {
+      "year": 2011,
+      "ours": "Sebastian Vettel",
+      "jolpica": "(no data)",
+      "match": false
+    },
+    {
+      "year": 2012,
+      "ours": "Sebastian Vettel",
+      "jolpica": "(no data)",
+      "match": false
+    },
+    {
+      "year": 2013,
+      "ours": "Sebastian Vettel",
+      "jolpica": "Sebastian Vettel",
+      "match": true
+    },
+    {
+      "year": 2014,
+      "ours": "Lewis Hamilton",
+      "jolpica": "(no data)",
+      "match": false
+    },
+    {
+      "year": 2015,
+      "ours": "Lewis Hamilton",
+      "jolpica": "(no data)",
+      "match": false
+    },
+    {
+      "year": 2016,
+      "ours": "Nico Rosberg",
+      "jolpica": "Nico Rosberg",
+      "match": true
+    },
+    {
+      "year": 2017,
+      "ours": "Lewis Hamilton",
+      "jolpica": "(no data)",
+      "match": false
+    },
+    {
+      "year": 2018,
+      "ours": "Lewis Hamilton",
+      "jolpica": "(no data)",
+      "match": false
+    },
+    {
+      "year": 2019,
+      "ours": "Lewis Hamilton",
+      "jolpica": "Lewis Hamilton",
+      "match": true
+    },
+    {
+      "year": 2020,
+      "ours": "Lewis Hamilton",
+      "jolpica": "(no data)",
+      "match": false
+    },
+    {
+      "year": 2021,
+      "ours": "Max Verstappen",
+      "jolpica": "(no data)",
+      "match": false
+    },
+    {
+      "year": 2022,
+      "ours": "Max Verstappen",
+      "jolpica": "Max Verstappen",
+      "match": true
+    },
+    {
+      "year": 2023,
+      "ours": "Max Verstappen",
+      "jolpica": "(no data)",
+      "match": false
+    },
+    {
+      "year": 2024,
+      "ours": "Max Verstappen",
+      "jolpica": "(no data)",
+      "match": false
+    },
+    {
+      "year": 2025,
+      "ours": "Lando Norris",
+      "jolpica": "Lando Norris",
+      "match": true
+    }
+  ],
+  "wcc": [
+    {
+      "year": 1984,
+      "ours": "McLaren",
+      "jolpica": "McLaren",
+      "match": true
+    },
+    {
+      "year": 1985,
+      "ours": "McLaren",
+      "jolpica": "McLaren",
+      "match": true
+    },
+    {
+      "year": 1986,
+      "ours": "Williams",
+      "jolpica": "Williams",
+      "match": true
+    },
+    {
+      "year": 1987,
+      "ours": "Williams",
+      "jolpica": "Williams",
+      "match": true
+    },
+    {
+      "year": 1988,
+      "ours": "McLaren",
+      "jolpica": "McLaren",
+      "match": true
+    },
+    {
+      "year": 1989,
+      "ours": "McLaren",
+      "jolpica": "McLaren",
+      "match": true
+    },
+    {
+      "year": 1990,
+      "ours": "McLaren",
+      "jolpica": "McLaren",
+      "match": true
+    },
+    {
+      "year": 1991,
+      "ours": "McLaren",
+      "jolpica": "McLaren",
+      "match": true
+    },
+    {
+      "year": 1992,
+      "ours": "Williams",
+      "jolpica": "Williams",
+      "match": true
+    },
+    {
+      "year": 1993,
+      "ours": "Williams",
+      "jolpica": "Williams",
+      "match": true
+    },
+    {
+      "year": 1994,
+      "ours": "Williams",
+      "jolpica": "Williams",
+      "match": true
+    },
+    {
+      "year": 1995,
+      "ours": "Benetton",
+      "jolpica": "Benetton",
+      "match": true
+    },
+    {
+      "year": 1996,
+      "ours": "Williams",
+      "jolpica": "Williams",
+      "match": true
+    },
+    {
+      "year": 1997,
+      "ours": "Williams",
+      "jolpica": "Williams",
+      "match": true
+    },
+    {
+      "year": 1998,
+      "ours": "McLaren",
+      "jolpica": "McLaren",
+      "match": true
+    },
+    {
+      "year": 1999,
+      "ours": "Ferrari",
+      "jolpica": "Ferrari",
+      "match": true
+    },
+    {
+      "year": 2000,
+      "ours": "Ferrari",
+      "jolpica": "Ferrari",
+      "match": true
+    },
+    {
+      "year": 2001,
+      "ours": "Ferrari",
+      "jolpica": "Ferrari",
+      "match": true
+    },
+    {
+      "year": 2002,
+      "ours": "Ferrari",
+      "jolpica": "Ferrari",
+      "match": true
+    },
+    {
+      "year": 2003,
+      "ours": "Ferrari",
+      "jolpica": "Ferrari",
+      "match": true
+    },
+    {
+      "year": 2004,
+      "ours": "Ferrari",
+      "jolpica": "(no data)",
+      "match": false
+    },
+    {
+      "year": 2005,
+      "ours": "Renault",
+      "jolpica": "(no data)",
+      "match": false
+    },
+    {
+      "year": 2006,
+      "ours": "Renault",
+      "jolpica": "(no data)",
+      "match": false
+    },
+    {
+      "year": 2007,
+      "ours": "Ferrari",
+      "jolpica": "(no data)",
+      "match": false
+    },
+    {
+      "year": 2008,
+      "ours": "Ferrari",
+      "jolpica": "(no data)",
+      "match": false
+    },
+    {
+      "year": 2009,
+      "ours": "Brawn",
+      "jolpica": "(no data)",
+      "match": false
+    },
+    {
+      "year": 2010,
+      "ours": "Red Bull",
+      "jolpica": "(no data)",
+      "match": false
+    },
+    {
+      "year": 2011,
+      "ours": "Red Bull",
+      "jolpica": "(no data)",
+      "match": false
+    },
+    {
+      "year": 2012,
+      "ours": "Red Bull",
+      "jolpica": "(no data)",
+      "match": false
+    },
+    {
+      "year": 2013,
+      "ours": "Red Bull",
+      "jolpica": "(no data)",
+      "match": false
+    },
+    {
+      "year": 2014,
+      "ours": "Mercedes",
+      "jolpica": "(no data)",
+      "match": false
+    },
+    {
+      "year": 2015,
+      "ours": "Mercedes",
+      "jolpica": "(no data)",
+      "match": false
+    },
+    {
+      "year": 2016,
+      "ours": "Mercedes",
+      "jolpica": "(no data)",
+      "match": false
+    },
+    {
+      "year": 2017,
+      "ours": "Mercedes",
+      "jolpica": "(no data)",
+      "match": false
+    },
+    {
+      "year": 2018,
+      "ours": "Mercedes",
+      "jolpica": "(no data)",
+      "match": false
+    },
+    {
+      "year": 2019,
+      "ours": "Mercedes",
+      "jolpica": "(no data)",
+      "match": false
+    },
+    {
+      "year": 2020,
+      "ours": "Mercedes",
+      "jolpica": "(no data)",
+      "match": false
+    },
+    {
+      "year": 2021,
+      "ours": "Mercedes",
+      "jolpica": "(no data)",
+      "match": false
+    },
+    {
+      "year": 2022,
+      "ours": "Red Bull",
+      "jolpica": "(no data)",
+      "match": false
+    },
+    {
+      "year": 2023,
+      "ours": "Red Bull",
+      "jolpica": "(no data)",
+      "match": false
+    },
+    {
+      "year": 2024,
+      "ours": "McLaren",
+      "jolpica": "(no data)",
+      "match": false
+    },
+    {
+      "year": 2025,
+      "ours": "McLaren",
+      "jolpica": "(no data)",
+      "match": false
+    }
+  ],
+  "raceWinners": [],
+  "careerWins": []
+}

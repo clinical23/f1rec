@@ -1,0 +1,840 @@
+{
+  "generatedAt": "2026-04-14T06:33:01.861Z",
+  "baseUrl": "https://f1rec.com",
+  "concurrency": 10,
+  "delayMs": 75,
+  "summary": {
+    "totalUrlsChecked": 1130,
+    "http200Count": 1130,
+    "httpErrors": [],
+    "undefinedFindings": [
+      {
+        "path": "/teams/scarab",
+        "snippet": "ntent=\"Complete Formula 1 constructor statistics for Scarab. 0 wins, 0 podiums, undefined championships across 1 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/eagle-climax",
+        "snippet": "\"Complete Formula 1 constructor statistics for Eagle-Climax. 0 wins, 0 podiums, undefined championships across 3 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/cooper-borgward",
+        "snippet": "mplete Formula 1 constructor statistics for Cooper-Borgward. 0 wins, 0 podiums, undefined championships across 1 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/super_aguri",
+        "snippet": "=\"Complete Formula 1 constructor statistics for Super Aguri. 0 wins, 0 podiums, undefined championships across 3 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/era",
+        "snippet": "content=\"Complete Formula 1 constructor statistics for ERA. 0 wins, 0 podiums, undefined championships across 3 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/kurtis_kraft",
+        "snippet": "Complete Formula 1 constructor statistics for Kurtis Kraft. 5 wins, 19 podiums, undefined championships across 11 seasons.\"/><meta name=\"keywords\" content=\"Form"
+      },
+      {
+        "path": "/teams/penske",
+        "snippet": "ntent=\"Complete Formula 1 constructor statistics for Penske. 1 wins, 3 podiums, undefined championships across 4 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/hrt",
+        "snippet": "content=\"Complete Formula 1 constructor statistics for HRT. 0 wins, 0 podiums, undefined championships across 3 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/surtees",
+        "snippet": "tent=\"Complete Formula 1 constructor statistics for Surtees. 0 wins, 2 podiums, undefined championships across 9 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/simtek",
+        "snippet": "ntent=\"Complete Formula 1 constructor statistics for Simtek. 0 wins, 0 podiums, undefined championships across 2 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/jbw",
+        "snippet": "content=\"Complete Formula 1 constructor statistics for JBW. 0 wins, 0 podiums, undefined championships across 3 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/bmw_sauber",
+        "snippet": "=\"Complete Formula 1 constructor statistics for BMW Sauber. 1 wins, 17 podiums, undefined championships across 4 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/emeryson",
+        "snippet": "ent=\"Complete Formula 1 constructor statistics for Emeryson. 0 wins, 0 podiums, undefined championships across 3 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/cooper-maserati",
+        "snippet": "mplete Formula 1 constructor statistics for Cooper-Maserati. 2 wins, 7 podiums, undefined championships across 9 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/schroeder",
+        "snippet": "nt=\"Complete Formula 1 constructor statistics for Schroeder. 0 wins, 0 podiums, undefined championships across 4 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/lancia",
+        "snippet": "ntent=\"Complete Formula 1 constructor statistics for Lancia. 0 wins, 1 podiums, undefined championships across 2 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/dunn",
+        "snippet": "content=\"Complete Formula 1 constructor statistics for Dunn. 0 wins, 0 podiums, undefined championships across 3 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/brp",
+        "snippet": "content=\"Complete Formula 1 constructor statistics for BRP. 0 wins, 0 podiums, undefined championships across 2 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/lotus-brm",
+        "snippet": "nt=\"Complete Formula 1 constructor statistics for Lotus-BRM. 1 wins, 2 podiums, undefined championships across 6 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/lds",
+        "snippet": "content=\"Complete Formula 1 constructor statistics for LDS. 0 wins, 0 podiums, undefined championships across 3 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/mclaren-ford",
+        "snippet": "Complete Formula 1 constructor statistics for McLaren-Ford. 4 wins, 16 podiums, undefined championships across 5 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/mf1",
+        "snippet": "content=\"Complete Formula 1 constructor statistics for MF1. 0 wins, 0 podiums, undefined championships across 1 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/lesovsky",
+        "snippet": "ent=\"Complete Formula 1 constructor statistics for Lesovsky. 0 wins, 1 podiums, undefined championships across 9 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/frazer_nash",
+        "snippet": "=\"Complete Formula 1 constructor statistics for Frazer Nash. 0 wins, 0 podiums, undefined championships across 1 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/sutton",
+        "snippet": "ntent=\"Complete Formula 1 constructor statistics for Sutton. 0 wins, 0 podiums, undefined championships across 1 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/lambo",
+        "snippet": "ontent=\"Complete Formula 1 constructor statistics for Lambo. 0 wins, 0 podiums, undefined championships across 1 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/veritas",
+        "snippet": "tent=\"Complete Formula 1 constructor statistics for Veritas. 0 wins, 0 podiums, undefined championships across 3 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/adams",
+        "snippet": "ontent=\"Complete Formula 1 constructor statistics for Adams. 0 wins, 0 podiums, undefined championships across 1 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/kuzma",
+        "snippet": "ontent=\"Complete Formula 1 constructor statistics for Kuzma. 1 wins, 3 podiums, undefined championships across 10 seasons.\"/><meta name=\"keywords\" content=\"Form"
+      },
+      {
+        "path": "/teams/lago",
+        "snippet": "=\"Complete Formula 1 constructor statistics for Talbot-Lago. 0 wins, 2 podiums, undefined championships across 2 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/nichels",
+        "snippet": "tent=\"Complete Formula 1 constructor statistics for Nichels. 0 wins, 0 podiums, undefined championships across 2 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/tecno",
+        "snippet": "ontent=\"Complete Formula 1 constructor statistics for Tecno. 0 wins, 0 podiums, undefined championships across 2 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/ats",
+        "snippet": "content=\"Complete Formula 1 constructor statistics for ATS. 0 wins, 0 podiums, undefined championships across 8 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/snowberger",
+        "snippet": "t=\"Complete Formula 1 constructor statistics for Snowberger. 0 wins, 0 podiums, undefined championships across 1 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/shadow",
+        "snippet": "ntent=\"Complete Formula 1 constructor statistics for Shadow. 1 wins, 6 podiums, undefined championships across 7 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/re",
+        "snippet": "\" content=\"Complete Formula 1 constructor statistics for RE. 0 wins, 0 podiums, undefined championships across 1 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/pawl",
+        "snippet": "content=\"Complete Formula 1 constructor statistics for Pawl. 0 wins, 0 podiums, undefined championships across 3 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/caterham",
+        "snippet": "ent=\"Complete Formula 1 constructor statistics for Caterham. 0 wins, 0 podiums, undefined championships across 3 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/stewart",
+        "snippet": "tent=\"Complete Formula 1 constructor statistics for Stewart. 1 wins, 5 podiums, undefined championships across 3 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/rial",
+        "snippet": "content=\"Complete Formula 1 constructor statistics for Rial. 0 wins, 0 podiums, undefined championships across 2 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/lotus_f1",
+        "snippet": "nt=\"Complete Formula 1 constructor statistics for Lotus F1. 2 wins, 25 podiums, undefined championships across 4 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/bar",
+        "snippet": "content=\"Complete Formula 1 constructor statistics for BAR. 0 wins, 15 podiums, undefined championships across 7 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/turner",
+        "snippet": "ntent=\"Complete Formula 1 constructor statistics for Turner. 0 wins, 0 podiums, undefined championships across 1 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/hwm",
+        "snippet": "content=\"Complete Formula 1 constructor statistics for HWM. 0 wins, 0 podiums, undefined championships across 4 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/marchese",
+        "snippet": "ent=\"Complete Formula 1 constructor statistics for Marchese. 0 wins, 0 podiums, undefined championships across 2 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/brabham-brm",
+        "snippet": "=\"Complete Formula 1 constructor statistics for Brabham-BRM. 0 wins, 1 podiums, undefined championships across 3 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/porsche",
+        "snippet": "tent=\"Complete Formula 1 constructor statistics for Porsche. 1 wins, 5 podiums, undefined championships across 8 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/manor",
+        "snippet": "omplete Formula 1 constructor statistics for Manor Marussia. 0 wins, 0 podiums, undefined championships across 2 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/moore",
+        "snippet": "ontent=\"Complete Formula 1 constructor statistics for Moore. 0 wins, 0 podiums, undefined championships across 3 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/dallara",
+        "snippet": "tent=\"Complete Formula 1 constructor statistics for Dallara. 0 wins, 2 podiums, undefined championships across 5 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/merzario",
+        "snippet": "ent=\"Complete Formula 1 constructor statistics for Merzario. 0 wins, 0 podiums, undefined championships across 2 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/jaguar",
+        "snippet": "ntent=\"Complete Formula 1 constructor statistics for Jaguar. 0 wins, 2 podiums, undefined championships across 5 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/toleman",
+        "snippet": "tent=\"Complete Formula 1 constructor statistics for Toleman. 0 wins, 3 podiums, undefined championships across 5 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/brabham-ford",
+        "snippet": "\"Complete Formula 1 constructor statistics for Brabham-Ford. 2 wins, 9 podiums, undefined championships across 6 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/sherman",
+        "snippet": "tent=\"Complete Formula 1 constructor statistics for Sherman. 0 wins, 0 podiums, undefined championships across 2 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/rae",
+        "snippet": "content=\"Complete Formula 1 constructor statistics for Rae. 0 wins, 0 podiums, undefined championships across 1 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/brabham-alfa_romeo",
+        "snippet": "ete Formula 1 constructor statistics for Brabham-Alfa Romeo. 0 wins, 0 podiums, undefined championships across 2 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/boro",
+        "snippet": "content=\"Complete Formula 1 constructor statistics for Boro. 0 wins, 0 podiums, undefined championships across 2 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/leyton",
+        "snippet": "\"Complete Formula 1 constructor statistics for Leyton House. 0 wins, 1 podiums, undefined championships across 2 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/wetteroth",
+        "snippet": "nt=\"Complete Formula 1 constructor statistics for Wetteroth. 0 wins, 0 podiums, undefined championships across 1 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/march-alfa_romeo",
+        "snippet": "plete Formula 1 constructor statistics for March-Alfa Romeo. 0 wins, 0 podiums, undefined championships across 1 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/fittipaldi",
+        "snippet": "t=\"Complete Formula 1 constructor statistics for Fittipaldi. 0 wins, 3 podiums, undefined championships across 8 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/ags",
+        "snippet": "content=\"Complete Formula 1 constructor statistics for AGS. 0 wins, 0 podiums, undefined championships across 6 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/pankratz",
+        "snippet": "ent=\"Complete Formula 1 constructor statistics for Pankratz. 0 wins, 0 podiums, undefined championships across 2 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/mclaren-seren",
+        "snippet": "te Formula 1 constructor statistics for McLaren-Serenissima. 0 wins, 0 podiums, undefined championships across 1 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/eagle-weslake",
+        "snippet": "Complete Formula 1 constructor statistics for Eagle-Weslake. 1 wins, 2 podiums, undefined championships across 3 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/pacific",
+        "snippet": "tent=\"Complete Formula 1 constructor statistics for Pacific. 0 wins, 0 podiums, undefined championships across 2 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/zakspeed",
+        "snippet": "ent=\"Complete Formula 1 constructor statistics for Zakspeed. 0 wins, 0 podiums, undefined championships across 5 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/cooper-ats",
+        "snippet": "t=\"Complete Formula 1 constructor statistics for Cooper-ATS. 0 wins, 0 podiums, undefined championships across 1 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/lotus_racing",
+        "snippet": "ontent=\"Complete Formula 1 constructor statistics for Lotus. 0 wins, 0 podiums, undefined championships across 2 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/cooper-brm",
+        "snippet": "t=\"Complete Formula 1 constructor statistics for Cooper-BRM. 0 wins, 2 podiums, undefined championships across 1 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/de_tomaso-alfa_romeo",
+        "snippet": "e Formula 1 constructor statistics for De Tomaso-Alfa Romeo. 0 wins, 0 podiums, undefined championships across 2 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/jordan",
+        "snippet": "tent=\"Complete Formula 1 constructor statistics for Jordan. 4 wins, 19 podiums, undefined championships across 15 seasons.\"/><meta name=\"keywords\" content=\"Form"
+      },
+      {
+        "path": "/teams/alphatauri",
+        "snippet": "t=\"Complete Formula 1 constructor statistics for AlphaTauri. 1 wins, 2 podiums, undefined championships across 4 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/aston_martin",
+        "snippet": "\"Complete Formula 1 constructor statistics for Aston Martin. 0 wins, 9 podiums, undefined championships across 7 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/force_india",
+        "snippet": "=\"Complete Formula 1 constructor statistics for Force India. 0 wins, 6 podiums, undefined championships across 11 seasons.\"/><meta name=\"keywords\" content=\"Form"
+      },
+      {
+        "path": "/teams/spyker",
+        "snippet": "ntent=\"Complete Formula 1 constructor statistics for Spyker. 0 wins, 0 podiums, undefined championships across 1 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/fondmetal",
+        "snippet": "nt=\"Complete Formula 1 constructor statistics for Fondmetal. 0 wins, 0 podiums, undefined championships across 2 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/scirocco",
+        "snippet": "ent=\"Complete Formula 1 constructor statistics for Scirocco. 0 wins, 0 podiums, undefined championships across 2 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/lotus-ford",
+        "snippet": "\"Complete Formula 1 constructor statistics for Lotus-Ford. 11 wins, 25 podiums, undefined championships across 5 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/gordini",
+        "snippet": "tent=\"Complete Formula 1 constructor statistics for Gordini. 0 wins, 2 podiums, undefined championships across 5 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/ewing",
+        "snippet": "ontent=\"Complete Formula 1 constructor statistics for Ewing. 0 wins, 0 podiums, undefined championships across 2 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/watson",
+        "snippet": "ntent=\"Complete Formula 1 constructor statistics for Watson. 3 wins, 5 podiums, undefined championships across 9 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/spirit",
+        "snippet": "ntent=\"Complete Formula 1 constructor statistics for Spirit. 0 wins, 0 podiums, undefined championships across 3 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/lola",
+        "snippet": "content=\"Complete Formula 1 constructor statistics for Lola. 0 wins, 2 podiums, undefined championships across 10 seasons.\"/><meta name=\"keywords\" content=\"Form"
+      },
+      {
+        "path": "/teams/alta",
+        "snippet": "content=\"Complete Formula 1 constructor statistics for Alta. 0 wins, 0 podiums, undefined championships across 3 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/elder",
+        "snippet": "ontent=\"Complete Formula 1 constructor statistics for Elder. 0 wins, 0 podiums, undefined championships across 1 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/amon",
+        "snippet": "content=\"Complete Formula 1 constructor statistics for Amon. 0 wins, 0 podiums, undefined championships across 1 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/hesketh",
+        "snippet": "tent=\"Complete Formula 1 constructor statistics for Hesketh. 1 wins, 7 podiums, undefined championships across 5 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/prost",
+        "snippet": "ontent=\"Complete Formula 1 constructor statistics for Prost. 0 wins, 3 podiums, undefined championships across 5 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/eurobrun",
+        "snippet": "nt=\"Complete Formula 1 constructor statistics for Euro Brun. 0 wins, 0 podiums, undefined championships across 2 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/cooper-climax",
+        "snippet": "mplete Formula 1 constructor statistics for Cooper-Climax. 12 wins, 44 podiums, undefined championships across 9 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/brabham-climax",
+        "snippet": "mplete Formula 1 constructor statistics for Brabham-Climax. 2 wins, 11 podiums, undefined championships across 6 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/footwork",
+        "snippet": "ent=\"Complete Formula 1 constructor statistics for Footwork. 0 wins, 1 podiums, undefined championships across 6 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/iso_marlboro",
+        "snippet": "\"Complete Formula 1 constructor statistics for Iso Marlboro. 0 wins, 0 podiums, undefined championships across 2 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/brabham-repco",
+        "snippet": "omplete Formula 1 constructor statistics for Brabham-Repco. 8 wins, 25 podiums, undefined championships across 4 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/tomaso",
+        "snippet": "nt=\"Complete Formula 1 constructor statistics for De Tomaso. 0 wins, 0 podiums, undefined championships across 2 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/lotus-pw",
+        "snippet": "1 constructor statistics for Lotus-Pratt &amp;amp; Whitney. 0 wins, 0 podiums, undefined championships across 1 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/matra-ford",
+        "snippet": "=\"Complete Formula 1 constructor statistics for Matra-Ford. 9 wins, 15 podiums, undefined championships across 2 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/marussia",
+        "snippet": "ent=\"Complete Formula 1 constructor statistics for Marussia. 0 wins, 0 podiums, undefined championships across 3 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/phillips",
+        "snippet": "ent=\"Complete Formula 1 constructor statistics for Phillips. 0 wins, 1 podiums, undefined championships across 7 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/onyx",
+        "snippet": "content=\"Complete Formula 1 constructor statistics for Onyx. 0 wins, 1 podiums, undefined championships across 2 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/lotus-climax",
+        "snippet": "omplete Formula 1 constructor statistics for Lotus-Climax. 22 wins, 31 podiums, undefined championships across 7 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/lds-alfa_romeo",
+        "snippet": "omplete Formula 1 constructor statistics for LDS-Alfa Romeo. 0 wins, 0 podiums, undefined championships across 1 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/epperly",
+        "snippet": "tent=\"Complete Formula 1 constructor statistics for Epperly. 2 wins, 5 podiums, undefined championships across 5 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/maserati",
+        "snippet": "nt=\"Complete Formula 1 constructor statistics for Maserati. 9 wins, 40 podiums, undefined championships across 11 seasons.\"/><meta name=\"keywords\" content=\"Form"
+      },
+      {
+        "path": "/teams/connaught",
+        "snippet": "nt=\"Complete Formula 1 constructor statistics for Connaught. 0 wins, 1 podiums, undefined championships across 8 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/osella",
+        "snippet": "ntent=\"Complete Formula 1 constructor statistics for Osella. 0 wins, 0 podiums, undefined championships across 11 seasons.\"/><meta name=\"keywords\" content=\"Form"
+      },
+      {
+        "path": "/teams/honda",
+        "snippet": "ontent=\"Complete Formula 1 constructor statistics for Honda. 3 wins, 9 podiums, undefined championships across 8 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/parnelli",
+        "snippet": "ent=\"Complete Formula 1 constructor statistics for Parnelli. 0 wins, 0 podiums, undefined championships across 3 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/rb",
+        "snippet": "t=\"Complete Formula 1 constructor statistics for RB F1 Team. 0 wins, 1 podiums, undefined championships across 2 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/shadow-ford",
+        "snippet": "=\"Complete Formula 1 constructor statistics for Shadow-Ford. 0 wins, 1 podiums, undefined championships across 1 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/lds-climax",
+        "snippet": "t=\"Complete Formula 1 constructor statistics for LDS-Climax. 0 wins, 0 podiums, undefined championships across 1 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/forti",
+        "snippet": "ontent=\"Complete Formula 1 constructor statistics for Forti. 0 wins, 0 podiums, undefined championships across 2 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/vhristensen",
+        "snippet": "=\"Complete Formula 1 constructor statistics for Christensen. 0 wins, 0 podiums, undefined championships across 2 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/trojan",
+        "snippet": "ntent=\"Complete Formula 1 constructor statistics for Trojan. 0 wins, 0 podiums, undefined championships across 1 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/simca",
+        "snippet": "ontent=\"Complete Formula 1 constructor statistics for Simca. 0 wins, 0 podiums, undefined championships across 4 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/de_tomaso-osca",
+        "snippet": "omplete Formula 1 constructor statistics for De Tomaso-Osca. 0 wins, 0 podiums, undefined championships across 1 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/theodore",
+        "snippet": "ent=\"Complete Formula 1 constructor statistics for Theodore. 0 wins, 0 podiums, undefined championships across 4 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/afm",
+        "snippet": "content=\"Complete Formula 1 constructor statistics for AFM. 0 wins, 0 podiums, undefined championships across 2 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/shannon",
+        "snippet": "tent=\"Complete Formula 1 constructor statistics for Shannon. 0 wins, 0 podiums, undefined championships across 1 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/coloni",
+        "snippet": "ntent=\"Complete Formula 1 constructor statistics for Coloni. 0 wins, 0 podiums, undefined championships across 3 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/wolf",
+        "snippet": "ontent=\"Complete Formula 1 constructor statistics for Wolf. 3 wins, 13 podiums, undefined championships across 4 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/hall",
+        "snippet": "content=\"Complete Formula 1 constructor statistics for Hall. 0 wins, 0 podiums, undefined championships across 1 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/olson",
+        "snippet": "ontent=\"Complete Formula 1 constructor statistics for Olson. 0 wins, 0 podiums, undefined championships across 1 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/meskowski",
+        "snippet": "nt=\"Complete Formula 1 constructor statistics for Meskowski. 0 wins, 0 podiums, undefined championships across 1 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/cooper-ferrari",
+        "snippet": "omplete Formula 1 constructor statistics for Cooper-Ferrari. 0 wins, 0 podiums, undefined championships across 1 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/larrousse",
+        "snippet": "nt=\"Complete Formula 1 constructor statistics for Larrousse. 0 wins, 1 podiums, undefined championships across 8 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/ram",
+        "snippet": "content=\"Complete Formula 1 constructor statistics for RAM. 0 wins, 0 podiums, undefined championships across 3 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/virgin",
+        "snippet": "ntent=\"Complete Formula 1 constructor statistics for Virgin. 0 wins, 0 podiums, undefined championships across 2 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/deidt",
+        "snippet": "ontent=\"Complete Formula 1 constructor statistics for Deidt. 0 wins, 2 podiums, undefined championships across 3 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/stevens",
+        "snippet": "tent=\"Complete Formula 1 constructor statistics for Stevens. 0 wins, 0 podiums, undefined championships across 6 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/butterworth",
+        "snippet": "lete Formula 1 constructor statistics for Aston Butterworth. 0 wins, 0 podiums, undefined championships across 1 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/mclaren-brm",
+        "snippet": "=\"Complete Formula 1 constructor statistics for McLaren-BRM. 0 wins, 0 podiums, undefined championships across 2 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/ensign",
+        "snippet": "ntent=\"Complete Formula 1 constructor statistics for Ensign. 0 wins, 0 podiums, undefined championships across 10 seasons.\"/><meta name=\"keywords\" content=\"Form"
+      },
+      {
+        "path": "/teams/hill",
+        "snippet": "\"Complete Formula 1 constructor statistics for Embassy Hill. 0 wins, 0 podiums, undefined championships across 1 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/arrows",
+        "snippet": "ntent=\"Complete Formula 1 constructor statistics for Arrows. 0 wins, 8 podiums, undefined championships across 19 seasons.\"/><meta name=\"keywords\" content=\"Form"
+      },
+      {
+        "path": "/teams/toro_rosso",
+        "snippet": "t=\"Complete Formula 1 constructor statistics for Toro Rosso. 1 wins, 3 podiums, undefined championships across 14 seasons.\"/><meta name=\"keywords\" content=\"Form"
+      },
+      {
+        "path": "/teams/trevis",
+        "snippet": "ntent=\"Complete Formula 1 constructor statistics for Trevis. 0 wins, 0 podiums, undefined championships across 4 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/march-ford",
+        "snippet": "t=\"Complete Formula 1 constructor statistics for March-Ford. 0 wins, 5 podiums, undefined championships across 1 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/langley",
+        "snippet": "tent=\"Complete Formula 1 constructor statistics for Langley. 0 wins, 0 podiums, undefined championships across 1 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/behra-porsche",
+        "snippet": "Complete Formula 1 constructor statistics for Behra-Porsche. 0 wins, 0 podiums, undefined championships across 1 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/alfa",
+        "snippet": "\"Complete Formula 1 constructor statistics for Alfa Romeo. 11 wins, 28 podiums, undefined championships across 16 seasons.\"/><meta name=\"keywords\" content=\"Form"
+      },
+      {
+        "path": "/teams/haas",
+        "snippet": "\"Complete Formula 1 constructor statistics for Haas F1 Team. 0 wins, 0 podiums, undefined championships across 10 seasons.\"/><meta name=\"keywords\" content=\"Form"
+      },
+      {
+        "path": "/teams/sauber",
+        "snippet": "tent=\"Complete Formula 1 constructor statistics for Sauber. 0 wins, 11 podiums, undefined championships across 24 seasons.\"/><meta name=\"keywords\" content=\"Form"
+      },
+      {
+        "path": "/teams/racing_point",
+        "snippet": "\"Complete Formula 1 constructor statistics for Racing Point. 1 wins, 4 podiums, undefined championships across 2 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/cooper-castellotti",
+        "snippet": "ete Formula 1 constructor statistics for Cooper-Castellotti. 0 wins, 0 podiums, undefined championships across 1 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/bromme",
+        "snippet": "ntent=\"Complete Formula 1 constructor statistics for Bromme. 0 wins, 0 podiums, undefined championships across 4 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/bmw",
+        "snippet": "content=\"Complete Formula 1 constructor statistics for BMW. 0 wins, 0 podiums, undefined championships across 2 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/bugatti",
+        "snippet": "tent=\"Complete Formula 1 constructor statistics for Bugatti. 0 wins, 0 podiums, undefined championships across 1 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/cooper-alfa_romeo",
+        "snippet": "lete Formula 1 constructor statistics for Cooper-Alfa Romeo. 0 wins, 0 podiums, undefined championships across 1 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/brm-ford",
+        "snippet": "ent=\"Complete Formula 1 constructor statistics for BRM-Ford. 0 wins, 0 podiums, undefined championships across 1 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/bellasi",
+        "snippet": "tent=\"Complete Formula 1 constructor statistics for Bellasi. 0 wins, 0 podiums, undefined championships across 2 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/connew",
+        "snippet": "ntent=\"Complete Formula 1 constructor statistics for Connew. 0 wins, 0 podiums, undefined championships across 1 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/toyota",
+        "snippet": "tent=\"Complete Formula 1 constructor statistics for Toyota. 0 wins, 13 podiums, undefined championships across 8 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/arzani-volpini",
+        "snippet": "omplete Formula 1 constructor statistics for Arzani-Volpini. 0 wins, 0 podiums, undefined championships across 1 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/del_roy",
+        "snippet": "tent=\"Complete Formula 1 constructor statistics for Del Roy. 0 wins, 0 podiums, undefined championships across 1 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/kojima",
+        "snippet": "ntent=\"Complete Formula 1 constructor statistics for Kojima. 0 wins, 0 podiums, undefined championships across 2 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/derrington",
+        "snippet": "t=\"Complete Formula 1 constructor statistics for Derrington. 0 wins, 0 podiums, undefined championships across 1 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/emw",
+        "snippet": "content=\"Complete Formula 1 constructor statistics for EMW. 0 wins, 0 podiums, undefined championships across 1 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/ferguson",
+        "snippet": "ent=\"Complete Formula 1 constructor statistics for Ferguson. 0 wins, 0 podiums, undefined championships across 1 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/enb",
+        "snippet": "content=\"Complete Formula 1 constructor statistics for ENB. 0 wins, 0 podiums, undefined championships across 1 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/cooper-osca",
+        "snippet": "=\"Complete Formula 1 constructor statistics for Cooper-OSCA. 0 wins, 0 podiums, undefined championships across 1 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/klenk",
+        "snippet": "ontent=\"Complete Formula 1 constructor statistics for Klenk. 0 wins, 0 podiums, undefined championships across 1 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/lec",
+        "snippet": "content=\"Complete Formula 1 constructor statistics for LEC. 0 wins, 0 podiums, undefined championships across 1 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/gilby",
+        "snippet": "ontent=\"Complete Formula 1 constructor statistics for Gilby. 0 wins, 0 podiums, undefined championships across 3 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/osca",
+        "snippet": "content=\"Complete Formula 1 constructor statistics for OSCA. 0 wins, 0 podiums, undefined championships across 3 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/mbm",
+        "snippet": "content=\"Complete Formula 1 constructor statistics for MBM. 0 wins, 0 podiums, undefined championships across 1 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/martini",
+        "snippet": "tent=\"Complete Formula 1 constructor statistics for Martini. 0 wins, 0 podiums, undefined championships across 1 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/lotus-borgward",
+        "snippet": "omplete Formula 1 constructor statistics for Lotus-Borgward. 0 wins, 0 podiums, undefined championships across 1 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/mclaren-alfa_romeo",
+        "snippet": "ete Formula 1 constructor statistics for McLaren-Alfa Romeo. 0 wins, 0 podiums, undefined championships across 1 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/lyncar",
+        "snippet": "ntent=\"Complete Formula 1 constructor statistics for Lyncar. 0 wins, 0 podiums, undefined championships across 1 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/maki",
+        "snippet": "content=\"Complete Formula 1 constructor statistics for Maki. 0 wins, 0 podiums, undefined championships across 1 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/lotus-maserati",
+        "snippet": "omplete Formula 1 constructor statistics for Lotus-Maserati. 0 wins, 0 podiums, undefined championships across 2 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/moda",
+        "snippet": "=\"Complete Formula 1 constructor statistics for Andrea Moda. 0 wins, 0 podiums, undefined championships across 1 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/milano",
+        "snippet": "ntent=\"Complete Formula 1 constructor statistics for Milano. 0 wins, 0 podiums, undefined championships across 1 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/politoys",
+        "snippet": "ent=\"Complete Formula 1 constructor statistics for Politoys. 0 wins, 0 podiums, undefined championships across 1 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/rebaque",
+        "snippet": "tent=\"Complete Formula 1 constructor statistics for Rebaque. 0 wins, 0 podiums, undefined championships across 1 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/tec-mec",
+        "snippet": "tent=\"Complete Formula 1 constructor statistics for Tec-Mec. 0 wins, 0 podiums, undefined championships across 1 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/stebro",
+        "snippet": "ntent=\"Complete Formula 1 constructor statistics for Stebro. 0 wins, 0 podiums, undefined championships across 1 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/token",
+        "snippet": "ontent=\"Complete Formula 1 constructor statistics for Token. 0 wins, 0 podiums, undefined championships across 1 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/spyker_mf1",
+        "snippet": "t=\"Complete Formula 1 constructor statistics for Spyker MF1. 0 wins, 0 podiums, undefined championships across 1 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/minardi",
+        "snippet": "tent=\"Complete Formula 1 constructor statistics for Minardi. 0 wins, 0 podiums, undefined championships across 21 seasons.\"/><meta name=\"keywords\" content=\"Form"
+      },
+      {
+        "path": "/teams/shadow-matra",
+        "snippet": "\"Complete Formula 1 constructor statistics for Shadow-Matra. 0 wins, 0 podiums, undefined championships across 1 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/protos",
+        "snippet": "ntent=\"Complete Formula 1 constructor statistics for Protos. 0 wins, 0 podiums, undefined championships across 1 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/march",
+        "snippet": "ntent=\"Complete Formula 1 constructor statistics for March. 3 wins, 16 podiums, undefined championships across 13 seasons.\"/><meta name=\"keywords\" content=\"Form"
+      },
+      {
+        "path": "/teams/brawn",
+        "snippet": "ntent=\"Complete Formula 1 constructor statistics for Brawn. 8 wins, 15 podiums, undefined championships across 1 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/tyrrell",
+        "snippet": "nt=\"Complete Formula 1 constructor statistics for Tyrrell. 23 wins, 77 podiums, undefined championships across 29 seasons.\"/><meta name=\"keywords\" content=\"Form"
+      },
+      {
+        "path": "/teams/matra",
+        "snippet": "ontent=\"Complete Formula 1 constructor statistics for Matra. 0 wins, 6 podiums, undefined championships across 5 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/cadillac",
+        "snippet": "ent=\"Complete Formula 1 constructor statistics for Cadillac. 0 wins, 0 podiums, undefined championships across 0 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/brm",
+        "snippet": "ontent=\"Complete Formula 1 constructor statistics for BRM. 17 wins, 61 podiums, undefined championships across 23 seasons.\"/><meta name=\"keywords\" content=\"Form"
+      },
+      {
+        "path": "/teams/ligier",
+        "snippet": "tent=\"Complete Formula 1 constructor statistics for Ligier. 9 wins, 50 podiums, undefined championships across 21 seasons.\"/><meta name=\"keywords\" content=\"Form"
+      },
+      {
+        "path": "/teams/renault",
+        "snippet": "t=\"Complete Formula 1 constructor statistics for Renault. 35 wins, 103 podiums, undefined championships across 24 seasons.\"/><meta name=\"keywords\" content=\"Form"
+      },
+      {
+        "path": "/teams/benetton",
+        "snippet": "=\"Complete Formula 1 constructor statistics for Benetton. 27 wins, 102 podiums, undefined championships across 16 seasons.\"/><meta name=\"keywords\" content=\"Form"
+      },
+      {
+        "path": "/teams/team_lotus",
+        "snippet": "Complete Formula 1 constructor statistics for Team Lotus. 45 wins, 114 podiums, undefined championships across 29 seasons.\"/><meta name=\"keywords\" content=\"Form"
+      },
+      {
+        "path": "/teams/vanwall",
+        "snippet": "nt=\"Complete Formula 1 constructor statistics for Vanwall. 10 wins, 14 podiums, undefined championships across 7 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/alpine",
+        "snippet": "omplete Formula 1 constructor statistics for Alpine F1 Team. 1 wins, 6 podiums, undefined championships across 5 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/racing_bulls",
+        "snippet": "\"Complete Formula 1 constructor statistics for Racing Bulls. 0 wins, 0 podiums, undefined championships across 0 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/audi",
+        "snippet": "content=\"Complete Formula 1 constructor statistics for Audi. 0 wins, 0 podiums, undefined championships across 0 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/cooper",
+        "snippet": "ntent=\"Complete Formula 1 constructor statistics for Cooper. 2 wins, 6 podiums, undefined championships across 9 seasons.\"/><meta name=\"keywords\" content=\"Formu"
+      },
+      {
+        "path": "/teams/williams",
+        "snippet": "\"Complete Formula 1 constructor statistics for Williams. 114 wins, 316 podiums, undefined championships across 50 seasons.\"/><meta name=\"keywords\" content=\"Form"
+      },
+      {
+        "path": "/teams/mercedes",
+        "snippet": "\"Complete Formula 1 constructor statistics for Mercedes. 130 wins, 308 podiums, undefined championships across 18 seasons.\"/><meta name=\"keywords\" content=\"Form"
+      },
+      {
+        "path": "/teams/ferrari",
+        "snippet": "=\"Complete Formula 1 constructor statistics for Ferrari. 249 wins, 846 podiums, undefined championships across 76 seasons.\"/><meta name=\"keywords\" content=\"Form"
+      },
+      {
+        "path": "/teams/mclaren",
+        "snippet": "=\"Complete Formula 1 constructor statistics for McLaren. 199 wins, 542 podiums, undefined championships across 56 seasons.\"/><meta name=\"keywords\" content=\"Form"
+      },
+      {
+        "path": "/teams/brabham",
+        "snippet": "nt=\"Complete Formula 1 constructor statistics for Brabham. 23 wins, 78 podiums, undefined championships across 22 seasons.\"/><meta name=\"keywords\" content=\"Form"
+      },
+      {
+        "path": "/teams/red_bull",
+        "snippet": "\"Complete Formula 1 constructor statistics for Red Bull. 129 wins, 295 podiums, undefined championships across 21 seasons.\"/><meta name=\"keywords\" content=\"Form"
+      }
+    ],
+    "nullFindings": [],
+    "missingJsonLd": [],
+    "invalidJsonLd": []
+  }
+}

@@ -449,7 +449,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
   const { team, aggregates, titleCount } = data
   const name = String(team.name ?? 'Team')
-  const desc = `Complete Formula 1 constructor statistics for ${name}. ${aggregates.totalWins} wins, ${aggregates.totalPodiums} podiums, ${titleCount} championships across ${aggregates.seasonCount} seasons.`
+  const championships = titleCount ?? 0
+  const descStats =
+    championships > 0
+      ? `${aggregates.totalWins} wins, ${aggregates.totalPodiums} podiums, ${championships} championships across ${aggregates.seasonCount} seasons.`
+      : `${aggregates.totalWins} wins, ${aggregates.totalPodiums} podiums across ${aggregates.seasonCount} seasons.`
+  const desc = `Complete Formula 1 constructor statistics for ${name}. ${descStats}`
   return {
     title: `${name} — Constructor Stats, History & Drivers | F1Rec`,
     description: desc,
@@ -546,6 +551,10 @@ export default async function TeamDetailPage({ params }: PageProps) {
     name,
     sport: 'Formula 1',
     url: `https://f1rec.com/teams/${slug}`,
+    description:
+      titleCount > 0
+        ? `${name} has ${aggregates.totalWins} wins, ${aggregates.totalPodiums} podiums, and ${titleCount} constructor championships.`
+        : `${name} has ${aggregates.totalWins} wins and ${aggregates.totalPodiums} podiums in Formula 1.`,
     ...(team.nationality ? { location: { '@type': 'Place', name: String(team.nationality) } } : {}),
   }
 
