@@ -56,6 +56,12 @@ type PostRow = {
   related_driver_slug?: string | null
 }
 
+type RpcTeammateRow = {
+  teammate_name: string | null
+  teammate_slug: string | null
+  team_name: string | null
+}
+
 function unwrapRelation<T>(rel: T | T[] | null | undefined): T | null {
   if (rel == null) return null
   return Array.isArray(rel) ? rel[0] ?? null : rel
@@ -244,7 +250,8 @@ async function loadDriverProfileData(slug: string) {
     if (r.season_id && r.team_id) pairKeys.add(`${r.season_id}:${r.team_id}`)
   }
 
-  const [teammatesRes, firstRaceRes, firstWinRes, currentTeamRes] = await Promise.all([
+  const [teammatesRpcRes, teammatesFallbackRes, firstRaceRes, firstWinRes, currentTeamRes] = await Promise.all([
+    supabase.rpc('get_teammates', { p_driver_slug: slug }),
     seasonIds.length
       ? supabase
           .from('driver_season_stats')
@@ -274,17 +281,29 @@ async function loadDriverProfileData(slug: string) {
   ])
 
   const teammateMap = new Map<string, { full_name: string; slug: string }>()
-  for (const row of (teammatesRes.data ?? []) as Array<{
-    driver_id: string
-    season_id: string
-    team_id: string
-    drivers: { full_name: string; slug: string } | { full_name: string; slug: string }[] | null
-  }>) {
-    if (row.driver_id === driverId) continue
-    const key = `${row.season_id}:${row.team_id}`
-    if (!pairKeys.has(key)) continue
-    const dr = unwrapRelation(row.drivers)
-    if (dr?.slug && dr.full_name) teammateMap.set(dr.slug, { full_name: dr.full_name, slug: dr.slug })
+  if (!teammatesRpcRes.error && teammatesRpcRes.data) {
+    for (const row of teammatesRpcRes.data as RpcTeammateRow[]) {
+      const teammateSlug = row.teammate_slug?.trim()
+      const teammateName = row.teammate_name?.trim()
+      if (!teammateSlug || !teammateName) continue
+      teammateMap.set(teammateSlug, { full_name: teammateName, slug: teammateSlug })
+    }
+  } else {
+    if (teammatesRpcRes.error) {
+      console.error('[driver-page] get_teammates RPC failed, using fallback query', teammatesRpcRes.error)
+    }
+    for (const row of (teammatesFallbackRes.data ?? []) as Array<{
+      driver_id: string
+      season_id: string
+      team_id: string
+      drivers: { full_name: string; slug: string } | { full_name: string; slug: string }[] | null
+    }>) {
+      if (row.driver_id === driverId) continue
+      const key = `${row.season_id}:${row.team_id}`
+      if (!pairKeys.has(key)) continue
+      const dr = unwrapRelation(row.drivers)
+      if (dr?.slug && dr.full_name) teammateMap.set(dr.slug, { full_name: dr.full_name, slug: dr.slug })
+    }
   }
   const teammates = [...teammateMap.values()].sort((a, b) => a.full_name.localeCompare(b.full_name))
 
@@ -762,7 +781,7 @@ export default async function DriverProfilePage({ params }: PageProps) {
             <h2 className="mb-3 font-display text-lg font-extrabold uppercase tracking-wide text-[var(--text)]">
               Teammates
             </h2>
-            <p className="mb-3 text-sm text-[var(--muted)]">Drivers who shared a constructor in the same season.</p>
+            <p className="mb-3 text-sm text-[var(--muted)]">Drivers who raced as teammates in the same race weekend lineup.</p>
             <p className="flex flex-wrap gap-x-1 gap-y-2 text-sm leading-relaxed text-[var(--text)]">
               {teammates.map((t, idx) => (
                 <span key={t.slug}>
