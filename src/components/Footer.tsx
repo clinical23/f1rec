@@ -70,7 +70,14 @@ export default function Footer() {
 
         <div>
           <h4 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '13px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1.5px', color: 'var(--text)', marginBottom: '16px' }}>Follow us</h4>
-          <p style={{ color: 'var(--muted)', fontSize: '13px' }}>@F1RecStats on X/Twitter coming soon</p>
+          <a
+            href="https://x.com/F1RecStats"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: 'var(--muted)', fontSize: '13px', textDecoration: 'none' }}
+          >
+            @F1RecStats on X
+          </a>
         </div>
       </div>
 

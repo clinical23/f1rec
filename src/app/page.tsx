@@ -444,16 +444,16 @@ export default async function HomePage() {
             Every Stat. Every Race. Every Era.
           </h1>
           <p className="mx-auto mt-5 max-w-xl text-[17px] text-[var(--muted)]">{heroSubtitle}</p>
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
             <Link
               href="/drivers"
-              className="rounded-lg bg-[#e8002d] px-6 py-3 text-sm font-semibold text-white no-underline transition-opacity hover:opacity-90"
+              className="rounded-lg bg-[#e8002d] px-8 py-3 text-sm font-semibold text-white no-underline transition-opacity hover:opacity-90"
             >
               Explore Drivers
             </Link>
             <Link
               href="/compare"
-              className="rounded-lg border border-[#2a2a3a] px-6 py-3 text-sm font-semibold text-[#e8e8f0] no-underline transition-colors hover:border-[var(--accent)] hover:text-[var(--accent)]"
+              className="rounded-lg border border-[#2a2a3a] px-8 py-3 text-sm font-semibold text-[#e8e8f0] no-underline transition-colors hover:border-[var(--accent)] hover:text-[var(--accent)]"
             >
               Compare Head-to-Head
             </Link>
@@ -463,14 +463,17 @@ export default async function HomePage() {
         {/* Stats bar */}
         <section className="py-16">
           <div className="rounded-xl border border-[#2a2a3a] bg-[var(--bg2)] py-6">
-            <div className="flex flex-wrap items-center justify-center gap-10 md:gap-12">
+            <div className="flex flex-wrap items-center justify-center gap-8 md:flex-nowrap">
               {[
                 { num: counts.drivers.toLocaleString(), label: 'Drivers' },
                 { num: counts.results.toLocaleString(), label: 'Results' },
                 { num: counts.seasons.toLocaleString(), label: 'Seasons' },
                 { num: counts.teams.toLocaleString(), label: 'Teams' },
               ].map((stat, i) => (
-                <div key={stat.label} className={`px-4 text-center ${i < 3 ? 'md:border-r md:border-[#2a2a3a]' : ''}`}>
+                <div
+                  key={stat.label}
+                  className={`min-w-[120px] text-center ${i < 3 ? 'border-r border-[#2a2a3a] pr-8' : ''}`}
+                >
                   <div className="font-mono text-3xl font-black leading-none text-[var(--text)] md:text-4xl">{stat.num}</div>
                   <div className="mx-auto mt-2 h-px w-8 bg-[var(--border)]" />
                   <div className="mt-2 text-[11px] font-semibold uppercase tracking-wider text-[var(--muted)]">{stat.label}</div>
@@ -593,8 +596,8 @@ export default async function HomePage() {
                 <ol className="divide-y divide-[var(--border)] p-2">
                   {wcc2026.length > 0 ? (
                     wcc2026.map((row) => (
-                      <li key={row.slug} className="flex items-center gap-2 border-l-2 border-l-[var(--accent)] px-3 py-3 text-sm">
-                        <span className="w-6 shrink-0 text-center font-mono text-xs text-[var(--muted)]">{row.pos}</span>
+                      <li key={row.slug} className="flex items-center gap-3 border-l-2 border-l-[var(--accent)] px-3 py-3 text-sm">
+                        <span className="mr-3 w-6 shrink-0 text-center font-mono text-xs text-[var(--muted)]">{row.pos}</span>
                         <Link
                           href={`/teams/${row.slug}`}
                           className="min-w-0 flex-1 truncate font-semibold text-[var(--text)] no-underline hover:text-[var(--accent)]"
@@ -672,10 +675,10 @@ export default async function HomePage() {
 
         {/* Quick links */}
         <section className="py-16">
-          <h2 className="mb-4 font-display text-xl font-extrabold text-[var(--text)]">
+          <h2 className="mb-8 font-display text-xl font-extrabold text-[var(--text)]">
             Explore
           </h2>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-2 gap-6 md:grid-cols-3">
             {[
               { href: '/drivers', emoji: '👤', title: 'Drivers', desc: 'Career stats for every F1 driver.', count: `${counts.drivers.toLocaleString()} drivers` },
               { href: '/teams', emoji: '🏎️', title: 'Teams', desc: 'Constructor history and records.', count: `${counts.teams.toLocaleString()} teams` },
@@ -687,7 +690,7 @@ export default async function HomePage() {
               <Link
                 key={card.href}
                 href={card.href}
-                className="group rounded-lg border border-[var(--border)] bg-[var(--bg2)] p-5 no-underline transition-colors hover:border-[var(--accent)]"
+                className="group rounded-xl border border-[#2a2a3a] bg-[#111118] p-6 no-underline transition hover:border-[#e8002d]"
               >
                 <div className="mb-2 text-[2rem]">{card.emoji}</div>
                 <h3 className="font-display text-lg font-bold text-[var(--text)] group-hover:text-[var(--accent)]">
