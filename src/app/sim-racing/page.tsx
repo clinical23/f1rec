@@ -115,7 +115,7 @@ export default async function SimRacingPage() {
         }}>
           From the grid to the rig
         </p>
-        <h1 style={{
+        <h1 className="hero-title" style={{
           fontFamily: 'var(--font-display)',
           fontSize: 'clamp(40px, 7vw, 72px)',
           fontWeight: 900,

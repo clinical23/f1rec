@@ -32,7 +32,7 @@ export default async function RandomStatsPage() {
     <main className="min-h-screen bg-[var(--bg)] text-[var(--text)]">
       <section className="border-b border-[var(--border)] bg-gradient-to-b from-[color-mix(in_srgb,var(--accent)_10%,transparent)] to-transparent px-6 py-12 text-center">
         <p className="font-display text-xs font-bold uppercase tracking-[0.2em] text-[var(--accent)]">Did You Know?</p>
-        <h1 className="mt-2 font-display text-[clamp(2rem,5vw,3.25rem)] font-black leading-tight text-[var(--text)]">
+        <h1 className="mt-2 font-display text-[clamp(2rem,5vw,3.25rem)] font-black leading-tight text-[var(--text)] hero-title">
           Random F1 Stats
         </h1>
         <p className="mx-auto mt-4 max-w-2xl text-sm text-[var(--muted)]">

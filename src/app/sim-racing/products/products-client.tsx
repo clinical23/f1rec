@@ -156,7 +156,7 @@ export default function ProductsClient() {
         <p style={{ fontFamily: 'var(--font-barlow-condensed, "Barlow Condensed", sans-serif)', textTransform: 'uppercase', letterSpacing: '0.2em', fontSize: '0.75rem', color: 'var(--accent, #e8002d)', marginBottom: '0.5rem' }}>
           Sim Racing Hardware
         </p>
-        <h1 style={{ fontFamily: 'var(--font-barlow-condensed, "Barlow Condensed", sans-serif)', fontSize: 'clamp(2.5rem, 5vw, 4rem)', fontWeight: 800, margin: 0, lineHeight: 1.05 }}>
+        <h1 className="hero-title" style={{ fontFamily: 'var(--font-barlow-condensed, "Barlow Condensed", sans-serif)', fontSize: 'clamp(2.5rem, 5vw, 4rem)', fontWeight: 800, margin: 0, lineHeight: 1.05 }}>
           Sim Racing<br /><span style={{ color: 'var(--accent, #e8002d)' }}>Hardware</span>
         </h1>
         <p style={{ color: 'var(--muted, #889)', maxWidth: '560px', margin: '1rem auto 0', fontSize: '0.95rem' }}>

@@ -64,6 +64,11 @@ h3 {
   color: var(--text);
 }
 
+/* Hero titles — bold uppercase brand statements */
+.hero-title {
+  text-transform: uppercase;
+}
+
 p,
 .body-text {
   font-family: 'Barlow', sans-serif;

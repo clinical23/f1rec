@@ -56,7 +56,7 @@ export default function DriversClient({ initialDrivers }: { initialDrivers: Driv
     <main className="min-h-screen bg-[var(--bg)] text-[var(--text)]">
       <section className="border-b border-[var(--border)] bg-[radial-gradient(ellipse_at_top,rgba(232,0,45,0.08),transparent_60%)] px-6 py-16 text-center">
         <p className="section-eyebrow mb-2 text-[var(--accent)]">F1 Database</p>
-        <h1>Every Driver. Every Season.</h1>
+        <h1 className="hero-title">Every Driver. Every Season.</h1>
         <p className="mx-auto mt-3 max-w-xl text-[var(--muted)]">{initialDrivers.length} drivers from 1950 to today.</p>
       </section>
 

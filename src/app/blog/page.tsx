@@ -100,7 +100,7 @@ export default async function BlogIndexPage() {
             marginBottom: '32px',
           }}
         >
-          <h1 style={{ margin: 0, fontFamily: font.display, fontWeight: 900, fontSize: 'clamp(38px,7vw,74px)', lineHeight: 0.95, letterSpacing: '-1px' }}>
+          <h1 className="hero-title" style={{ margin: 0, fontFamily: font.display, fontWeight: 900, fontSize: 'clamp(38px,7vw,74px)', lineHeight: 0.95, letterSpacing: '-1px' }}>
             F1 <span style={{ color: tokens.accent }}>ANALYSIS & INSIGHTS</span>
           </h1>
           <p style={{ margin: '14px 0 0', color: tokens.muted, maxWidth: '780px', fontSize: '16px', lineHeight: 1.6 }}>

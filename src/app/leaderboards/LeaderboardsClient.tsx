@@ -54,7 +54,7 @@ export default function LeaderboardsClient({
     <main className="min-h-screen bg-[var(--bg)] text-[var(--text)]">
       <section className="border-b border-[var(--border)] bg-[radial-gradient(ellipse_at_top,rgba(232,0,45,0.08),transparent_60%)] px-6 py-16 text-center">
         <p className="section-eyebrow mb-2 text-[var(--accent)]">F1 Database</p>
-        <h1>All-Time Records</h1>
+        <h1 className="hero-title">All-Time Records</h1>
       </section>
       <section className="mx-auto max-w-7xl px-6 py-16">
         <div className="mb-8 flex gap-3">

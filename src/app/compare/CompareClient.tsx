@@ -25,7 +25,7 @@ export default function CompareClient({ drivers }: { drivers: DriverBasic[] }) {
     <main className="min-h-screen bg-[var(--bg)] text-[var(--text)]">
       <section className="border-b border-[var(--border)] bg-[radial-gradient(ellipse_at_top,rgba(232,0,45,0.08),transparent_60%)] px-6 py-16 text-center">
         <p className="section-eyebrow mb-2 text-[var(--accent)]">Head to Head</p>
-        <h1>Compare Drivers</h1>
+        <h1 className="hero-title">Compare Drivers</h1>
       </section>
       <section className="mx-auto max-w-5xl px-4 py-10 md:px-6">
         <div className="grid gap-3 md:grid-cols-2">
