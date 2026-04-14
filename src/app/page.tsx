@@ -3,8 +3,8 @@ import Link from 'next/link'
 import { createServerClient } from '@/lib/supabase/server'
 import EmailCapture from '@/components/EmailCapture'
 
-/** Fresh standings and race data on each request (not frozen at build time). */
-export const dynamic = 'force-dynamic'
+/** Refresh homepage data hourly via ISR. */
+export const revalidate = 3600
 
 export const metadata: Metadata = {
   title: 'F1Rec — Every Stat. Every Race. Every Era.',
@@ -49,6 +49,16 @@ type TeamStandingRow = {
   teams: { name: string; slug: string } | { name: string; slug: string }[]
 }
 
+type ResultStandingRow = {
+  driver_slug: string | null
+  driver_name: string | null
+  constructor_slug: string | null
+  constructor_name: string | null
+  points: number | string | null
+  position: number | string | null
+  is_sprint: boolean | null
+}
+
 function unwrapRelation<T>(rel: T | T[] | null | undefined): T | null {
   if (rel == null) return null
   return Array.isArray(rel) ? rel[0] ?? null : rel
@@ -58,6 +68,78 @@ function num(v: number | string | null | undefined): number {
   if (v == null) return 0
   const n = typeof v === 'number' ? v : Number.parseFloat(String(v))
   return Number.isFinite(n) ? n : 0
+}
+
+function toInt(v: number | string | null | undefined): number | null {
+  if (v == null) return null
+  const parsed = typeof v === 'number' ? v : Number.parseInt(String(v), 10)
+  return Number.isFinite(parsed) ? parsed : null
+}
+
+function deriveStandingsFromResults(rows: ResultStandingRow[]) {
+  const driverMap = new Map<
+    string,
+    { fullName: string; slug: string; teamName: string; teamSlug: string; points: number; wins: number; podiums: number }
+  >()
+  const teamMap = new Map<string, { name: string; slug: string; points: number }>()
+
+  for (const row of rows) {
+    const driverSlug = (row.driver_slug ?? '').trim()
+    const driverName = (row.driver_name ?? '').trim()
+    const teamSlug = (row.constructor_slug ?? '').trim()
+    const teamName = (row.constructor_name ?? '').trim()
+    if (!driverSlug || !teamSlug) continue
+
+    const pts = num(row.points)
+    const position = toInt(row.position)
+    const isRaceResult = row.is_sprint !== true
+
+    const driver = driverMap.get(driverSlug) ?? {
+      fullName: driverName || driverSlug,
+      slug: driverSlug,
+      teamName: teamName || teamSlug,
+      teamSlug,
+      points: 0,
+      wins: 0,
+      podiums: 0,
+    }
+    driver.points += pts
+    if (isRaceResult && position === 1) driver.wins += 1
+    if (isRaceResult && position != null && position > 0 && position <= 3) driver.podiums += 1
+    if (teamName && (!driver.teamName || driver.teamName === driver.teamSlug)) {
+      driver.teamName = teamName
+    }
+    driverMap.set(driverSlug, driver)
+
+    const team = teamMap.get(teamSlug) ?? { name: teamName || teamSlug, slug: teamSlug, points: 0 }
+    team.points += pts
+    if (teamName && (!team.name || team.name === team.slug)) team.name = teamName
+    teamMap.set(teamSlug, team)
+  }
+
+  const wdc2026 = [...driverMap.values()]
+    .sort((a, b) => b.points - a.points || b.wins - a.wins || b.podiums - a.podiums || a.fullName.localeCompare(b.fullName))
+    .slice(0, 10)
+    .map((row, idx) => ({
+      pos: idx + 1,
+      fullName: row.fullName,
+      slug: row.slug,
+      teamName: row.teamName,
+      teamSlug: row.teamSlug,
+      points: row.points,
+    }))
+
+  const wcc2026 = [...teamMap.values()]
+    .sort((a, b) => b.points - a.points || a.name.localeCompare(b.name))
+    .slice(0, 10)
+    .map((row, idx) => ({
+      pos: idx + 1,
+      name: row.name,
+      slug: row.slug,
+      points: row.points,
+    }))
+
+  return { wdc2026, wcc2026 }
 }
 
 async function loadHomePageData() {
@@ -218,6 +300,17 @@ async function loadHomePageData() {
           return b.points - a.points
         })
       wcc2026 = sortedT.slice(0, 10).map((r, i) => ({ ...r, pos: r.pos <= 20 ? r.pos : i + 1 }))
+
+      if (wdc2026.length === 0 || wcc2026.length === 0) {
+        const { data: derivedRows } = await supabase
+          .from('results')
+          .select('driver_slug, driver_name, constructor_slug, constructor_name, points, position, is_sprint')
+          .eq('season_year', season2026.year)
+
+        const derived = deriveStandingsFromResults((derivedRows ?? []) as ResultStandingRow[])
+        if (wdc2026.length === 0) wdc2026 = derived.wdc2026
+        if (wcc2026.length === 0) wcc2026 = derived.wcc2026
+      }
     }
 
     let recentRaces2026 = empty.recentRaces2026
