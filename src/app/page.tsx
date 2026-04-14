@@ -438,12 +438,7 @@ export default async function HomePage() {
         </p>
         <h1
           className="font-display mx-auto max-w-4xl text-[clamp(2.25rem,6vw,4rem)] font-black leading-[0.95] tracking-tight hero-title"
-          style={{
-            background: 'linear-gradient(135deg, #e8e8f0 0%, #f5c842 50%, #e8002d 100%)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text',
-          }}
+          style={{ color: '#e8e8f0' }}
         >
           Every Stat. Every Race. Every Era.
         </h1>
@@ -465,7 +460,7 @@ export default async function HomePage() {
       </section>
 
       {/* Stats bar */}
-      <div className="grid grid-cols-2 border-y border-[var(--border)] bg-[var(--bg2)] md:grid-cols-4">
+      <div className="mt-8 grid grid-cols-2 border-y border-[var(--border)] bg-[var(--bg2)] md:grid-cols-4">
         {[
           { num: counts.drivers.toLocaleString(), label: 'Drivers' },
           { num: counts.results.toLocaleString(), label: 'Results' },
@@ -488,7 +483,7 @@ export default async function HomePage() {
         <div className="mb-12 grid gap-8 lg:grid-cols-3">
           <section className="rounded-lg border border-[var(--border)] bg-[var(--bg2)] lg:col-span-1">
             <div className="border-b border-[var(--border)] bg-[var(--bg3)] px-4 py-3">
-              <h2 className="font-display text-sm font-extrabold tracking-wider text-[var(--text)]">
+              <h2 className="font-display text-sm font-extrabold uppercase tracking-wider text-[var(--text)]">
                 Reigning champion · 2025
               </h2>
             </div>
@@ -539,7 +534,7 @@ export default async function HomePage() {
 
           <section className="lg:col-span-2">
             <div className="mb-4 flex flex-wrap items-end justify-between gap-2">
-              <h2 className="font-display text-xl font-extrabold tracking-wide text-[var(--text)]">
+              <h2 className="font-display text-xl font-extrabold uppercase tracking-wide text-[var(--text)]">
                 2026 season <span className="text-[var(--accent)]">live</span>
               </h2>
               <Link
