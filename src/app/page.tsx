@@ -37,8 +37,8 @@ export default function ComingSoonPage() {
       <h1
         style={{
           fontFamily: 'var(--font-barlow-condensed), sans-serif',
-          fontSize: 'clamp(3rem, 8vw, 6rem)',
-          fontWeight: 700,
+          fontSize: 'clamp(4rem, 11vw, 8rem)',
+          fontWeight: 800,
           lineHeight: 1,
           marginBottom: '2rem',
         }}
