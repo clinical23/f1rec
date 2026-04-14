@@ -7,9 +7,11 @@ import { useSound } from '@/components/SoundProvider'
 
 const navLinks = [
   { label: 'Home', href: '/', sound: 'home' },
+  { label: 'Live', href: '/live' },
   { label: 'Drivers', href: '/drivers' },
   { label: 'Teams', href: '/teams' },
   { label: 'Races', href: '/races' },
+  { label: 'Calendar', href: '/calendar' },
   { label: 'Seasons', href: '/seasons' },
   { label: 'Compare', href: '/compare' },
   { label: 'Leaderboards', href: '/leaderboards' },
@@ -28,9 +30,11 @@ export default function Nav() {
 
   const soundFor = (href: string) => {
     if (href === '/') return 'home'
+    if (href === '/live') return 'home'
     if (href === '/drivers') return 'drivers'
     if (href === '/teams') return 'teams'
     if (href === '/races') return 'races'
+    if (href === '/calendar') return 'races'
     if (href === '/seasons') return 'seasons'
     if (href === '/compare') return 'compare'
     if (href === '/leaderboards') return 'leaderboards'

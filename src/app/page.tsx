@@ -694,7 +694,10 @@ export default async function HomePage() {
         </section>
 
         {/* Sim racing teaser */}
-        <section className="mb-12 rounded-xl border border-[var(--border)] bg-gradient-to-br from-[color-mix(in_srgb,var(--accent)_12%,var(--bg2))] to-[var(--bg2)] p-8 text-center md:p-10">
+        <section className="mb-12 rounded-xl border border-[var(--border)] border-t-4 border-t-[var(--accent)] bg-gradient-to-br from-[color-mix(in_srgb,var(--accent)_12%,var(--bg2))] to-[var(--bg2)] p-8 text-center md:p-10">
+          <p className="mb-2 font-display text-[0.62rem] font-bold uppercase tracking-[0.14em] text-[var(--accent)]">
+            Sim Racing Section
+          </p>
           <h2 className="font-display text-2xl font-black uppercase text-[var(--text)] md:text-3xl">
             Sim Racing Hub — Reviews, Setups, and Gear
           </h2>
