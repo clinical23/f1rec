@@ -442,13 +442,13 @@ export default async function HomePage() {
         <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
           <Link
             href="/drivers"
-            className="font-display rounded border border-transparent bg-[var(--accent)] px-7 py-3 text-sm font-bold uppercase tracking-wide text-white no-underline transition-opacity hover:opacity-90"
+            className="font-display rounded-sm border border-transparent bg-[var(--accent)] px-7 py-3 text-base font-bold uppercase tracking-[0.05em] text-white no-underline transition-colors hover:bg-[color-mix(in_srgb,var(--accent)_85%,black)]"
           >
             Explore Drivers
           </Link>
           <Link
             href="/compare"
-            className="font-display rounded border border-[var(--border)] bg-transparent px-7 py-3 text-sm font-bold uppercase tracking-wide text-[var(--text)] no-underline transition-colors hover:border-[var(--accent)] hover:text-[var(--accent)]"
+            className="font-display rounded-sm border border-[var(--border)] bg-transparent px-7 py-3 text-base font-bold uppercase tracking-[0.05em] text-[var(--text)] no-underline transition-colors hover:border-[var(--accent)]"
           >
             Compare Head-to-Head
           </Link>
@@ -465,7 +465,7 @@ export default async function HomePage() {
         ].map((stat, i) => (
           <div
             key={stat.label}
-            className={`px-4 py-5 text-center md:px-6 ${i % 2 === 0 ? 'border-r border-[var(--border)] md:border-r' : ''} ${i < 2 ? 'border-b border-[var(--border)] md:border-b-0' : ''} md:border-r md:border-[var(--border)] md:[&:nth-child(4)]:border-r-0`}
+            className={`px-8 py-5 text-center ${i % 2 === 0 ? 'border-r border-[var(--border)]' : ''} ${i < 2 ? 'border-b border-[var(--border)] md:border-b-0' : ''} md:border-r md:border-[var(--border)] md:[&:nth-child(4)]:border-r-0`}
           >
             <div className="font-display text-3xl font-black leading-none text-[var(--text)] md:text-4xl">{stat.num}</div>
             <div className="mt-1 text-[11px] font-semibold uppercase tracking-wider text-[var(--muted)]">{stat.label}</div>
@@ -475,7 +475,7 @@ export default async function HomePage() {
 
       <div className="mx-auto max-w-6xl px-6 py-10 md:py-14">
         {/* Reigning champion + 2026 live */}
-        <div className="mb-12 grid gap-8 lg:grid-cols-3">
+        <section className="grid gap-8 border-t border-[var(--border)] py-12 lg:grid-cols-3">
           <section className="rounded-lg border border-[var(--border)] bg-[var(--bg2)] lg:col-span-1">
             <div className="border-b border-[var(--border)] bg-[var(--bg3)] px-4 py-3">
               <h2 className="font-display text-sm font-extrabold uppercase tracking-wider text-[var(--text)]">
@@ -551,8 +551,9 @@ export default async function HomePage() {
                     wdc2026.map((row, idx) => {
                       const leader = idx === 0
                       return (
-                        <li key={row.slug} className="flex items-center gap-2 px-2 py-2 text-sm">
-                          <span className="w-6 shrink-0 text-center font-mono text-xs text-[var(--muted)]">{row.pos}</span>
+                        <li key={row.slug} className="flex items-center gap-3 px-2 py-2 text-sm">
+                          <span className="min-w-8 shrink-0 text-right font-mono text-xs text-[var(--muted)]">{row.pos}</span>
+                          <span className="h-7 w-px shrink-0 bg-[var(--accent)]/50" aria-hidden />
                           <div className="min-w-0 flex-1">
                             <Link
                               href={`/drivers/${row.slug}`}
@@ -590,8 +591,9 @@ export default async function HomePage() {
                 <ol className="divide-y divide-[var(--border)] p-2">
                   {wcc2026.length > 0 ? (
                     wcc2026.map((row) => (
-                      <li key={row.slug} className="flex items-center gap-2 px-2 py-2 text-sm">
-                        <span className="w-6 shrink-0 text-center font-mono text-xs text-[var(--muted)]">{row.pos}</span>
+                      <li key={row.slug} className="flex items-center gap-3 px-2 py-2 text-sm">
+                        <span className="min-w-8 shrink-0 text-right font-mono text-xs text-[var(--muted)]">{row.pos}</span>
+                        <span className="h-7 w-px shrink-0 bg-[var(--accent)]/50" aria-hidden />
                         <Link
                           href={`/teams/${row.slug}`}
                           className="min-w-0 flex-1 truncate font-semibold text-[var(--text)] no-underline hover:text-[var(--accent)]"
@@ -610,10 +612,10 @@ export default async function HomePage() {
               </div>
             </div>
           </section>
-        </div>
+        </section>
 
         {/* Recent races */}
-        <section className="mb-12">
+        <section className="border-t border-[var(--border)] py-12">
           <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
             <h2 className="font-display text-xl font-extrabold uppercase text-[var(--text)]">
               Recent <span className="text-[var(--accent)]">races</span> · 2026
@@ -627,16 +629,16 @@ export default async function HomePage() {
               recentRaces2026.map((race) => (
                 <article
                   key={race.slug}
-                  className="flex flex-col rounded-lg border border-[var(--border)] bg-[var(--bg2)] p-4 transition-colors hover:border-[color-mix(in_srgb,var(--accent)_40%,var(--border))]"
+                  className="flex flex-col rounded-lg border border-[var(--border)] bg-[var(--bg2)] p-3 transition-colors hover:border-[color-mix(in_srgb,var(--accent)_40%,var(--border))]"
                 >
-                  <div className="mb-1 font-mono text-[10px] uppercase tracking-wider text-[var(--muted)]">Round {race.round}</div>
-                  <h3 className="font-display text-lg font-bold uppercase leading-tight text-[var(--text)]">
+                  <div className="font-mono text-[10px] uppercase tracking-wider text-[var(--muted)]">Round {race.round}</div>
+                  <h3 className="mt-1 font-display text-base font-bold uppercase leading-tight text-[var(--text)]">
                     {race.name}
                   </h3>
-                  <p className="mt-1 text-sm text-[var(--muted)]">
+                  <p className="mt-1 text-xs leading-snug text-[var(--muted)]">
                     {race.dateLabel} · {race.circuitName}
                   </p>
-                  <p className="mt-3 text-sm text-[var(--text)]">
+                  <p className="mt-2 text-xs leading-snug text-[var(--text)]">
                     <span className="text-[var(--muted)]">Winner: </span>
                     {race.winnerSlug ? (
                       <Link href={`/drivers/${race.winnerSlug}`} className="font-semibold text-[var(--gold)] no-underline hover:text-[var(--accent)]">
@@ -648,7 +650,7 @@ export default async function HomePage() {
                   </p>
                   <Link
                     href={`/races/${race.slug}`}
-                    className="mt-auto pt-4 text-xs font-bold uppercase tracking-wide text-[var(--accent)] no-underline hover:underline"
+                    className="mt-auto pt-3 text-[11px] font-bold uppercase tracking-wide text-[var(--accent)] no-underline hover:underline"
                   >
                     View Results →
                   </Link>
@@ -662,10 +664,12 @@ export default async function HomePage() {
           </div>
         </section>
 
-        <DidYouKnowWidget initialStat={randomStat} />
+        <section className="border-t border-[var(--border)] py-12">
+          <DidYouKnowWidget initialStat={randomStat} />
+        </section>
 
         {/* Quick links */}
-        <section className="mb-12">
+        <section className="border-t border-[var(--border)] py-12">
           <h2 className="mb-4 font-display text-xl font-extrabold uppercase text-[var(--text)]">
             Explore
           </h2>
@@ -681,7 +685,7 @@ export default async function HomePage() {
               <Link
                 key={card.href}
                 href={card.href}
-                className="group rounded-lg border border-[var(--border)] bg-[var(--bg2)] p-5 no-underline transition-colors hover:border-[var(--accent)]"
+                className="group rounded-lg border border-[var(--border)] bg-[var(--bg2)] p-5 no-underline transition-[border-color,transform] duration-200 hover:-translate-y-0.5 hover:border-[var(--accent)]"
               >
                 <div className="mb-2 text-2xl">{card.emoji}</div>
                 <h3 className="font-display text-lg font-bold uppercase text-[var(--text)] group-hover:text-[var(--accent)]">
@@ -695,7 +699,8 @@ export default async function HomePage() {
         </section>
 
         {/* Sim racing teaser */}
-        <section className="mb-12 rounded-xl border border-[var(--border)] border-t-4 border-t-[var(--accent)] bg-gradient-to-br from-[color-mix(in_srgb,var(--accent)_12%,var(--bg2))] to-[var(--bg2)] p-8 text-center md:p-10">
+        <section className="border-t border-[var(--border)] py-12">
+          <div className="rounded-xl border border-[var(--border)] border-t-4 border-t-[var(--accent)] bg-gradient-to-br from-[color-mix(in_srgb,var(--accent)_12%,var(--bg2))] to-[var(--bg2)] p-8 text-center md:p-10">
           <p className="mb-2 font-display text-[0.62rem] font-bold uppercase tracking-[0.14em] text-[var(--accent)]">
             Sim Racing Section
           </p>
@@ -711,11 +716,14 @@ export default async function HomePage() {
           >
             Open Sim Racing
           </Link>
+          </div>
         </section>
 
-        <div className="mb-12 max-w-3xl mx-auto">
+        <section className="border-t border-[var(--border)] py-12">
+          <div className="home-email-capture mx-auto max-w-[600px]">
           <EmailCapture source="homepage" />
-        </div>
+          </div>
+        </section>
 
       </div>
     </main>

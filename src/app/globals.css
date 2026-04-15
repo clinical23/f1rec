@@ -44,3 +44,27 @@ h1, h2, h3, h4, h5, h6 {
 
 .font-display { font-family: 'Barlow Condensed', sans-serif; }
 .font-mono    { font-family: 'JetBrains Mono', monospace; }
+
+.home-email-capture form {
+  display: flex;
+  align-items: stretch;
+  gap: 0.5rem;
+}
+
+.home-email-capture input[type='email'],
+.home-email-capture input[type='text'] {
+  flex: 1;
+  min-width: 0;
+  background: var(--bg2);
+}
+
+.home-email-capture button {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+@media (max-width: 640px) {
+  .home-email-capture form {
+    flex-direction: column;
+  }
+}
