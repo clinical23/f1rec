@@ -429,251 +429,194 @@ export default async function HomePage() {
   const heroSubtitle = `The definitive Formula 1 statistics platform — ${counts.seasons.toLocaleString()} seasons, ${counts.drivers.toLocaleString()} drivers, ${counts.results.toLocaleString()} results`
 
   return (
-    <main className="min-h-screen bg-[var(--bg)] text-[var(--text)]">
-      {/* Hero */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-[var(--bg)] via-[var(--bg2)] to-[var(--bg)] px-6 py-16 text-center md:py-20">
-        <p className="font-display mb-4 inline-block rounded-full border border-[color-mix(in_srgb,var(--accent)_30%,transparent)] px-3 py-1 text-[11px] font-bold uppercase tracking-[0.2em] text-[var(--accent)]">
-          The F1 database
+    <main style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--text)' }}>
+      {/* ═══ HERO ═══ */}
+      <section style={{ textAlign: 'center', padding: '4rem 1.5rem 2rem', background: 'linear-gradient(180deg, var(--bg) 0%, var(--bg2) 50%, var(--bg) 100%)' }}>
+        <p style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '11px', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--accent)', marginBottom: '1rem' }}>
+          The F1 Database
         </p>
-        <h1 className="font-display mx-auto max-w-4xl text-[clamp(2.25rem,6vw,4rem)] font-black uppercase leading-[0.95] tracking-tight text-[var(--text)]">
+        <h1 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: 'clamp(2.5rem, 6vw, 4.5rem)', fontWeight: 900, textTransform: 'uppercase', lineHeight: 0.95, letterSpacing: '-0.01em', color: 'var(--text)', maxWidth: '900px', margin: '0 auto' }}>
           Every Stat. Every Race. Every Era.
         </h1>
-        <p className="mx-auto mt-5 max-w-xl text-[17px] text-[var(--muted)]">{heroSubtitle}</p>
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-          <Link
-            href="/drivers"
-            className="font-display rounded-sm border border-transparent bg-[var(--accent)] px-7 py-3 text-base font-bold uppercase tracking-[0.05em] text-white no-underline transition-colors hover:bg-[color-mix(in_srgb,var(--accent)_85%,black)]"
-          >
+        <p style={{ color: 'var(--muted)', fontSize: '16px', marginTop: '1rem', maxWidth: '600px', marginLeft: 'auto', marginRight: 'auto' }}>
+          {heroSubtitle}
+        </p>
+        <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', marginTop: '2rem', flexWrap: 'wrap' }}>
+          <Link href="/drivers" style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700, fontSize: '14px', textTransform: 'uppercase', letterSpacing: '0.08em', background: 'var(--accent)', color: '#fff', padding: '12px 32px', borderRadius: '3px', textDecoration: 'none', border: 'none', transition: 'opacity 0.2s' }}>
             Explore Drivers
           </Link>
-          <Link
-            href="/compare"
-            className="font-display rounded-sm border border-[var(--border)] bg-transparent px-7 py-3 text-base font-bold uppercase tracking-[0.05em] text-[var(--text)] no-underline transition-colors hover:border-[var(--accent)]"
-          >
+          <Link href="/compare" style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700, fontSize: '14px', textTransform: 'uppercase', letterSpacing: '0.08em', background: 'transparent', color: 'var(--text)', padding: '12px 32px', borderRadius: '3px', textDecoration: 'none', border: '1px solid var(--border)', transition: 'border-color 0.2s' }}>
             Compare Head-to-Head
           </Link>
         </div>
       </section>
 
-      {/* Stats bar */}
-      <div className="grid grid-cols-2 border-y border-[var(--border)] bg-[var(--bg2)] md:grid-cols-4">
+      {/* ═══ STAT COUNTERS — horizontal row ═══ */}
+      <div style={{ display: 'flex', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)', background: 'var(--bg2)' }}>
         {[
-          { num: counts.drivers.toLocaleString(), label: 'Drivers' },
-          { num: counts.results.toLocaleString(), label: 'Results' },
-          { num: counts.seasons.toLocaleString(), label: 'Seasons' },
-          { num: counts.teams.toLocaleString(), label: 'Teams' },
-        ].map((stat, i) => (
-          <div
-            key={stat.label}
-            className={`px-8 py-5 text-center ${i % 2 === 0 ? 'border-r border-[var(--border)]' : ''} ${i < 2 ? 'border-b border-[var(--border)] md:border-b-0' : ''} md:border-r md:border-[var(--border)] md:[&:nth-child(4)]:border-r-0`}
-          >
-            <div className="font-display text-3xl font-black leading-none text-[var(--text)] md:text-4xl">{stat.num}</div>
-            <div className="mt-1 text-[11px] font-semibold uppercase tracking-wider text-[var(--muted)]">{stat.label}</div>
+          { n: counts.drivers.toLocaleString(), label: 'Drivers' },
+          { n: counts.results.toLocaleString(), label: 'Results' },
+          { n: counts.seasons.toLocaleString(), label: 'Seasons' },
+          { n: counts.teams.toLocaleString(), label: 'Teams' },
+        ].map((stat, i, arr) => (
+          <div key={stat.label} style={{ flex: 1, textAlign: 'center', padding: '1.25rem 1rem', borderRight: i < arr.length - 1 ? '1px solid var(--border)' : 'none' }}>
+            <div style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '2rem', fontWeight: 900, color: 'var(--text)' }}>{stat.n}</div>
+            <div style={{ fontSize: '10px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.15em', color: 'var(--muted)', marginTop: '2px' }}>{stat.label}</div>
           </div>
         ))}
       </div>
 
-      <div className="mx-auto max-w-6xl px-6 py-10 md:py-14">
-        {/* Reigning champion + 2026 live */}
-        <section className="grid gap-8 border-t border-[var(--border)] py-12 lg:grid-cols-3">
-          <section className="rounded-lg border border-[var(--border)] bg-[var(--bg2)] lg:col-span-1">
-            <div className="border-b border-[var(--border)] bg-[var(--bg3)] px-4 py-3">
-              <h2 className="font-display text-sm font-extrabold uppercase tracking-wider text-[var(--text)]">
-                Reigning champion · 2025
-              </h2>
-            </div>
-            <div className="p-6 text-center">
-              <div className="mb-3 text-4xl" aria-hidden>
-                🏆
+      {/* ═══ MAIN CONTENT AREA ═══ */}
+      <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '2.5rem 1.5rem' }}>
+
+        {/* ── Champion + 2026 Standings side by side ── */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '1.5rem', marginBottom: '2.5rem' }}>
+
+          {/* Champion card */}
+          <div style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: '8px', overflow: 'hidden' }}>
+            <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--border)', background: 'var(--bg3)' }}>
+              <div style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '12px', fontWeight: 800, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--text)' }}>
+                Reigning Champion · 2025
               </div>
+            </div>
+            <div style={{ padding: '1.5rem', textAlign: 'center' }}>
+              <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>🏆</div>
               {champion2025 ? (
                 <>
-                  <Link
-                    href={`/drivers/${champion2025.slug}`}
-                    className="font-display text-2xl font-black uppercase text-[var(--text)] no-underline hover:text-[var(--accent)]"
-                  >
+                  <Link href={`/drivers/${champion2025.slug}`} style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '22px', fontWeight: 900, textTransform: 'uppercase', color: 'var(--text)', textDecoration: 'none' }}>
                     {champion2025.fullName}
                   </Link>
-                  {champion2025.teamName ? (
-                    champion2025.teamSlug ? (
-                      <Link
-                        href={`/teams/${champion2025.teamSlug}`}
-                        className="mt-2 block text-sm text-[var(--muted)] no-underline hover:text-[var(--accent)]"
-                      >
-                        {champion2025.teamName}
-                      </Link>
-                    ) : (
-                      <p className="mt-2 text-sm text-[var(--muted)]">{champion2025.teamName}</p>
-                    )
-                  ) : null}
-                  <dl className="mt-4 grid grid-cols-3 gap-2 text-center font-mono text-sm">
-                    <div>
-                      <dt className="text-[10px] uppercase tracking-wider text-[var(--muted)]">Wins</dt>
-                      <dd className="font-semibold text-[var(--text)]">{champion2025.wins}</dd>
-                    </div>
-                    <div>
-                      <dt className="text-[10px] uppercase tracking-wider text-[var(--muted)]">Podiums</dt>
-                      <dd className="font-semibold text-[var(--text)]">{champion2025.podiums}</dd>
-                    </div>
-                    <div>
-                      <dt className="text-[10px] uppercase tracking-wider text-[var(--muted)]">Pts</dt>
-                      <dd className="font-semibold text-[var(--gold)]">{champion2025.points.toLocaleString()} pts</dd>
-                    </div>
-                  </dl>
+                  {champion2025.teamName && (
+                    <p style={{ color: 'var(--muted)', fontSize: '13px', marginTop: '4px' }}>
+                      {champion2025.teamSlug ? (
+                        <Link href={`/teams/${champion2025.teamSlug}`} style={{ color: 'var(--muted)', textDecoration: 'none' }}>{champion2025.teamName}</Link>
+                      ) : champion2025.teamName}
+                    </p>
+                  )}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '1.25rem', borderTop: '1px solid var(--border)', paddingTop: '1rem' }}>
+                    {[
+                      { label: 'Wins', value: champion2025.wins },
+                      { label: 'Podiums', value: champion2025.podiums },
+                      { label: 'Pts', value: champion2025.points.toLocaleString(), gold: true },
+                    ].map((s) => (
+                      <div key={s.label} style={{ textAlign: 'center' }}>
+                        <div style={{ fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--muted)', marginBottom: '4px' }}>{s.label}</div>
+                        <div style={{ fontFamily: 'JetBrains Mono, monospace', fontWeight: 600, fontSize: '16px', color: s.gold ? 'var(--gold)' : 'var(--text)' }}>{s.value}</div>
+                      </div>
+                    ))}
+                  </div>
                 </>
               ) : (
-                <p className="text-sm text-[var(--muted)]">2025 champion data unavailable.</p>
+                <p style={{ color: 'var(--muted)', fontSize: '14px' }}>2025 champion data unavailable.</p>
               )}
             </div>
-          </section>
+          </div>
 
-          <section className="lg:col-span-2">
-            <div className="mb-4 flex flex-wrap items-end justify-between gap-2">
-              <h2 className="font-display text-xl font-extrabold uppercase tracking-wide text-[var(--text)]">
-                2026 season <span className="text-[var(--accent)]">live</span>
+          {/* 2026 Standings */}
+          <div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: '1rem' }}>
+              <h2 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '20px', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em', color: 'var(--text)', margin: 0 }}>
+                2026 Season <span style={{ color: 'var(--accent)' }}>Live</span>
               </h2>
-              <Link
-                href={season2026Slug ? `/seasons/${season2026Slug}` : '/seasons'}
-                className="text-xs font-semibold uppercase tracking-wide text-[var(--accent)] no-underline hover:underline"
-              >
-                Full season →
+              <Link href={season2026Slug ? `/seasons/${season2026Slug}` : '/seasons'} style={{ fontSize: '12px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--accent)', textDecoration: 'none' }}>
+                Full Season →
               </Link>
             </div>
-            <div className="grid gap-6 md:grid-cols-2">
-              <div className="rounded-lg border border-[var(--border)] bg-[var(--bg2)]">
-                <div className="border-b border-[var(--border)] px-4 py-2">
-                  <h3 className="font-display text-xs font-bold uppercase tracking-wider text-[var(--muted)]">
-                    WDC · Top 10
-                  </h3>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+              {/* WDC */}
+              <div style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: '8px', overflow: 'hidden' }}>
+                <div style={{ padding: '10px 16px', borderBottom: '1px solid var(--border)', background: 'var(--bg3)' }}>
+                  <div style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '11px', fontWeight: 800, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--muted)' }}>WDC · Top 10</div>
                 </div>
-                <ol className="divide-y divide-[var(--border)] p-2">
-                  {wdc2026.length > 0 ? (
-                    wdc2026.map((row, idx) => {
-                      const leader = idx === 0
-                      return (
-                        <li key={row.slug} className="flex items-center gap-3 px-2 py-2 text-sm">
-                          <span className="min-w-8 shrink-0 text-right font-mono text-xs text-[var(--muted)]">{row.pos}</span>
-                          <span className="h-7 w-px shrink-0 bg-[var(--accent)]/50" aria-hidden />
-                          <div className="min-w-0 flex-1">
-                            <Link
-                              href={`/drivers/${row.slug}`}
-                              className={`font-semibold no-underline ${leader ? 'text-[var(--accent)]' : 'text-[var(--text)] hover:text-[var(--accent)]'}`}
-                            >
-                              {row.fullName}
-                            </Link>
-                            <div className="truncate text-xs text-[var(--muted)]">
-                              {row.teamSlug ? (
-                                <Link href={`/teams/${row.teamSlug}`} className="text-[var(--muted)] no-underline hover:text-[var(--accent)]">
-                                  {row.teamName}
-                                </Link>
-                              ) : (
-                                row.teamName
-                              )}
-                            </div>
-                          </div>
-                          <span className="shrink-0 font-mono text-xs font-semibold text-[var(--gold)]">
-                            {row.points.toLocaleString()} pts
-                          </span>
-                        </li>
-                      )
-                    })
-                  ) : (
-                    <li className="px-3 py-6 text-center text-sm text-[var(--muted)]">No 2026 standings yet.</li>
-                  )}
-                </ol>
-              </div>
-              <div className="rounded-lg border border-[var(--border)] bg-[var(--bg2)]">
-                <div className="border-b border-[var(--border)] px-4 py-2">
-                  <h3 className="font-display text-xs font-bold uppercase tracking-wider text-[var(--muted)]">
-                    WCC · Top 10
-                  </h3>
-                </div>
-                <ol className="divide-y divide-[var(--border)] p-2">
-                  {wcc2026.length > 0 ? (
-                    wcc2026.map((row) => (
-                      <li key={row.slug} className="flex items-center gap-3 px-2 py-2 text-sm">
-                        <span className="min-w-8 shrink-0 text-right font-mono text-xs text-[var(--muted)]">{row.pos}</span>
-                        <span className="h-7 w-px shrink-0 bg-[var(--accent)]/50" aria-hidden />
-                        <Link
-                          href={`/teams/${row.slug}`}
-                          className="min-w-0 flex-1 truncate font-semibold text-[var(--text)] no-underline hover:text-[var(--accent)]"
-                        >
-                          {row.name}
+                <div style={{ padding: '4px 0' }}>
+                  {wdc2026.length > 0 ? wdc2026.map((row, idx) => (
+                    <div key={row.slug} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '7px 14px', borderBottom: idx < wdc2026.length - 1 ? '1px solid var(--border)' : 'none', fontSize: '13px' }}>
+                      <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '11px', color: 'var(--muted)', minWidth: '20px', textAlign: 'right' }}>{row.pos}</span>
+                      <span style={{ width: '2px', height: '20px', background: idx === 0 ? 'var(--accent)' : 'var(--border)', borderRadius: '1px', flexShrink: 0 }} />
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <Link href={`/drivers/${row.slug}`} style={{ fontWeight: 600, color: idx === 0 ? 'var(--accent)' : 'var(--text)', textDecoration: 'none', fontSize: '13px' }}>
+                          {row.fullName}
                         </Link>
-                        <span className="shrink-0 font-mono text-xs font-semibold text-[var(--gold)]">
-                          {row.points.toLocaleString()} pts
-                        </span>
-                      </li>
-                    ))
-                  ) : (
-                    <li className="px-3 py-6 text-center text-sm text-[var(--muted)]">No 2026 constructor standings yet.</li>
+                        <div style={{ fontSize: '11px', color: 'var(--muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          {row.teamSlug ? <Link href={`/teams/${row.teamSlug}`} style={{ color: 'var(--muted)', textDecoration: 'none' }}>{row.teamName}</Link> : row.teamName}
+                        </div>
+                      </div>
+                      <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '12px', fontWeight: 600, color: 'var(--gold)', flexShrink: 0 }}>
+                        {row.points} pts
+                      </span>
+                    </div>
+                  )) : (
+                    <p style={{ padding: '2rem', textAlign: 'center', color: 'var(--muted)', fontSize: '13px' }}>No 2026 standings yet.</p>
                   )}
-                </ol>
+                </div>
+              </div>
+              {/* WCC */}
+              <div style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: '8px', overflow: 'hidden' }}>
+                <div style={{ padding: '10px 16px', borderBottom: '1px solid var(--border)', background: 'var(--bg3)' }}>
+                  <div style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '11px', fontWeight: 800, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--muted)' }}>WCC · Top 10</div>
+                </div>
+                <div style={{ padding: '4px 0' }}>
+                  {wcc2026.length > 0 ? wcc2026.map((row, idx) => (
+                    <div key={row.slug} style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '7px 14px', borderBottom: idx < wcc2026.length - 1 ? '1px solid var(--border)' : 'none', fontSize: '13px' }}>
+                      <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '11px', color: 'var(--muted)', minWidth: '20px', textAlign: 'right' }}>{row.pos}</span>
+                      <span style={{ width: '2px', height: '20px', background: idx === 0 ? 'var(--accent)' : 'var(--border)', borderRadius: '1px', flexShrink: 0 }} />
+                      <Link href={`/teams/${row.slug}`} style={{ flex: 1, fontWeight: 600, color: 'var(--text)', textDecoration: 'none', fontSize: '13px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {row.name}
+                      </Link>
+                      <span style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '12px', fontWeight: 600, color: 'var(--gold)', flexShrink: 0 }}>
+                        {row.points} pts
+                      </span>
+                    </div>
+                  )) : (
+                    <p style={{ padding: '2rem', textAlign: 'center', color: 'var(--muted)', fontSize: '13px' }}>No 2026 constructor standings yet.</p>
+                  )}
+                </div>
               </div>
             </div>
-          </section>
-        </section>
-
-        {/* Recent races */}
-        <section className="border-t border-[var(--border)] py-12">
-          <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
-            <h2 className="font-display text-xl font-extrabold uppercase text-[var(--text)]">
-              Recent <span className="text-[var(--accent)]">races</span> · 2026
-            </h2>
-            <Link href="/races" className="text-xs font-semibold uppercase tracking-wide text-[var(--accent)] no-underline hover:underline">
-              All races →
-            </Link>
           </div>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {recentRaces2026.length > 0 ? (
-              recentRaces2026.map((race) => (
-                <article
-                  key={race.slug}
-                  className="flex flex-col rounded-lg border border-[var(--border)] bg-[var(--bg2)] p-3 transition-colors hover:border-[color-mix(in_srgb,var(--accent)_40%,var(--border))]"
-                >
-                  <div className="font-mono text-[10px] uppercase tracking-wider text-[var(--muted)]">Round {race.round}</div>
-                  <h3 className="mt-1 font-display text-base font-bold uppercase leading-tight text-[var(--text)]">
-                    {race.name}
-                  </h3>
-                  <p className="mt-1 text-xs leading-snug text-[var(--muted)]">
-                    {race.dateLabel} · {race.circuitName}
-                  </p>
-                  <p className="mt-2 text-xs leading-snug text-[var(--text)]">
-                    <span className="text-[var(--muted)]">Winner: </span>
-                    {race.winnerSlug ? (
-                      <Link href={`/drivers/${race.winnerSlug}`} className="font-semibold text-[var(--gold)] no-underline hover:text-[var(--accent)]">
-                        {race.winnerName}
-                      </Link>
-                    ) : (
-                      <span className="font-semibold text-[var(--gold)]">{race.winnerName}</span>
-                    )}
-                  </p>
-                  <Link
-                    href={`/races/${race.slug}`}
-                    className="mt-auto pt-3 text-[11px] font-bold uppercase tracking-wide text-[var(--accent)] no-underline hover:underline"
-                  >
-                    View Results →
-                  </Link>
-                </article>
-              ))
-            ) : (
-              <p className="col-span-full rounded-lg border border-dashed border-[var(--border)] bg-[var(--bg2)] py-10 text-center text-sm text-[var(--muted)]">
-                No 2026 races in the database yet.
-              </p>
+        </div>
+
+        {/* ── Recent Races ── */}
+        <div style={{ borderTop: '1px solid var(--border)', paddingTop: '2rem', marginBottom: '2.5rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+            <h2 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '20px', fontWeight: 800, textTransform: 'uppercase', color: 'var(--text)', margin: 0 }}>
+              Recent <span style={{ color: 'var(--accent)' }}>Races</span> · 2026
+            </h2>
+            <Link href="/races" style={{ fontSize: '12px', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--accent)', textDecoration: 'none' }}>All Races →</Link>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem' }}>
+            {recentRaces2026.length > 0 ? recentRaces2026.map((race) => (
+              <div key={race.slug} style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: '8px', padding: '14px 16px', display: 'flex', flexDirection: 'column' }}>
+                <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '10px', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--muted)' }}>Round {race.round}</div>
+                <h3 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '16px', fontWeight: 700, textTransform: 'uppercase', color: 'var(--text)', margin: '4px 0' }}>{race.name}</h3>
+                <p style={{ fontSize: '12px', color: 'var(--muted)', margin: 0 }}>{race.dateLabel} · {race.circuitName}</p>
+                <p style={{ fontSize: '12px', color: 'var(--text)', margin: '6px 0 0' }}>
+                  <span style={{ color: 'var(--muted)' }}>Winner: </span>
+                  {race.winnerSlug ? (
+                    <Link href={`/drivers/${race.winnerSlug}`} style={{ fontWeight: 600, color: 'var(--gold)', textDecoration: 'none' }}>{race.winnerName}</Link>
+                  ) : (
+                    <span style={{ fontWeight: 600, color: 'var(--gold)' }}>{race.winnerName}</span>
+                  )}
+                </p>
+                <Link href={`/races/${race.slug}`} style={{ fontSize: '11px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--accent)', textDecoration: 'none', marginTop: 'auto', paddingTop: '10px' }}>
+                  View Results →
+                </Link>
+              </div>
+            )) : (
+              <p style={{ gridColumn: '1 / -1', textAlign: 'center', color: 'var(--muted)', padding: '2rem', background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: '8px' }}>No 2026 races yet.</p>
             )}
           </div>
-        </section>
+        </div>
 
-        <section className="border-t border-[var(--border)] py-12">
+        {/* ── Did You Know ── */}
+        <div style={{ borderTop: '1px solid var(--border)', paddingTop: '2rem', marginBottom: '2.5rem' }}>
           <DidYouKnowWidget initialStat={randomStat} />
-        </section>
+        </div>
 
-        {/* Quick links */}
-        <section className="border-t border-[var(--border)] py-12">
-          <h2 className="mb-4 font-display text-xl font-extrabold uppercase text-[var(--text)]">
-            Explore
-          </h2>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {/* ── Explore Cards ── */}
+        <div style={{ borderTop: '1px solid var(--border)', paddingTop: '2rem', marginBottom: '2.5rem' }}>
+          <h2 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '20px', fontWeight: 800, textTransform: 'uppercase', color: 'var(--text)', marginBottom: '1rem' }}>Explore</h2>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1rem' }}>
             {[
               { href: '/drivers', emoji: '👤', title: 'Drivers', desc: 'Career stats for every F1 driver.', count: `${counts.drivers.toLocaleString()} drivers` },
               { href: '/teams', emoji: '🏎️', title: 'Teams', desc: 'Constructor history and records.', count: `${counts.teams.toLocaleString()} teams` },
@@ -682,49 +625,40 @@ export default async function HomePage() {
               { href: '/leaderboards', emoji: '📊', title: 'Leaderboards', desc: 'All-time rankings and records.', count: 'Records' },
               { href: '/sim-racing', emoji: '🎮', title: 'Sim Racing', desc: 'Hardware, reviews, and setups.', count: 'Hub' },
             ].map((card) => (
-              <Link
-                key={card.href}
-                href={card.href}
-                className="group rounded-lg border border-[var(--border)] bg-[var(--bg2)] p-5 no-underline transition-[border-color,transform] duration-200 hover:-translate-y-0.5 hover:border-[var(--accent)]"
-              >
-                <div className="mb-2 text-2xl">{card.emoji}</div>
-                <h3 className="font-display text-lg font-bold uppercase text-[var(--text)] group-hover:text-[var(--accent)]">
-                  {card.title}
-                </h3>
-                <p className="mt-1 text-sm text-[var(--muted)]">{card.desc}</p>
-                <p className="mt-3 font-mono text-xs text-[var(--gold)]">{card.count}</p>
+              <Link key={card.href} href={card.href} style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: '8px', padding: '1.25rem', textDecoration: 'none', transition: 'border-color 0.2s, transform 0.15s' }}>
+                <div style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>{card.emoji}</div>
+                <h3 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '18px', fontWeight: 700, textTransform: 'uppercase', color: 'var(--text)', margin: '0 0 4px' }}>{card.title}</h3>
+                <p style={{ fontSize: '13px', color: 'var(--muted)', margin: '0 0 0.75rem' }}>{card.desc}</p>
+                <p style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '12px', color: 'var(--gold)', margin: 0 }}>{card.count}</p>
               </Link>
             ))}
           </div>
-        </section>
+        </div>
 
-        {/* Sim racing teaser */}
-        <section className="border-t border-[var(--border)] py-12">
-          <div className="rounded-xl border border-[var(--border)] border-t-4 border-t-[var(--accent)] bg-gradient-to-br from-[color-mix(in_srgb,var(--accent)_12%,var(--bg2))] to-[var(--bg2)] p-8 text-center md:p-10">
-          <p className="mb-2 font-display text-[0.62rem] font-bold uppercase tracking-[0.14em] text-[var(--accent)]">
-            Sim Racing Section
-          </p>
-          <h2 className="font-display text-2xl font-black uppercase text-[var(--text)] md:text-3xl">
-            Sim Racing Hub — Reviews, Setups, and Gear
-          </h2>
-          <p className="mx-auto mt-3 max-w-lg text-sm text-[var(--muted)]">
-            {simCounts.products.toLocaleString()} products, {simCounts.reviews.toLocaleString()} reviews, {simCounts.brands.toLocaleString()} brands — curated for serious sim racers.
-          </p>
-          <Link
-            href="/sim-racing"
-            className="mt-6 inline-block rounded border border-[var(--accent)] bg-[var(--accent)] px-6 py-3 font-display text-sm font-bold uppercase tracking-wide text-white no-underline hover:opacity-90"
-          >
-            Open Sim Racing
-          </Link>
+        {/* ── Sim Racing CTA ── */}
+        <div style={{ borderTop: '1px solid var(--border)', paddingTop: '2rem', marginBottom: '2.5rem' }}>
+          <div style={{ background: 'linear-gradient(135deg, var(--bg2) 0%, var(--bg3) 100%)', border: '1px solid var(--accent)', borderRadius: '8px', padding: '2.5rem', textAlign: 'center' }}>
+            <p style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '11px', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--accent)', marginBottom: '0.5rem' }}>Sim Racing Section</p>
+            <h2 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '28px', fontWeight: 900, color: 'var(--text)', margin: '0 0 0.5rem' }}>
+              Sim Racing Hub — Reviews, Setups, and Gear
+            </h2>
+            <p style={{ color: 'var(--muted)', fontSize: '14px', marginBottom: '1.5rem' }}>
+              {simCounts.products} products, {simCounts.reviews} reviews, {simCounts.brands} brands — curated for serious sim racers.
+            </p>
+            <Link href="/sim-racing" style={{ fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700, fontSize: '14px', textTransform: 'uppercase', letterSpacing: '0.08em', background: 'var(--accent)', color: '#fff', padding: '12px 32px', borderRadius: '3px', textDecoration: 'none' }}>
+              Open Sim Racing
+            </Link>
           </div>
-        </section>
+        </div>
 
-        <section className="border-t border-[var(--border)] py-12">
-          <div className="home-email-capture mx-auto max-w-[600px]">
-          <EmailCapture source="homepage" />
+        {/* ── Email Capture ── */}
+        <div style={{ borderTop: '1px solid var(--border)', paddingTop: '2rem', marginBottom: '2.5rem' }}>
+          <div style={{ maxWidth: '500px', margin: '0 auto' }}>
+            <h2 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '24px', fontWeight: 900, textTransform: 'uppercase', color: 'var(--text)', marginBottom: '0.5rem' }}>Stay In The Loop</h2>
+            <p style={{ color: 'var(--muted)', fontSize: '14px', marginBottom: '1rem' }}>Race results, driver stats, sim racing deals — no spam, unsubscribe anytime.</p>
+            <EmailCapture source="homepage" />
           </div>
-        </section>
-
+        </div>
       </div>
     </main>
   )
