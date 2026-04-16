@@ -653,10 +653,39 @@ export default async function HomePage() {
 
         {/* ── Email Capture ── */}
         <div style={{ borderTop: '1px solid var(--border)', paddingTop: '2rem', marginBottom: '2.5rem' }}>
-          <div style={{ maxWidth: '500px', margin: '0 auto' }}>
-            <h2 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '24px', fontWeight: 900, textTransform: 'uppercase', color: 'var(--text)', marginBottom: '0.5rem' }}>Stay In The Loop</h2>
-            <p style={{ color: 'var(--muted)', fontSize: '14px', marginBottom: '1rem' }}>Race results, driver stats, sim racing deals — no spam, unsubscribe anytime.</p>
-            <EmailCapture source="homepage" />
+          <div
+            style={{
+              background: 'var(--bg2)',
+              border: '1px solid var(--border)',
+              borderRadius: '8px',
+              overflow: 'hidden',
+              marginBottom: '16px',
+              maxWidth: '640px',
+              marginLeft: 'auto',
+              marginRight: 'auto',
+            }}
+          >
+            <div
+              style={{
+                padding: '10px 16px',
+                borderBottom: '1px solid var(--border)',
+                background: 'var(--bg3)',
+                fontFamily: "'Barlow Condensed', sans-serif",
+                fontSize: '12px',
+                fontWeight: 800,
+                letterSpacing: '0.12em',
+                textTransform: 'uppercase',
+                color: '#fff',
+              }}
+            >
+              Stay In The Loop
+            </div>
+            <div style={{ padding: '12px 16px 16px' }}>
+              <p style={{ color: 'var(--muted)', fontSize: '14px', margin: '0 0 8px 0' }}>
+                Race results, driver stats, sim racing deals — no spam, unsubscribe anytime.
+              </p>
+              <EmailCapture source="homepage" hideIntro />
+            </div>
           </div>
         </div>
       </div>

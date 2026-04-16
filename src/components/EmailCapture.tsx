@@ -5,9 +5,10 @@ import { subscribeAction } from '@/app/actions/subscribe'
 
 type Props = {
   source?: string
+  hideIntro?: boolean
 }
 
-export default function EmailCapture({ source = 'community' }: Props) {
+export default function EmailCapture({ source = 'community', hideIntro = false }: Props) {
   const [email, setEmail] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [done, setDone] = useState<'success' | 'already' | null>(null)
@@ -64,12 +65,12 @@ export default function EmailCapture({ source = 'community' }: Props) {
 
   return (
     <div className="rounded-xl border border-[var(--border)] bg-[var(--bg2)] p-6">
-      <h2 className="font-display text-xl font-extrabold uppercase tracking-wide text-[var(--text)] md:text-2xl">
-        Stay in the loop
-      </h2>
-      <p className="mt-2 text-sm text-[var(--muted)]">
-        Race results, driver stats, sim racing deals — no spam, unsubscribe anytime.
-      </p>
+      {!hideIntro ? (
+        <>
+          <h2 className="font-display text-xl font-extrabold uppercase tracking-wide text-[var(--text)] md:text-2xl">Stay in the loop</h2>
+          <p className="mt-2 text-sm text-[var(--muted)]">Race results, driver stats, sim racing deals — no spam, unsubscribe anytime.</p>
+        </>
+      ) : null}
       <form onSubmit={handleSubmit} className="mt-4">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-stretch">
           <label className="sr-only" htmlFor={`email-capture-${source}`}>
