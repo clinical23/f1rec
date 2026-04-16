@@ -54,8 +54,8 @@ export function validatePost(o: any, factsheet: FactSheet): { valid: boolean; re
     reasons.push(`meta_description_length_out_of_range:${post.meta_description.length}`);
   }
 
-  // 8. Content length
-  if (post.content.length < 3000 || post.content.length > 5000) {
+  // 8. Content length (3000-5500 chars; 5000 was too tight, Sonnet regularly landed in 5000-5200 range)
+  if (post.content.length < 3000 || post.content.length > 5500) {
     reasons.push(`content_length_out_of_range:${post.content.length}`);
   }
 
