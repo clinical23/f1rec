@@ -29,7 +29,7 @@ export const POST = withCrashNotify('POST /api/subscribe', async (req: NextReque
     .eq('is_active', true);
 
   // Fire-and-forget Telegram notification (silent — don't buzz for every signup)
-  void notify({
+  await notify({
     text: [
       `👤 *New subscriber*`,
       ``,

@@ -43,7 +43,7 @@ export const POST = withCrashNotify('POST /api/blog/generate', async (req: NextR
   try {
     result = await provider.generate(STYLE_BIBLE_V2, factsheet);
   } catch (e: any) {
-    void notify({
+    await notify({
       text: `🔥 *Blog pipeline crashed*\nRace: \`${esc(race_slug)}\`\nProvider: ${provider.name}\nError: \`${esc((e.message ?? 'unknown').slice(0, 200))}\``
     });
     await supabase.from('posts_rejected').insert({
@@ -65,7 +65,7 @@ export const POST = withCrashNotify('POST /api/blog/generate', async (req: NextR
       fact_sheet_sent: factsheet,
       rejection_reasons: [`llm_returned_error:${result.parsed.error}`]
     });
-    void notify({
+    await notify({
       text: [
         `⚠️ *LLM refused to generate*`,
         `Race: \`${esc(race_slug)}\``,
@@ -92,7 +92,7 @@ export const POST = withCrashNotify('POST /api/blog/generate', async (req: NextR
       fact_sheet_sent: factsheet,
       rejection_reasons: reasons
     });
-    void notify({
+    await notify({
       text: [
         `⚠️ *Blog draft rejected*`,
         ``,
@@ -122,7 +122,7 @@ export const POST = withCrashNotify('POST /api/blog/generate', async (req: NextR
   }).select().single();
 
   if (error) return NextResponse.json({ error: 'Insert failed', details: error }, { status: 500 });
-  void notify({
+  await notify({
     text: [
       `✅ *Blog published*`,
       ``,
