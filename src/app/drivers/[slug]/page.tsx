@@ -7,6 +7,7 @@ import EmailCapture from '@/components/EmailCapture'
 
 type PageProps = {
   params: Promise<{ slug: string }>
+  searchParams?: Promise<{ tab?: string }>
 }
 
 type DriverRow = Record<string, unknown> & {
@@ -84,6 +85,18 @@ type DriverVideoRow = {
   category: string | null
   season_year: number | null
   driver_slug: string | null
+}
+
+type RaceResultRow = {
+  id: string
+  season_year: number | null
+  race_name: string | null
+  race_slug: string | null
+  grid_position: number | null
+  position: number | null
+  status: string | null
+  points: number | string | null
+  constructor_name: string | null
 }
 
 function unwrapRelation<T>(rel: T | T[] | null | undefined): T | null {
@@ -218,7 +231,7 @@ async function loadDriverProfileData(slug: string) {
   const d = driver as DriverRow
   const driverId = d.id
 
-  const [seasonStatsRes, postsRes, countriesRes, profileRes, videosRes] = await Promise.all([
+  const [seasonStatsRes, postsRes, countriesRes, profileRes, videosRes, raceResultsRes] = await Promise.all([
     supabase
       .from('driver_season_stats')
       .select(
@@ -252,6 +265,13 @@ async function loadDriverProfileData(slug: string) {
       .eq('driver_slug', slug)
       .eq('is_active', true)
       .order('sort_order', { ascending: true }),
+    supabase
+      .from('results')
+      .select('id, season_year, race_name, race_slug, grid_position, position, status, points, constructor_name')
+      .eq('driver_slug', slug)
+      .eq('is_sprint', false)
+      .order('season_year', { ascending: false })
+      .order('round', { ascending: false }),
   ])
 
   const seasonRows = ((seasonStatsRes.data ?? []) as SeasonStatRow[]).sort((a, b) => {
@@ -382,6 +402,7 @@ async function loadDriverProfileData(slug: string) {
   const titleSeasonRows = seasonRows.filter((r) => unwrapRelation(r.seasons)?.champion_driver_id === driverId)
   const profile = (profileRes.data as DriverProfileRow | null) ?? null
   const videos = ((videosRes.data ?? []) as DriverVideoRow[]).filter((video) => video.youtube_id && video.title)
+  const raceResults = (raceResultsRes.data ?? []) as RaceResultRow[]
 
   return {
     driver: d,
@@ -402,6 +423,7 @@ async function loadDriverProfileData(slug: string) {
     titleSeasonRows,
     profile,
     videos,
+    raceResults,
   }
 }
 
@@ -470,7 +492,7 @@ function RecordRow({ label, value }: { label: string; value: string }) {
   )
 }
 
-export default async function DriverProfilePage({ params }: PageProps) {
+export default async function DriverProfilePage({ params, searchParams }: PageProps) {
   const { slug } = await params
   const data = await loadDriverProfileData(slug)
   if (!data) notFound()
@@ -494,7 +516,12 @@ export default async function DriverProfilePage({ params }: PageProps) {
     titleSeasonRows,
     profile,
     videos,
+    raceResults,
   } = data
+
+  const resolvedSearchParams = (await searchParams) ?? {}
+  const activeTab = resolvedSearchParams.tab === 'seasons' ? 'seasons' : 'results'
+  const seasonsCount = minYear != null && Number(careerEndLabel) ? Number(careerEndLabel) - minYear + 1 : seasonRows.length
 
   const affiliationName =
     (driver.current_team as string | null)?.trim() || currentTeamLink?.name || null
@@ -518,503 +545,183 @@ export default async function DriverProfilePage({ params }: PageProps) {
     description: `${name} Formula 1 career statistics, season results, and records on F1Rec.`,
   }
 
-  const categoryStyles: Record<string, string> = {
-    'race-review': 'bg-[color-mix(in_srgb,var(--accent)_18%,transparent)] text-[var(--accent)]',
-    'driver-analysis': 'bg-[color-mix(in_srgb,var(--green)_18%,transparent)] text-[var(--green)]',
-    'season-preview': 'bg-[color-mix(in_srgb,var(--blue)_18%,transparent)] text-[var(--blue)]',
-    history: 'bg-[color-mix(in_srgb,var(--gold)_18%,transparent)] text-[var(--gold)]',
-    tech: 'bg-[color-mix(in_srgb,#ce93d8_18%,transparent)] text-[#ce93d8]',
-  }
-
-  const videoCategoryLabel = (category: string | null): string => {
-    if (!category) return 'Highlight'
-    return category.replace(/-/g, ' ')
-  }
-
   return (
-    <main className="min-h-screen bg-[var(--bg)] text-[var(--text)]">
+    <main style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--text)' }}>
       <JsonLd data={jsonLd} id={`driver-jsonld-${slug}`} />
+      <section style={{ maxWidth: '1200px', margin: '0 auto', padding: '24px' }}>
+        <div style={{ marginBottom: '10px' }}>
+          <Link href="/drivers" style={{ color: 'var(--muted)', textDecoration: 'none', fontSize: '14px' }}>
+            ← All Drivers
+          </Link>
+        </div>
 
-      <section className="border-b border-[var(--border)] bg-gradient-to-b from-[color-mix(in_srgb,var(--accent)_10%,transparent)] to-transparent px-6 py-10 md:py-14">
-        <div className="mx-auto max-w-6xl">
-          <div className="mb-6 text-sm">
-            <Link href="/drivers" className="text-[var(--muted)] no-underline hover:text-[var(--accent)]">
-              ← All Drivers
-            </Link>
-          </div>
-          <div className="flex flex-col gap-8 lg:flex-row lg:items-start lg:justify-between">
-            <div className="flex min-w-0 flex-1 flex-col gap-4 sm:flex-row sm:items-start">
-              {driver.number != null && Number(driver.number) > 0 ? (
-                <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-xl border-2 border-[var(--border)] bg-[var(--bg2)] font-display text-3xl font-extrabold text-[var(--accent)]">
-                  #{driver.number}
+        <div style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: '8px', overflow: 'hidden', marginBottom: '16px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1.6fr 1fr', gap: '20px', padding: '32px', minHeight: '240px' }}>
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                {driver.number != null && Number(driver.number) > 0 ? (
+                  <div style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '64px', fontWeight: 800, color: 'var(--accent)', lineHeight: 1 }}>#{driver.number}</div>
+                ) : null}
+                {driver.code ? (
+                  <div style={{ width: '32px', height: '32px', borderRadius: '999px', background: 'var(--accent)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'JetBrains Mono, monospace', fontSize: '12px', fontWeight: 700 }}>
+                    {String(driver.code)}
+                  </div>
+                ) : null}
+              </div>
+              <h1 style={{ margin: '8px 0 6px', fontFamily: "'Barlow Condensed', sans-serif", fontSize: '56px', fontWeight: 800, lineHeight: 1, color: '#fff', textTransform: 'uppercase' }}>
+                <span style={{ color: 'var(--muted)', fontWeight: 400 }}>{String(driver.first_name ?? '').toUpperCase()} </span>
+                {String(driver.last_name ?? name).toUpperCase()}
+              </h1>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', color: 'var(--muted)', fontSize: '14px' }}>
+                {flag ? <span>{flag}</span> : null}
+                {nationality ? <span>{nationality}</span> : null}
+                {minYear != null ? <span>· {minYear}-{careerEndLabel} · {seasonsCount} seasons</span> : null}
+              </div>
+              {showChampionBadge ? (
+                <div style={{ marginTop: '14px', display: 'inline-flex', alignItems: 'center', gap: '8px', borderRadius: '999px', padding: '6px 12px', border: '1px solid color-mix(in srgb, var(--gold) 40%, transparent)', background: 'color-mix(in srgb, var(--gold) 14%, transparent)', color: 'var(--gold)', fontFamily: "'Barlow Condensed', sans-serif", fontSize: '12px', fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+                  <span>👑</span>
+                  {titleCount}x World Champion
                 </div>
               ) : null}
-              <div className="min-w-0 flex-1">
-                {driver.code ? (
-                  <p className="font-display text-xs font-bold uppercase tracking-[0.2em] text-[var(--accent)]">
-                    {String(driver.code)}
-                  </p>
-                ) : null}
-                <h1 className="font-display text-[clamp(2rem,5vw,3.5rem)] font-extrabold leading-[1.05] tracking-tight text-[var(--text)]">
-                  {name}
-                </h1>
-                <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-[var(--muted)]">
-                  {nationality ? (
-                    <span className="inline-flex items-center gap-2">
-                      {flag ? <span aria-hidden>{flag}</span> : null}
-                      {nationality}
-                    </span>
-                  ) : null}
-                  {minYear != null ? (
-                    <span className="font-mono text-xs text-[var(--text)]">
-                      {minYear} – {careerEndLabel}
-                    </span>
-                  ) : null}
-                </div>
-                <div className="mt-3 text-sm">
-                  <span className="text-[var(--muted)]">Team: </span>
-                  {driver.is_active === false ? (
-                    <span className="text-[var(--text)]">Retired</span>
-                  ) : currentTeamLink?.slug ? (
-                    <Link
-                      href={`/teams/${currentTeamLink.slug}`}
-                      className="font-semibold text-[var(--text)] no-underline hover:text-[var(--accent)]"
-                    >
-                      {currentTeamLink.name}
-                    </Link>
-                  ) : affiliationName ? (
-                    <span className="text-[var(--text)]">{affiliationName}</span>
-                  ) : (
-                    <span className="text-[var(--muted)]">—</span>
-                  )}
-                </div>
-                {showChampionBadge ? (
-                  <div className="mt-4 inline-flex items-center gap-2 rounded-md border border-[color-mix(in_srgb,var(--gold)_35%,transparent)] bg-[color-mix(in_srgb,var(--gold)_12%,transparent)] px-4 py-2 font-display text-xs font-bold uppercase tracking-wider text-[var(--gold)]">
-                    <span aria-hidden>★</span>
-                    {titleCount > 0 ? `${titleCount}× World Champion` : 'World Champion'}
-                  </div>
-                ) : null}
-              </div>
             </div>
-            <Link
-              href={`/compare?d1=${encodeURIComponent(slug)}`}
-              className="inline-flex shrink-0 items-center justify-center rounded-lg border border-[var(--border)] bg-[var(--bg2)] px-5 py-3 font-display text-xs font-bold uppercase tracking-wider text-[var(--text)] no-underline transition-colors hover:border-[var(--accent)] hover:text-[var(--accent)]"
-            >
-              Compare →
-            </Link>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
+              {[
+                { label: 'Wins', value: aggregates.totalWins, gold: aggregates.totalWins > 0 },
+                { label: 'Poles', value: aggregates.totalPoles, gold: false },
+                { label: 'Podiums', value: aggregates.totalPodiums, gold: false },
+                { label: 'Titles', value: titleCount, gold: titleCount > 0 },
+                { label: 'Points', value: Math.round(aggregates.totalPoints).toLocaleString(), gold: false },
+                { label: 'Starts', value: aggregates.totalRaces, gold: false },
+              ].map((stat) => (
+                <div key={stat.label} style={{ background: 'var(--bg3)', border: '1px solid var(--border)', borderRadius: '6px', padding: '16px', textAlign: 'center' }}>
+                  <div style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '10px', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--muted)' }}>{stat.label}</div>
+                  <div style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '32px', fontWeight: 800, color: stat.gold ? 'var(--gold)' : '#fff', lineHeight: 1, marginTop: '6px' }}>{stat.value}</div>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
-      </section>
-
-      <div className="mx-auto max-w-6xl px-6 py-10 md:py-14">
-        {/* Career stat cards */}
-        <section className="mb-12">
-          <h2 className="mb-4 font-display text-lg font-extrabold tracking-wide text-[var(--text)]">
-            Career <span className="text-[var(--accent)]">totals</span>
-          </h2>
-          <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-3">
-            <StatCard label="Races" value={aggregates.totalRaces.toLocaleString()} />
-            <StatCard label="Wins" value={aggregates.totalWins.toLocaleString()} accent={aggregates.totalWins > 0} />
-            <StatCard label="Podiums" value={aggregates.totalPodiums.toLocaleString()} />
-            <StatCard label="Poles" value={aggregates.totalPoles.toLocaleString()} />
-            <StatCard label="Points" value={Math.round(aggregates.totalPoints).toLocaleString()} />
-            <StatCard label="Championships" value={titleCount} gold={titleCount > 0} />
-            <StatCard label="Fastest laps" value={aggregates.totalFastestLaps.toLocaleString()} />
-            <StatCard label="DNFs" value={aggregates.totalDnfs.toLocaleString()} />
-            <StatCard
-              label="Best championship"
-              value={
-                aggregates.bestChampOrdinal
-                  ? `${aggregates.bestChampOrdinal}${aggregates.bestChampYear ? ` (${aggregates.bestChampYear})` : ''}`
-                  : '—'
-              }
-              gold={aggregates.bestChampPos === 1}
-            />
-          </div>
-        </section>
-
-        {profile ? (
-          <section className="mb-12 rounded-xl border border-[var(--border)] bg-[var(--bg2)] p-5 md:p-6">
-            <h2 className="font-display text-lg font-extrabold tracking-wide text-[var(--text)]">
-              Beyond the <span className="text-[var(--accent)]">Stats</span>
-            </h2>
-
-            {profile.nickname ? (
-              <div className="mt-3 inline-flex rounded bg-[color-mix(in_srgb,var(--accent)_15%,transparent)] px-3 py-1 font-display text-xs font-bold uppercase tracking-wider text-[var(--accent)]">
-                {profile.nickname}
-              </div>
-            ) : null}
-
-            {profile.fun_facts && profile.fun_facts.length > 0 ? (
-              <div className="mt-5">
-                <h3 className="font-display text-sm font-bold tracking-wider text-[var(--text)]">Fun Facts</h3>
-                <ul className="mt-2 list-disc space-y-1 pl-5 text-sm text-[var(--muted)]">
-                  {profile.fun_facts.filter(Boolean).map((fact) => (
-                    <li key={fact}>{fact}</li>
-                  ))}
-                </ul>
-              </div>
-            ) : null}
-
-            {profile.hobbies ? (
-              <div className="mt-5">
-                <h3 className="font-display text-sm font-bold tracking-wider text-[var(--text)]">Off Track</h3>
-                <p className="mt-2 text-sm text-[var(--muted)]">{profile.hobbies}</p>
-              </div>
-            ) : null}
-
-            <div className="mt-5">
-              <h3 className="font-display text-sm font-bold tracking-wider text-[var(--text)]">Social Media</h3>
-              <div className="mt-2 flex flex-wrap gap-2">
-                {profile.social_twitter ? (
-                  <a href={`https://twitter.com/${profile.social_twitter}`} target="_blank" rel="noopener noreferrer" className="rounded border border-[var(--border)] bg-[var(--bg3)] px-3 py-1 text-xs font-semibold uppercase tracking-wide text-[var(--text)] no-underline hover:border-[var(--accent)] hover:text-[var(--accent)]">
-                    X
-                  </a>
-                ) : null}
-                {profile.social_instagram ? (
-                  <a href={`https://instagram.com/${profile.social_instagram}`} target="_blank" rel="noopener noreferrer" className="rounded border border-[var(--border)] bg-[var(--bg3)] px-3 py-1 text-xs font-semibold uppercase tracking-wide text-[var(--text)] no-underline hover:border-[var(--accent)] hover:text-[var(--accent)]">
-                    Instagram
-                  </a>
-                ) : null}
-                {profile.social_youtube ? (
-                  <a href={`https://youtube.com/${profile.social_youtube}`} target="_blank" rel="noopener noreferrer" className="rounded border border-[var(--border)] bg-[var(--bg3)] px-3 py-1 text-xs font-semibold uppercase tracking-wide text-[var(--text)] no-underline hover:border-[var(--accent)] hover:text-[var(--accent)]">
-                    YouTube
-                  </a>
-                ) : null}
-                {profile.social_twitch ? (
-                  <a href={`https://twitch.tv/${profile.social_twitch}`} target="_blank" rel="noopener noreferrer" className="rounded border border-[var(--border)] bg-[var(--bg3)] px-3 py-1 text-xs font-semibold uppercase tracking-wide text-[var(--text)] no-underline hover:border-[var(--accent)] hover:text-[var(--accent)]">
-                    Twitch
-                  </a>
-                ) : null}
-                {profile.social_tiktok ? (
-                  <a href={`https://tiktok.com/@${profile.social_tiktok}`} target="_blank" rel="noopener noreferrer" className="rounded border border-[var(--border)] bg-[var(--bg3)] px-3 py-1 text-xs font-semibold uppercase tracking-wide text-[var(--text)] no-underline hover:border-[var(--accent)] hover:text-[var(--accent)]">
-                    TikTok
-                  </a>
-                ) : null}
-              </div>
-            </div>
-
-            {profile.fan_community_name || profile.fan_base_region ? (
-              <div className="mt-5">
-                <h3 className="font-display text-sm font-bold tracking-wider text-[var(--text)]">Fan Community</h3>
-                <div className="mt-2 flex flex-wrap items-center gap-2">
-                  {profile.fan_community_name && profile.fan_community_url ? (
-                    <a href={profile.fan_community_url} target="_blank" rel="noopener noreferrer" className="text-sm font-semibold text-[var(--accent)] no-underline hover:underline">
-                      Join the {profile.fan_community_name}
-                    </a>
-                  ) : null}
-                  {profile.fan_base_region ? (
-                    <span className="rounded bg-[var(--bg3)] px-2 py-1 text-xs font-semibold uppercase tracking-wide text-[var(--muted)]">
-                      {profile.fan_base_region}
-                    </span>
-                  ) : null}
-                </div>
-              </div>
-            ) : null}
-          </section>
-        ) : null}
-
-        {videos.length > 0 ? (
-          <section className="mb-12">
-            <h2 className="mb-4 font-display text-lg font-extrabold tracking-wide text-[var(--text)]">
-              Best Moments <span className="text-[var(--accent)]">🎬</span>
-            </h2>
-            <div className="grid gap-4 md:grid-cols-2">
-              {videos.map((video) => (
-                <a
-                  key={video.id}
-                  href={`https://youtube.com/watch?v=${video.youtube_id}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="rounded-xl border border-[var(--border)] bg-[var(--bg2)] p-3 no-underline transition-colors hover:border-[var(--accent)]"
-                >
-                  <img
-                    src={`https://img.youtube.com/vi/${video.youtube_id}/mqdefault.jpg`}
-                    alt={video.title ?? 'Driver video'}
-                    className="h-auto w-full rounded-lg border border-[var(--border)]"
-                  />
-                  <div className="mt-3 flex items-center gap-2">
-                    <span className="rounded bg-[color-mix(in_srgb,var(--accent)_15%,transparent)] px-2 py-1 font-display text-[0.6rem] font-bold uppercase tracking-wider text-[var(--accent)]">
-                      {videoCategoryLabel(video.category)}
-                    </span>
-                    {video.season_year ? (
-                      <span className="text-xs font-mono text-[var(--muted)]">{video.season_year}</span>
-                    ) : null}
-                  </div>
-                  <h3 className="mt-2 font-display text-base font-bold text-[var(--text)]">
-                    {video.title}
-                  </h3>
-                </a>
-              ))}
-            </div>
-          </section>
-        ) : null}
-
-        {/* World championships */}
-        {titleSeasonRows.length > 0 ? (
-          <section className="mb-12">
-            <h2 className="mb-4 font-display text-lg font-extrabold tracking-wide text-[var(--text)]">
-              World <span className="text-[var(--gold)]">Championships</span>
-            </h2>
-            <ul className="space-y-2">
-              {titleSeasonRows.map((row) => {
-                const se = unwrapRelation(row.seasons)
-                const tm = unwrapRelation(row.teams)
-                const y = se?.year ?? '—'
-                return (
-                  <li
-                    key={row.id}
-                    className="flex flex-wrap items-baseline gap-2 rounded-lg border border-[var(--border)] bg-[var(--bg2)] px-4 py-3"
-                  >
-                    <span className="text-lg" aria-hidden>
-                      🏆
-                    </span>
-                    <span className="font-mono font-bold text-[var(--gold)]">{y}</span>
-                    <span className="text-[var(--muted)]">·</span>
-                    <span className="text-[var(--text)]">{tm?.name ?? '—'}</span>
-                  </li>
-                )
-              })}
-            </ul>
-          </section>
-        ) : null}
-
-        {/* Career records */}
-        <section className="mb-12">
-          <h2 className="mb-4 font-display text-lg font-extrabold tracking-wide text-[var(--text)]">
-            Career <span className="text-[var(--accent)]">records</span>
-          </h2>
-          <dl className="rounded-xl border border-[var(--border)] bg-[var(--bg2)] px-4 md:px-6">
-            <RecordRow
-              label="Best championship finish"
-              value={
-                aggregates.bestChampOrdinal && aggregates.bestChampYear
-                  ? `${aggregates.bestChampOrdinal} · ${aggregates.bestChampYear}`
-                  : aggregates.bestChampOrdinal ?? '—'
-              }
-            />
-            <RecordRow
-              label="Most wins in a season"
-              value={
-                aggregates.maxWinsSeason && aggregates.maxWinsSeason.wins > 0
-                  ? `${aggregates.maxWinsSeason.wins} · ${aggregates.maxWinsSeason.year}`
-                  : '—'
-              }
-            />
-            <RecordRow
-              label="Most points in a season"
-              value={
-                aggregates.maxPointsSeason && aggregates.maxPointsSeason.points > 0
-                  ? `${Math.round(aggregates.maxPointsSeason.points).toLocaleString()} · ${aggregates.maxPointsSeason.year}`
-                  : '—'
-              }
-            />
-            <RecordRow
-              label="Most podiums in a season"
-              value={
-                aggregates.maxPodiumsSeason && aggregates.maxPodiumsSeason.podiums > 0
-                  ? `${aggregates.maxPodiumsSeason.podiums} · ${aggregates.maxPodiumsSeason.year}`
-                  : '—'
-              }
-            />
-            <RecordRow
-              label="First race"
-              value={
-                firstRace
-                  ? `${firstRace.season_year} · ${firstRace.race_name ?? firstRace.race_slug ?? 'Grand Prix'}`
-                  : '—'
-              }
-            />
-            <RecordRow
-              label="First win"
-              value={
-                firstWin
-                  ? `${firstWin.season_year} · ${firstWin.race_name ?? firstWin.race_slug ?? 'Grand Prix'}`
-                  : '—'
-              }
-            />
-          </dl>
-        </section>
-
-        {/* Season table */}
-        <section className="mb-12">
-          <h2 className="mb-4 font-display text-lg font-extrabold tracking-wide text-[var(--text)]">
-            Season by <span className="text-[var(--accent)]">season</span>
-            <span className="ml-2 font-body text-xs font-normal normal-case tracking-normal text-[var(--muted)]">
-              {seasonRows.length} season{seasonRows.length !== 1 ? 's' : ''}
-            </span>
-          </h2>
-          {seasonRows.length > 0 ? (
-            <div className="overflow-x-auto rounded-xl border border-[var(--border)]">
-              <table className="w-full min-w-[720px] border-collapse text-sm">
-                <thead>
-                  <tr className="bg-[var(--bg2)]">
-                    {['Season', 'Team', 'Pos', 'Pts', 'Wins', 'Pods', 'Poles', 'FL', 'Races', 'DNFs'].map((h) => (
-                      <th
-                        key={h}
-                        className={`border-b border-[var(--border)] px-3 py-3 font-display text-[0.65rem] font-bold uppercase tracking-wider text-[var(--muted)] ${
-                          h === 'FL' || h === 'DNFs' ? 'hidden md:table-cell' : ''
-                        } ${h === 'Team' ? 'text-left' : 'text-right'}`}
-                      >
-                        {h}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {seasonRows.map((row, i) => {
-                    const se = unwrapRelation(row.seasons)
-                    const tm = unwrapRelation(row.teams)
-                    const year = se?.year ?? '—'
-                    const seasonSlug = se?.slug ?? String(year)
-                    const cp = row.championship_position
-                    const posLabel =
-                      cp != null && Number.isFinite(Number(cp)) && Number(cp) > 0 ? ordinal(Number(cp)) : '—'
-                    const isFirst = cp === 1
-                    const races = num(row.races_entered ?? row.starts)
-                    return (
-                      <tr
-                        key={row.id}
-                        className={i % 2 === 1 ? 'bg-[color-mix(in_srgb,var(--bg3)_55%,transparent)]' : ''}
-                      >
-                        <td className="border-b border-[var(--border)] px-3 py-2.5 text-right font-display font-bold">
-                          <Link href={`/seasons/${seasonSlug}`} className="text-[var(--text)] no-underline hover:text-[var(--accent)]">
-                            {year}
-                          </Link>
-                        </td>
-                        <td className="border-b border-[var(--border)] px-3 py-2.5 text-left">
-                          {tm?.slug ? (
-                            <Link href={`/teams/${tm.slug}`} className="text-[var(--text)] no-underline hover:text-[var(--accent)]">
-                              {tm.name ?? '—'}
-                            </Link>
-                          ) : (
-                            <span className="text-[var(--muted)]">—</span>
-                          )}
-                        </td>
-                        <td
-                          className={`border-b border-[var(--border)] px-3 py-2.5 text-right font-mono ${
-                            isFirst ? 'font-bold text-[var(--gold)]' : 'text-[var(--text)]'
-                          }`}
-                        >
-                          {posLabel}
-                        </td>
-                        <td className="border-b border-[var(--border)] px-3 py-2.5 text-right font-mono text-[var(--text)]">
-                          {Math.round(num(row.points)).toLocaleString()}
-                        </td>
-                        <td
-                          className={`border-b border-[var(--border)] px-3 py-2.5 text-right font-mono ${
-                            num(row.wins) > 0 ? 'font-semibold text-[var(--accent)]' : 'text-[var(--muted)]'
-                          }`}
-                        >
-                          {num(row.wins)}
-                        </td>
-                        <td className="border-b border-[var(--border)] px-3 py-2.5 text-right font-mono text-[var(--muted)]">
-                          {num(row.podiums)}
-                        </td>
-                        <td className="border-b border-[var(--border)] px-3 py-2.5 text-right font-mono text-[var(--muted)]">
-                          {num(row.poles)}
-                        </td>
-                        <td className="hidden border-b border-[var(--border)] px-3 py-2.5 text-right font-mono text-[var(--muted)] md:table-cell">
-                          {num(row.fastest_laps)}
-                        </td>
-                        <td className="border-b border-[var(--border)] px-3 py-2.5 text-right font-mono text-[var(--muted)]">
-                          {races}
-                        </td>
-                        <td className="hidden border-b border-[var(--border)] px-3 py-2.5 text-right font-mono text-[var(--muted)] md:table-cell">
-                          {num(row.dnfs)}
-                        </td>
-                      </tr>
-                    )
-                  })}
-                </tbody>
-              </table>
-            </div>
-          ) : (
-            <p className="text-[var(--muted)]">No season-by-season data available.</p>
-          )}
-        </section>
-
-        {/* Teammates */}
-        {teammates.length > 0 ? (
-          <section className="mb-12">
-            <h2 className="mb-3 font-display text-lg font-extrabold tracking-wide text-[var(--text)]">
-              Teammates
-            </h2>
-            <p className="mb-3 text-sm text-[var(--muted)]">Drivers who raced as teammates in the same race weekend lineup.</p>
-            <p className="flex flex-wrap gap-x-1 gap-y-2 text-sm leading-relaxed text-[var(--text)]">
-              {teammates.map((t, idx) => (
-                <span key={t.slug}>
-                  {idx > 0 ? <span className="text-[var(--muted)]"> · </span> : null}
-                  <Link href={`/drivers/${t.slug}`} className="text-[var(--accent)] no-underline hover:underline">
-                    {t.full_name}
-                  </Link>
-                </span>
-              ))}
-            </p>
-          </section>
-        ) : null}
-
-        {/* Compare CTA */}
-        <section className="mb-12">
-          <Link
-            href={`/compare?d1=${encodeURIComponent(slug)}`}
-            className="flex flex-col gap-2 rounded-xl border border-[var(--border)] border-l-4 border-l-[var(--accent)] bg-[var(--bg2)] px-6 py-6 no-underline transition-opacity hover:opacity-95 sm:flex-row sm:items-center sm:justify-between"
-          >
-            <div>
-              <p className="font-display text-lg font-extrabold uppercase text-[var(--text)]">
-                <span aria-hidden className="mr-2">
-                  ⚔️
-                </span>
-                Compare {name} head-to-head
-              </p>
-              <p className="mt-1 text-sm text-[var(--muted)]">Stack stats against any other driver on F1Rec.</p>
-            </div>
-            <span className="font-display text-sm font-bold uppercase tracking-wide text-[var(--accent)]">Open compare →</span>
-          </Link>
-        </section>
-
-        {/* Related posts */}
-        {relatedPosts.length > 0 ? (
-          <section className="mb-12">
-            <h2 className="mb-4 font-display text-lg font-extrabold tracking-wide text-[var(--text)]">
-              Articles about <span className="text-[var(--accent)]">{name}</span>
-            </h2>
-            <div className="grid gap-4 sm:grid-cols-2">
-              {relatedPosts.map((p) => (
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: '20px', alignItems: 'start' }}>
+          <div>
+            <div style={{ display: 'flex', gap: 0, borderBottom: '1px solid var(--border)', marginBottom: '24px' }}>
+              {[
+                { id: 'results', label: 'Race Results', href: `/drivers/${slug}?tab=results` },
+                { id: 'seasons', label: 'Season by Season', href: `/drivers/${slug}?tab=seasons` },
+              ].map((tab) => (
                 <Link
-                  key={p.slug!}
-                  href={`/blog/${p.slug}`}
-                  className="rounded-xl border border-[var(--border)] bg-[var(--bg2)] p-4 no-underline transition-colors hover:border-[color-mix(in_srgb,var(--accent)_40%,var(--border))]"
+                  key={tab.id}
+                  href={tab.href}
+                  style={{
+                    padding: '12px 20px',
+                    fontFamily: "'Barlow Condensed', sans-serif",
+                    fontSize: '14px',
+                    fontWeight: 800,
+                    letterSpacing: '0.08em',
+                    textTransform: 'uppercase',
+                    color: activeTab === tab.id ? '#fff' : 'var(--muted)',
+                    borderBottom: activeTab === tab.id ? '2px solid var(--accent)' : '2px solid transparent',
+                    marginBottom: '-1px',
+                    textDecoration: 'none',
+                  }}
                 >
-                  {p.category ? (
-                    <span
-                      className={`inline-block rounded px-2 py-0.5 font-display text-[0.6rem] font-bold uppercase tracking-wider ${
-                        categoryStyles[p.category] ?? 'bg-[var(--bg3)] text-[var(--muted)]'
-                      }`}
-                    >
-                      {p.category.replace(/-/g, ' ')}
-                    </span>
-                  ) : null}
-                  <h3 className="mt-2 font-display text-base font-bold text-[var(--text)]">{p.title ?? 'Article'}</h3>
-                  <p className="mt-2 font-mono text-xs text-[var(--muted)]">
-                    {p.published_at
-                      ? new Date(p.published_at).toLocaleDateString('en-GB', {
-                          day: 'numeric',
-                          month: 'short',
-                          year: 'numeric',
-                        })
-                      : ''}
-                  </p>
+                  {tab.label}
                 </Link>
               ))}
             </div>
-          </section>
-        ) : null}
 
-        <section className="max-w-3xl">
-          <EmailCapture source="driver-page" />
-        </section>
-      </div>
+            {activeTab === 'results' ? (
+              <div style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: '8px', overflow: 'hidden', marginBottom: '16px' }}>
+                <div style={{ padding: '10px 16px', borderBottom: '1px solid var(--border)', background: 'var(--bg3)', fontFamily: "'Barlow Condensed', sans-serif", fontSize: '12px', fontWeight: 800, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#fff' }}>Race Results</div>
+                <div style={{ overflowX: 'auto' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '980px' }}>
+                    <thead>
+                      <tr>
+                        {['Season', 'Race', 'Grid', 'Finish', 'Status', 'Points', 'Team'].map((h) => (
+                          <th key={h} style={{ padding: '12px 16px', borderBottom: '1px solid var(--border)', textAlign: h === 'Race' || h === 'Team' ? 'left' : 'right', fontFamily: "'Barlow Condensed', sans-serif", fontSize: '11px', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--muted)' }}>{h}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {raceResults.slice(0, 100).map((row) => {
+                        const pos = Number(row.position ?? 0)
+                        const status = (row.status ?? '').toUpperCase()
+                        const finishColor = pos === 1 ? 'var(--gold)' : pos === 2 ? '#c0c8d8' : pos === 3 ? '#cd7f32' : 'var(--muted)'
+                        const statusColor = status.includes('DNF') ? '#ef4444' : status === 'WIN' || pos === 1 ? 'var(--green)' : 'var(--muted)'
+                        return (
+                          <tr key={row.id} style={{ borderBottom: '1px solid var(--border)' }}>
+                            <td style={{ padding: '12px 16px', textAlign: 'right', fontFamily: 'JetBrains Mono, monospace' }}>{row.season_year ?? '—'}</td>
+                            <td style={{ padding: '12px 16px' }}>
+                              {row.race_slug ? <Link href={`/races/${row.race_slug}`} style={{ textDecoration: 'none', color: '#fff' }}>{row.race_name ?? 'Grand Prix'}</Link> : <span>{row.race_name ?? 'Grand Prix'}</span>}
+                            </td>
+                            <td style={{ padding: '12px 16px', textAlign: 'right', fontFamily: 'JetBrains Mono, monospace' }}>{row.grid_position ?? '—'}</td>
+                            <td style={{ padding: '12px 16px', textAlign: 'right' }}><span style={{ padding: '2px 8px', borderRadius: '999px', background: 'rgba(255,255,255,0.04)', color: finishColor, fontFamily: 'JetBrains Mono, monospace' }}>{row.position ?? '—'}</span></td>
+                            <td style={{ padding: '12px 16px', textAlign: 'right' }}><span style={{ padding: '2px 8px', borderRadius: '999px', background: 'rgba(255,255,255,0.04)', color: statusColor, fontFamily: "'Barlow Condensed', sans-serif", fontSize: '11px', letterSpacing: '0.08em', textTransform: 'uppercase' }}>{status || 'FIN'}</span></td>
+                            <td style={{ padding: '12px 16px', textAlign: 'right', fontFamily: 'JetBrains Mono, monospace' }}>{Math.round(num(row.points)).toLocaleString()}</td>
+                            <td style={{ padding: '12px 16px', color: 'var(--muted)' }}>{row.constructor_name ?? '—'}</td>
+                          </tr>
+                        )
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            ) : null}
+
+            {activeTab === 'seasons' ? (
+              <div style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: '8px', overflow: 'hidden', marginBottom: '16px' }}>
+                <div style={{ padding: '10px 16px', borderBottom: '1px solid var(--border)', background: 'var(--bg3)', fontFamily: "'Barlow Condensed', sans-serif", fontSize: '12px', fontWeight: 800, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#fff' }}>Season by Season</div>
+                <div style={{ overflowX: 'auto' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '900px' }}>
+                    <thead>
+                      <tr>
+                        {['Season', 'Team', 'Position', 'Points', 'Wins', 'Poles', 'Podiums'].map((h) => (
+                          <th key={h} style={{ padding: '12px 16px', borderBottom: '1px solid var(--border)', textAlign: h === 'Team' ? 'left' : 'right', fontFamily: "'Barlow Condensed', sans-serif", fontSize: '11px', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--muted)' }}>{h}</th>
+                        ))}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {seasonRows.map((row) => {
+                        const season = unwrapRelation(row.seasons)
+                        const team = unwrapRelation(row.teams)
+                        const isTitle = season?.champion_driver_id === driver.id
+                        return (
+                          <tr key={row.id} style={{ borderBottom: '1px solid var(--border)', borderLeft: isTitle ? '3px solid var(--gold)' : '3px solid transparent' }}>
+                            <td style={{ padding: '12px 16px', textAlign: 'right', fontFamily: 'JetBrains Mono, monospace' }}>{season?.year ?? '—'}</td>
+                            <td style={{ padding: '12px 16px' }}>{team?.slug ? <Link href={`/teams/${team.slug}`} style={{ textDecoration: 'none', color: '#fff' }}>{team.name}</Link> : <span style={{ color: 'var(--muted)' }}>—</span>}</td>
+                            <td style={{ padding: '12px 16px', textAlign: 'right', fontFamily: 'JetBrains Mono, monospace' }}>{row.championship_position ?? '—'}</td>
+                            <td style={{ padding: '12px 16px', textAlign: 'right', fontFamily: 'JetBrains Mono, monospace', color: isTitle ? 'var(--gold)' : '#fff' }}>{Math.round(num(row.points)).toLocaleString()}</td>
+                            <td style={{ padding: '12px 16px', textAlign: 'right', fontFamily: 'JetBrains Mono, monospace' }}>{num(row.wins)}</td>
+                            <td style={{ padding: '12px 16px', textAlign: 'right', fontFamily: 'JetBrains Mono, monospace' }}>{num(row.poles)}</td>
+                            <td style={{ padding: '12px 16px', textAlign: 'right', fontFamily: 'JetBrains Mono, monospace' }}>{num(row.podiums)}</td>
+                          </tr>
+                        )
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            ) : null}
+          </div>
+
+          <aside style={{ display: 'grid', gap: '12px' }}>
+            <div style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: '8px', overflow: 'hidden' }}>
+              <div style={{ padding: '10px 16px', borderBottom: '1px solid var(--border)', background: 'var(--bg3)', fontFamily: "'Barlow Condensed', sans-serif", fontSize: '12px', fontWeight: 800, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#fff' }}>Fast Facts</div>
+              <div style={{ padding: '12px 16px', fontSize: '13px', color: 'var(--muted)', display: 'grid', gap: '8px' }}>
+                <div>Nationality: <span style={{ color: '#fff' }}>{nationality ?? '—'}</span></div>
+                <div>Date of birth: <span style={{ color: '#fff' }}>{(driver.date_of_birth as string | null) ?? '—'}</span></div>
+                <div>First race: <span style={{ color: '#fff' }}>{firstRace?.race_name ?? '—'}</span></div>
+                <div>Last race: <span style={{ color: '#fff' }}>{raceResults[0]?.race_name ?? '—'}</span></div>
+                <div>Car number: <span style={{ color: '#fff' }}>{driver.number ?? '—'}</span></div>
+              </div>
+            </div>
+            <Link href={`/compare?d1=${encodeURIComponent(slug)}`} style={{ textDecoration: 'none', background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: '8px', padding: '16px', color: '#fff' }}>
+              <div style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '12px', fontWeight: 800, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--accent)' }}>Compare</div>
+              <div style={{ marginTop: '6px' }}>Open head-to-head with {name}</div>
+            </Link>
+            <EmailCapture source="driver-page" hideIntro />
+          </aside>
+        </div>
+      </section>
     </main>
   )
 }

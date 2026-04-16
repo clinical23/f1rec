@@ -128,20 +128,25 @@ export default async function CalendarPage() {
   })
 
   const broadcasts = (broadcastsRes.data ?? []) as BroadcastRow[]
+  const now = new Date()
+  const nextRace = cards
+    .filter((race) => race.raceDate && new Date(race.raceDate) >= now)
+    .sort((a, b) => new Date(a.raceDate ?? '').getTime() - new Date(b.raceDate ?? '').getTime())[0]
 
   return (
-    <main className="min-h-screen bg-[var(--bg)] text-[var(--text)]">
-      <section className="border-b border-[var(--border)] bg-gradient-to-b from-[color-mix(in_srgb,var(--accent)_10%,transparent)] to-transparent px-6 py-16 text-center">
-        <p className="font-display text-xs font-bold uppercase tracking-[0.2em] text-[var(--accent)]">2026 Season</p>
-        <h1 className="mt-2 font-display text-[clamp(2rem,5vw,3.25rem)] font-black leading-tight text-[var(--text)] hero-title">
-          2026 Race Calendar
-        </h1>
-        <p className="mx-auto mt-4 max-w-3xl text-sm text-[var(--muted)]">
-          Every Grand Prix date, time, and where to watch.
-        </p>
-      </section>
-
-      <section className="mx-auto max-w-7xl px-6 py-16">
+    <main style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--text)' }}>
+      <section style={{ maxWidth: '1200px', margin: '0 auto', padding: '32px 24px 64px' }}>
+        <div style={{ marginBottom: '24px' }}>
+          <h1 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '44px', fontWeight: 900, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#fff', margin: 0 }}>
+            2026 Season Calendar
+          </h1>
+          <p style={{ color: 'var(--muted)', fontSize: '16px', marginTop: '6px' }}>22 rounds across 5 continents</p>
+          {nextRace ? (
+            <p style={{ marginTop: '8px', color: 'var(--gold)', fontFamily: "'Barlow Condensed', sans-serif", fontSize: '13px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+              Next: {nextRace.name} - {nextRace.dateLabel}
+            </p>
+          ) : null}
+        </div>
         <CalendarBoard races={cards} broadcasts={broadcasts} />
       </section>
     </main>

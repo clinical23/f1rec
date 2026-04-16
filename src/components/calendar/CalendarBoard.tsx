@@ -86,48 +86,60 @@ export default function CalendarBoard({
 
   return (
     <>
-      <section className="mb-16 space-y-6">
-        {races.map((race) => {
-          const isPast = race.raceDate ? new Date(race.raceDate) < today : false
-          const until = race.raceDate ? daysUntil(race.raceDate) : null
-          const isNext = nextRaceId === race.id
-          return (
-            <article key={race.id} className="rounded-xl border border-[var(--border)] bg-[var(--bg2)] p-6">
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="font-display text-xs font-bold uppercase tracking-wider text-[var(--muted)]">Round {race.round}</span>
-                {isNext ? (
-                  <span className="rounded bg-[color-mix(in_srgb,var(--accent)_16%,transparent)] px-2 py-1 font-display text-[0.6rem] font-bold uppercase tracking-wider text-[var(--accent)]">
-                    Next Race
-                  </span>
-                ) : null}
-              </div>
-              <h3 className="mt-2 font-display text-xl font-bold uppercase text-[var(--text)]">
-                {race.flagEmoji} {race.name}
-              </h3>
-              <p className="mt-1 text-sm text-[var(--muted)]">
-                {race.dateLabel} · {race.circuitName}
-              </p>
-              <div className="mt-3 text-sm">
-                {isPast ? (
-                  race.winnerSlug ? (
-                    <p className="text-[var(--text)]">
-                      Winner:{' '}
-                      <Link href={`/drivers/${race.winnerSlug}`} className="font-semibold text-[var(--gold)] no-underline hover:text-[var(--accent)]">
-                        {race.winnerName ?? 'Unknown'}
-                      </Link>
-                    </p>
+      <section style={{ marginBottom: '40px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '16px' }}>
+          {races.map((race) => {
+            const isPast = race.raceDate ? new Date(race.raceDate) < today : false
+            const until = race.raceDate ? daysUntil(race.raceDate) : null
+            const isNext = nextRaceId === race.id
+            return (
+              <article
+                key={race.id}
+                style={{
+                  background: 'var(--bg2)',
+                  border: isNext ? '1px solid var(--gold)' : '1px solid var(--border)',
+                  borderRadius: '8px',
+                  overflow: 'hidden',
+                  opacity: isPast ? 1 : 0.92,
+                  transition: 'border-color 150ms, transform 150ms',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', background: 'var(--bg3)', borderBottom: '1px solid var(--border)' }}>
+                  <span style={{ padding: '2px 10px', borderRadius: '999px', background: 'var(--accent)', color: '#fff', fontFamily: "'Barlow Condensed', sans-serif", fontSize: '13px', fontWeight: 700 }}>R{race.round}</span>
+                  <span style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '11px', letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--muted)' }}>{race.dateLabel}</span>
+                </div>
+                <div style={{ padding: '16px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ fontSize: '24px' }}>{race.flagEmoji}</span>
+                    <span style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '12px', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--muted)' }}>{race.name.split(' ').slice(-1)[0]}</span>
+                  </div>
+                  <h3 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '20px', fontWeight: 800, color: '#fff', lineHeight: 1.2, margin: '8px 0 4px 0' }}>{race.name}</h3>
+                  <p style={{ fontSize: '13px', color: 'var(--muted)', margin: 0 }}>{race.circuitName}</p>
+                  <div style={{ borderTop: '1px solid var(--border)', margin: '12px 0' }} />
+                  {isPast ? (
+                    <div>
+                      <div style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '10px', letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--muted)' }}>Winner</div>
+                      <div style={{ marginTop: '3px' }}>
+                        {race.winnerSlug ? (
+                          <Link href={`/drivers/${race.winnerSlug}`} style={{ textDecoration: 'none', color: '#fff', fontSize: '14px' }}>
+                            {race.winnerName ?? 'Unknown'}
+                          </Link>
+                        ) : (
+                          <span style={{ color: 'var(--muted)', fontSize: '14px' }}>Pending</span>
+                        )}
+                      </div>
+                    </div>
                   ) : (
-                    <p className="text-[var(--muted)]">Winner data pending.</p>
-                  )
-                ) : (
-                  <p className="text-[var(--accent)]">
-                    {until != null && until >= 0 ? `In ${until} day${until === 1 ? '' : 's'}` : 'Upcoming'}
-                  </p>
-                )}
-              </div>
-            </article>
-          )
-        })}
+                    <div>
+                      <span style={{ display: 'inline-block', padding: '2px 8px', borderRadius: '999px', background: 'color-mix(in srgb, var(--green) 20%, transparent)', color: 'var(--green)', fontFamily: "'Barlow Condensed', sans-serif", fontSize: '10px', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase' }}>Upcoming</span>
+                      <div style={{ marginTop: '6px', color: 'var(--muted)', fontSize: '13px' }}>{until != null && until >= 0 ? `in ${until} days` : 'TBC'}</div>
+                    </div>
+                  )}
+                </div>
+              </article>
+            )
+          })}
+        </div>
       </section>
 
       <section className="border-t border-[#2a2a3a] pt-12">
