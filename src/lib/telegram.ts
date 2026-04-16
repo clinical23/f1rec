@@ -66,7 +66,7 @@ export function withCrashNotify<T extends (...args: any[]) => Promise<any>>(
     try {
       return await handler(...args);
     } catch (e: any) {
-      void notify({
+      await notify({
         text: [
           `🔥 *Unhandled exception*`,
           `Route: \`${esc(name)}\``,
