@@ -26,21 +26,15 @@ export class AnthropicProvider implements BlogProvider {
       messages: [
         {
           role: 'user',
-          content: `Write a blog post for this race. Fact sheet:\n\n${JSON.stringify(factsheet, null, 2)}`
-        },
-        {
-          role: 'assistant',
-          content: '{'
+          content: `Write a blog post for this race. Return ONLY the JSON object, with no markdown code fences, no preamble, no trailing commentary. The first character of your response must be { and the last character must be }.\n\nFact sheet:\n\n${JSON.stringify(factsheet, null, 2)}`
         }
       ]
     });
 
     const firstBlock = completion.content[0];
-    const modelText = firstBlock && firstBlock.type === 'text' ? firstBlock.text : '';
-    // We prefilled the assistant turn with '{', so prepend it back to reconstruct the full JSON
-    const raw_text = '{' + modelText;
+    const raw_text = firstBlock && firstBlock.type === 'text' ? firstBlock.text : '';
 
-    // Strip common markdown wrappers Claude sometimes adds
+    // Strip common markdown wrappers Claude sometimes adds, even when asked not to
     const cleaned = raw_text
       .trim()
       .replace(/^```json\s*/i, '')
