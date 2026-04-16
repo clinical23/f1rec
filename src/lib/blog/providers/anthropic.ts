@@ -27,18 +27,32 @@ export class AnthropicProvider implements BlogProvider {
         {
           role: 'user',
           content: `Write a blog post for this race. Fact sheet:\n\n${JSON.stringify(factsheet, null, 2)}`
+        },
+        {
+          role: 'assistant',
+          content: '{'
         }
       ]
     });
 
     const firstBlock = completion.content[0];
-    const raw_text = firstBlock && firstBlock.type === 'text' ? firstBlock.text : '';
+    const modelText = firstBlock && firstBlock.type === 'text' ? firstBlock.text : '';
+    // We prefilled the assistant turn with '{', so prepend it back to reconstruct the full JSON
+    const raw_text = '{' + modelText;
+
+    // Strip common markdown wrappers Claude sometimes adds
+    const cleaned = raw_text
+      .trim()
+      .replace(/^```json\s*/i, '')
+      .replace(/^```\s*/i, '')
+      .replace(/```\s*$/i, '')
+      .trim();
 
     let parsed: any;
     try {
-      parsed = JSON.parse(raw_text);
+      parsed = JSON.parse(cleaned);
     } catch {
-      parsed = { error: 'invalid_json', details: 'Model returned non-JSON text' };
+      parsed = { error: 'invalid_json', details: 'Model returned non-JSON text even after stripping code fences' };
     }
 
     return {
