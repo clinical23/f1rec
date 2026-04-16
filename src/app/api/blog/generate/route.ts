@@ -3,11 +3,12 @@ import { createAdminClient } from '@/lib/supabase/admin';
 import { STYLE_BIBLE_V2 } from '@/lib/blog/style-bible';
 import { validatePost } from '@/lib/blog/validator';
 import { getDefaultProvider } from '@/lib/blog/providers';
+import { notify, esc, withCrashNotify } from '@/lib/telegram';
 
 export const runtime = 'nodejs';
 export const maxDuration = 60;
 
-export async function POST(req: NextRequest) {
+export const POST = withCrashNotify('POST /api/blog/generate', async (req: NextRequest) => {
   if (req.headers.get('x-pipeline-secret') !== process.env.BLOG_PIPELINE_SECRET) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
@@ -42,6 +43,9 @@ export async function POST(req: NextRequest) {
   try {
     result = await provider.generate(STYLE_BIBLE_V2, factsheet);
   } catch (e: any) {
+    void notify({
+      text: `🔥 *Blog pipeline crashed*\nRace: \`${esc(race_slug)}\`\nProvider: ${provider.name}\nError: \`${esc((e.message ?? 'unknown').slice(0, 200))}\``
+    });
     await supabase.from('posts_rejected').insert({
       model: provider.model,
       topic: race_slug,
@@ -61,6 +65,14 @@ export async function POST(req: NextRequest) {
       fact_sheet_sent: factsheet,
       rejection_reasons: [`llm_returned_error:${result.parsed.error}`]
     });
+    void notify({
+      text: [
+        `⚠️ *LLM refused to generate*`,
+        `Race: \`${esc(race_slug)}\``,
+        `Reason: ${esc(result.parsed.error)}`
+      ].join('\n'),
+      silent: true
+    });
     return NextResponse.json({ status: 'rejected_by_llm', reason: result.parsed.error });
   }
 
@@ -79,6 +91,15 @@ export async function POST(req: NextRequest) {
       raw_llm_response: result.raw_text,
       fact_sheet_sent: factsheet,
       rejection_reasons: reasons
+    });
+    void notify({
+      text: [
+        `⚠️ *Blog draft rejected*`,
+        ``,
+        `Race: \`${esc(race_slug)}\``,
+        `Title: ${esc(result.parsed.title ?? '(no title)')}`,
+        `Reasons: ${reasons.slice(0, 5).map((r: string) => `\`${esc(r)}\``).join(', ')}`,
+      ].join('\n')
     });
     return NextResponse.json({ status: 'rejected', reasons });
   }
@@ -101,5 +122,15 @@ export async function POST(req: NextRequest) {
   }).select().single();
 
   if (error) return NextResponse.json({ error: 'Insert failed', details: error }, { status: 500 });
+  void notify({
+    text: [
+      `✅ *Blog published*`,
+      ``,
+      `*${esc(o.title)}*`,
+      `_${esc(o.category)}_ · ${o.content.length} chars · ${provider.model}`,
+      ``,
+      `[View on site](https://f1rec.com/blog/${o.slug})`
+    ].join('\n')
+  });
   return NextResponse.json({ status: 'published', post });
-}
+});
