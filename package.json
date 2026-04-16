@@ -11,6 +11,7 @@
     "seed:full": "node --env-file=.env.local --experimental-strip-types src/scripts/seed-full.ts"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "0.89.0",
     "@next/third-parties": "16.2.3",
     "@supabase/supabase-js": "2.103.0",
     "dotenv": "17.4.1",
