@@ -1,3 +1,4 @@
+// Telegram notification helper — v2 (await all calls)
 /**
  * Telegram notification helper.
  * Import notify() anywhere in the server codebase.
