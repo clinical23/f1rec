@@ -8,6 +8,50 @@ import { notify, esc, withCrashNotify } from '@/lib/telegram';
 export const runtime = 'nodejs';
 export const maxDuration = 60;
 
+/**
+ * Fire-and-forget tweet approval draft. Never fails the blog publish.
+ */
+async function queueTweetApproval(post: { title: string; slug: string }): Promise<void> {
+  const url = process.env.TWEET_APPROVAL_WEBHOOK_URL;
+  if (!url) {
+    console.warn('[blog->tweet] TWEET_APPROVAL_WEBHOOK_URL not set, skipping');
+    return;
+  }
+
+  // Craft tweet text. X limit is 280 chars. Budget ~30 for URL + dashes.
+  const postUrl = `https://f1rec.com/blog/${post.slug}`;
+  const prefix = 'New: ';
+  const separator = ' — ';
+  const maxTitleLen = 280 - prefix.length - separator.length - postUrl.length - 5; // safety buffer
+  const title = post.title.length > maxTitleLen
+    ? post.title.slice(0, maxTitleLen - 1).trimEnd() + '…'
+    : post.title;
+  const tweet_text = `${prefix}${title}${separator}${postUrl}`;
+
+  try {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        tweet_text,
+        context: { race_name: post.title, priority: 'medium', source: 'blog_auto' },
+      }),
+      signal: AbortSignal.timeout(8000),
+    });
+    if (!res.ok) {
+      console.error(`[blog->tweet] webhook returned ${res.status}`);
+      await notify(`⚠️ Tweet approval webhook returned ${res.status} for post "${esc(post.slug)}"`);
+      return;
+    }
+    const body = await res.json().catch(() => ({}));
+    console.log('[blog->tweet] queued', { approval_id: body.approval_id, slug: post.slug });
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error('[blog->tweet] webhook call threw', msg);
+    await notify(`⚠️ Tweet approval webhook threw for post "${esc(post.slug)}": ${esc(msg)}`);
+  }
+}
+
 export const POST = withCrashNotify('POST /api/blog/generate', async (req: NextRequest) => {
   if (req.headers.get('x-pipeline-secret') !== process.env.BLOG_PIPELINE_SECRET) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -132,5 +176,7 @@ export const POST = withCrashNotify('POST /api/blog/generate', async (req: NextR
       `[View on site](https://f1rec.com/blog/${o.slug})`
     ].join('\n')
   });
+  // Fire-and-forget: queue a tweet draft for approval. Never blocks or fails publish.
+  await queueTweetApproval({ title: post.title, slug: post.slug });
   return NextResponse.json({ status: 'published', post });
 });
