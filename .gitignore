@@ -39,3 +39,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local ops (contain secrets or are ephemeral)
+start-n8n.ps1
+.new-secret.txt
+exec-*.json
+.cloudflared/
