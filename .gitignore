@@ -45,3 +45,7 @@ start-n8n.ps1
 .new-secret.txt
 exec-*.json
 .cloudflared/
+
+.claude/settings.local.json
+
+.claude/settings.local.json
