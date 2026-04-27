@@ -1,5 +1,6 @@
 import { createServerClient } from '@/lib/supabase/server'
 import Link from 'next/link'
+import { getDriverEra } from '@/lib/drivers/era'
 
 type Tab = 'drivers' | 'constructors' | 'records'
 
@@ -37,12 +38,6 @@ type RecordItem = {
   isGold?: boolean
 }
 
-function eraLabel(first: number | null | undefined, last: number | null | undefined): string {
-  if (first == null) return 'Unknown era'
-  if (last == null || last === first) return `${first}s`
-  return `${first}-${last}`
-}
-
 const cardStyle = {
   background: 'var(--bg2)',
   border: '1px solid var(--border)',
@@ -74,7 +69,12 @@ export default async function LeaderboardsPage({
 
   const supabase = createServerClient()
   const [driversRes, constructorsRes, winRes, champRes, polesRes, podiumsRes, racesRes, youngestChampRes, oldestChampRes] = await Promise.all([
-    supabase.from('v_driver_leaderboard').select('*').order('career_wins', { ascending: false }),
+    supabase
+      .from('drivers')
+      .select(
+        'id, slug, full_name, nationality, career_wins, career_podiums, career_poles, career_points, championships, first_season, last_season'
+      )
+      .order('career_wins', { ascending: false }),
     supabase.from('v_constructor_leaderboard').select('*').order('race_wins', { ascending: false }),
     supabase.from('drivers').select('full_name, slug, career_wins').order('career_wins', { ascending: false }).limit(1),
     supabase.from('drivers').select('full_name, slug, championships').order('championships', { ascending: false }).limit(1),
@@ -200,7 +200,9 @@ export default async function LeaderboardsPage({
                       <td style={{ padding: '12px 16px', textAlign: 'right', fontFamily: 'JetBrains Mono, monospace', color: driver.championships > 0 ? 'var(--gold)' : 'var(--text)' }}>
                         {driver.championships}
                       </td>
-                      <td style={{ padding: '12px 16px', color: 'var(--muted)' }}>{eraLabel(driver.first_season, driver.last_season)}</td>
+                      <td style={{ padding: '12px 16px', color: 'var(--muted)' }}>
+                        {getDriverEra(driver.first_season, driver.last_season) ?? '—'}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
