@@ -100,9 +100,9 @@ const bodyProseStyle = {
 } as const
 
 function renderInlineMarkdown(text: string): ReactNode {
-  if (!text.includes('**')) return text
+  if (!text.includes('**') && !text.includes('[')) return text
   const out: ReactNode[] = []
-  const re = /\*\*(.+?)\*\*/gs
+  const re = /\*\*(.+?)\*\*|\[([^\]]+)\]\(([^)]+)\)/g
   let last = 0
   let match: RegExpExecArray | null
   let key = 0
@@ -110,11 +110,30 @@ function renderInlineMarkdown(text: string): ReactNode {
     if (match.index > last) {
       out.push(<Fragment key={`t-${key++}`}>{text.slice(last, match.index)}</Fragment>)
     }
-    out.push(
-      <strong key={`b-${key++}`} style={{ fontWeight: 700 }}>
-        {match[1]}
-      </strong>
-    )
+    if (match[1]) {
+      out.push(
+        <strong key={`b-${key++}`} style={{ fontWeight: 700 }}>
+          {match[1]}
+        </strong>
+      )
+    } else if (match[2] && match[3]) {
+      const label = match[2]
+      const href = match[3].trim()
+      const isInternal = href.startsWith('/')
+      if (isInternal) {
+        out.push(
+          <Link key={`l-${key++}`} href={href}>
+            {label}
+          </Link>
+        )
+      } else {
+        out.push(
+          <a key={`l-${key++}`} href={href} target="_blank" rel="noopener noreferrer">
+            {label}
+          </a>
+        )
+      }
+    }
     last = match.index + match[0].length
   }
   if (last < text.length) {
@@ -371,8 +390,8 @@ export default async function BlogArticlePage({ params }: PageProps) {
           <span className="text-[var(--text)]">{cleanTitle(post.title)}</span>
         </nav>
 
-        <div className="grid grid-cols-1 gap-10 lg:grid-cols-[1fr_320px] lg:gap-12">
-          <div>
+        <div className="flex flex-col gap-10 lg:flex-row lg:gap-12">
+          <div className="min-w-0 flex-1">
             <header className="mb-10">
               <div className="mb-6 flex items-center gap-3">
                 <span className="rounded-full border border-[var(--gold)]/30 bg-[var(--gold)]/10 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-[var(--gold)]">
@@ -403,7 +422,7 @@ export default async function BlogArticlePage({ params }: PageProps) {
             </div>
           </div>
 
-          <aside className="self-start lg:sticky lg:top-24">
+          <aside className="w-full self-start lg:sticky lg:top-24 lg:w-[320px] lg:flex-shrink-0">
             <SidebarCards
               relatedDriver={
                 driverRes.data
