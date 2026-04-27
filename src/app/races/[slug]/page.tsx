@@ -19,6 +19,16 @@ type ResultRow = {
   time_text: string | null
 }
 
+type WinnerJoinRow = {
+  drivers: { slug: string | null; full_name: string | null } | { slug: string | null; full_name: string | null }[] | null
+  races: { id?: string | null; slug: string | null; name?: string | null; season_year: number | null; race_date: string | null; circuit_slug?: string | null } | { id?: string | null; slug: string | null; name?: string | null; season_year: number | null; race_date: string | null; circuit_slug?: string | null }[] | null
+}
+
+function unwrapRelation<T>(rel: T | T[] | null | undefined): T | null {
+  if (rel == null) return null
+  return Array.isArray(rel) ? rel[0] ?? null : rel
+}
+
 function formatLongDate(value: string | null) {
   if (!value) return 'TBC'
   return new Date(value).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'long', year: 'numeric' })
@@ -36,21 +46,36 @@ function rowStyle(position: number | null) {
 }
 
 function normalizePastWinnerRows(
-  rows: Array<{ slug: string | null; season_year: number | null; race_date: string | null }>,
-  winnersByRace: Map<string, { winner_name: string; winner_slug: string }>
+  rows: WinnerJoinRow[],
+  currentRaceSlug: string
 ) {
   return rows
-    .filter((row): row is { slug: string; season_year: number; race_date: string | null } => typeof row.slug === 'string' && typeof row.season_year === 'number')
     .map((row) => {
-      const winner = winnersByRace.get(row.slug)
+      const race = unwrapRelation(row.races)
+      const driver = unwrapRelation(row.drivers)
+      return {
+        slug: race?.slug ?? null,
+        season_year: race?.season_year ?? null,
+        winner_name: driver?.full_name ?? null,
+        winner_slug: driver?.slug ?? null,
+      }
+    })
+    .filter((row): row is { slug: string; season_year: number; winner_name: string; winner_slug: string } =>
+      typeof row.slug === 'string' &&
+      row.slug !== currentRaceSlug &&
+      typeof row.season_year === 'number' &&
+      typeof row.winner_name === 'string' &&
+      typeof row.winner_slug === 'string'
+    )
+    .map((row) => {
       return {
         slug: row.slug,
         season_year: row.season_year,
-        winner_name: winner?.winner_name ?? 'Unknown',
-        winner_slug: winner?.winner_slug ?? '',
+        winner_name: row.winner_name,
+        winner_slug: row.winner_slug,
       }
     })
-    .filter((row) => row.winner_slug)
+    .slice(0, 5)
 }
 
 export default async function RacePage({ params }: PageProps) {
@@ -65,7 +90,7 @@ export default async function RacePage({ params }: PageProps) {
   const isUpcoming = raceDateObj ? raceDateObj > now : false
   const isCompleted = !isUpcoming
 
-  const [circuitRes, resultsRes, blogPostRes, lastYearRaceRes, pastRacesRes] = await Promise.all([
+  const [circuitRes, resultsRes, blogPostRes, lastYearWinnerRes, pastWinnersRes] = await Promise.all([
     race.circuit_slug
       ? supabase.from('circuits').select('slug, name, country').eq('slug', String(race.circuit_slug)).maybeSingle()
       : Promise.resolve({ data: null, error: null }),
@@ -85,21 +110,22 @@ export default async function RacePage({ params }: PageProps) {
       .maybeSingle(),
     isUpcoming && race.circuit_slug && race.race_date
       ? supabase
-          .from('races')
-          .select('slug, name, race_date, season_year')
-          .eq('circuit_slug', String(race.circuit_slug))
-          .lt('race_date', String(race.race_date))
-          .order('race_date', { ascending: false })
+          .from('results')
+          .select('position, drivers!inner(slug, full_name), races!inner(id, slug, name, season_year, race_date, circuit_slug)')
+          .eq('position', 1)
+          .eq('races.circuit_slug', String(race.circuit_slug))
+          .lt('races.race_date', String(race.race_date))
+          .order('races(race_date)', { ascending: false })
           .limit(1)
           .maybeSingle()
       : Promise.resolve({ data: null, error: null }),
     race.circuit_slug
       ? supabase
-          .from('races')
-          .select('slug, season_year, race_date')
-          .eq('circuit_slug', String(race.circuit_slug))
-          .neq('slug', slug)
-          .order('season_year', { ascending: false })
+          .from('results')
+          .select('position, drivers!inner(slug, full_name), races!inner(id, slug, season_year, race_date, circuit_slug)')
+          .eq('position', 1)
+          .eq('races.circuit_slug', String(race.circuit_slug))
+          .order('races(race_date)', { ascending: false })
           .limit(5)
       : Promise.resolve({ data: [], error: null }),
   ])
@@ -107,35 +133,23 @@ export default async function RacePage({ params }: PageProps) {
   const results = (resultsRes.data ?? []) as ResultRow[]
   const winner = results.find((row) => row.position === 1) ?? null
 
-  const pastRaceSlugs = (pastRacesRes.data ?? [])
-    .map((row) => (typeof row.slug === 'string' ? row.slug : null))
-    .filter((v): v is string => Boolean(v))
-
-  const [pastWinnersRes, lastYearWinnerRes] = await Promise.all([
-    pastRaceSlugs.length > 0
-      ? supabase.from('results').select('race_slug, driver_name, driver_slug').in('race_slug', pastRaceSlugs).eq('position', 1).eq('is_sprint', false)
-      : Promise.resolve({ data: [], error: null }),
-    lastYearRaceRes.data?.slug
-      ? supabase
-          .from('results')
-          .select('driver_name, driver_slug')
-          .eq('race_slug', String(lastYearRaceRes.data.slug))
-          .eq('position', 1)
-          .eq('is_sprint', false)
-          .limit(1)
-          .maybeSingle()
-      : Promise.resolve({ data: null, error: null }),
-  ])
-
-  const winnersByRace = new Map<string, { winner_name: string; winner_slug: string }>()
-  for (const row of pastWinnersRes.data ?? []) {
-    if (typeof row.race_slug !== 'string' || typeof row.driver_slug !== 'string' || typeof row.driver_name !== 'string') continue
-    if (!winnersByRace.has(row.race_slug)) {
-      winnersByRace.set(row.race_slug, { winner_name: row.driver_name, winner_slug: row.driver_slug })
+  const lastYearWinner = (() => {
+    if (!lastYearWinnerRes.data) return null
+    const row = lastYearWinnerRes.data as WinnerJoinRow
+    const driver = unwrapRelation(row.drivers)
+    const raceRel = unwrapRelation(row.races)
+    if (!driver?.slug || !driver.full_name || !raceRel?.slug || typeof raceRel.season_year !== 'number') return null
+    return {
+      driverName: driver.full_name,
+      driverSlug: driver.slug,
+      raceSlug: raceRel.slug,
+      raceName: raceRel.name ?? 'Grand Prix',
+      seasonYear: raceRel.season_year,
+      raceDate: raceRel.race_date ?? null,
     }
-  }
+  })()
 
-  const pastWinners = normalizePastWinnerRows((pastRacesRes.data ?? []) as Array<{ slug: string | null; season_year: number | null; race_date: string | null }>, winnersByRace)
+  const pastWinners = normalizePastWinnerRows((pastWinnersRes.data ?? []) as WinnerJoinRow[], slug)
 
   const raceName = String(race.name ?? race.full_name ?? 'Grand Prix')
   const circuitName = String(circuitRes.data?.name ?? race.circuit_slug ?? '')
@@ -221,14 +235,14 @@ export default async function RacePage({ params }: PageProps) {
                   </div>
                 ) : null}
 
-                {lastYearRaceRes.data ? (
-                  <Link href={`/races/${String(lastYearRaceRes.data.slug)}`} className="blog-card">
+                {lastYearWinner ? (
+                  <Link href={`/races/${lastYearWinner.raceSlug}`} className="blog-card">
                     <div className="blog-card__eyebrow">Last Year At {circuitName}</div>
                     <div className="blog-card__title">
-                      {lastYearRaceRes.data.season_year} {lastYearRaceRes.data.name}
+                      {lastYearWinner.seasonYear} {lastYearWinner.raceName}
                     </div>
                     <div className="blog-card__meta">
-                      Won by {lastYearWinnerRes.data?.driver_name ?? 'Unknown'} · {formatDate(lastYearRaceRes.data.race_date as string | null)}
+                      Won by {lastYearWinner.driverName} · {formatDate(lastYearWinner.raceDate)}
                     </div>
                   </Link>
                 ) : null}
@@ -244,16 +258,24 @@ export default async function RacePage({ params }: PageProps) {
                         </tr>
                       </thead>
                       <tbody>
-                        {pastWinners.map((item) => (
-                          <tr key={`${item.slug}-${item.season_year}`} style={{ borderTop: '1px solid var(--border)' }}>
-                            <td style={{ padding: '0.55rem 0.25rem 0.55rem 0', color: 'var(--muted)' }}>{item.season_year}</td>
-                            <td style={{ padding: '0.55rem 0' }}>
-                              <Link href={`/drivers/${item.winner_slug}`} style={{ color: 'var(--text)', textDecoration: 'none' }}>
-                                {item.winner_name}
-                              </Link>
+                        {pastWinners.length > 0 ? (
+                          pastWinners.map((item) => (
+                            <tr key={`${item.slug}-${item.season_year}`} style={{ borderTop: '1px solid var(--border)' }}>
+                              <td style={{ padding: '0.55rem 0.25rem 0.55rem 0', color: 'var(--muted)' }}>{item.season_year}</td>
+                              <td style={{ padding: '0.55rem 0' }}>
+                                <Link href={`/drivers/${item.winner_slug}`} style={{ color: 'var(--text)', textDecoration: 'none' }}>
+                                  {item.winner_name}
+                                </Link>
+                              </td>
+                            </tr>
+                          ))
+                        ) : (
+                          <tr>
+                            <td colSpan={2} style={{ padding: '0.75rem 0', color: 'var(--muted)' }}>
+                              No past winners available.
                             </td>
                           </tr>
-                        ))}
+                        )}
                       </tbody>
                     </table>
                   </div>
