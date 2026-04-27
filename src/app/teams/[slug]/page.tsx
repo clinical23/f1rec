@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation'
 import { createServerClient } from '@/lib/supabase/server'
 import JsonLd from '@/components/JsonLd'
 import EmailCapture from '@/components/EmailCapture'
+import TeamSidebar from '@/components/teams/TeamSidebar'
 
 type PageProps = {
   params: Promise<{ slug: string }>
@@ -252,6 +253,18 @@ type LoadedTeam = {
   team: TeamRow
   teamSeasonRows: TeamSeasonRow[]
   aggregates: TeamAggregates
+  titleCount: number
+  currentSeason: number
+  careerStats: {
+    seasons: number
+    races: number
+    wins: number
+    podiums: number
+    poles: number
+    points: number
+    championships: number
+    bestChampionshipFinish: string
+  }
   titleSeasons: { year: number; id: string }[]
   driverAggs: DriverAgg[]
   champions: DriverAgg[]
@@ -269,6 +282,7 @@ type LoadedTeam = {
   relatedPosts: PostRow[]
   flag: string | null
   showFlColumn: boolean
+  currentDriversSidebar: Array<{ slug: string; full_name: string }>
 }
 
 async function loadTeamPageData(slug: string): Promise<LoadedTeam | null> {
@@ -278,9 +292,9 @@ async function loadTeamPageData(slug: string): Promise<LoadedTeam | null> {
 
   const t = team as TeamRow
   const teamId = t.id
-  const thisYear = new Date().getFullYear()
+  const fallbackYear = new Date().getFullYear()
 
-  const [tssRes, dssRes, postsRes, countriesRes, fwRes] = await Promise.all([
+  const [tssRes, dssRes, postsRes, countriesRes, fwRes, resultsAggRes, latestSeasonRes] = await Promise.all([
     supabase
       .from('team_season_stats')
       .select(
@@ -305,6 +319,17 @@ async function loadTeamPageData(slug: string): Promise<LoadedTeam | null> {
       .order('season_year', { ascending: true })
       .order('round', { ascending: true })
       .limit(1),
+    supabase
+      .from('results')
+      .select('race_id, finish_position, is_pole, points, season_year')
+      .eq('team_id', teamId),
+    supabase
+      .from('results')
+      .select('season_year')
+      .not('season_year', 'is', null)
+      .order('season_year', { ascending: false })
+      .limit(1)
+      .maybeSingle(),
   ])
 
   let teamSeasonRows = (tssRes.data ?? []) as TeamSeasonRow[]
@@ -321,6 +346,29 @@ async function loadTeamPageData(slug: string): Promise<LoadedTeam | null> {
   const dbTitles = aggregates.titleCount
   const colTitles = num(t.championships)
   const titleCount = Math.max(dbTitles, colTitles)
+  const currentSeason =
+    latestSeasonRes.data && typeof latestSeasonRes.data.season_year === 'number'
+      ? latestSeasonRes.data.season_year
+      : fallbackYear
+
+  const statsRows = (resultsAggRes.data ??
+    []) as Array<{
+    race_id: string | null
+    finish_position: number | null
+    is_pole: boolean | null
+    points: number | string | null
+    season_year: number | null
+  }>
+  const careerStats = {
+    seasons: new Set(statsRows.map((r) => r.season_year).filter((y): y is number => typeof y === 'number')).size,
+    races: new Set(statsRows.map((r) => r.race_id).filter((id): id is string => typeof id === 'string')).size,
+    wins: statsRows.filter((r) => r.finish_position === 1).length,
+    podiums: statsRows.filter((r) => typeof r.finish_position === 'number' && r.finish_position <= 3).length,
+    poles: statsRows.filter((r) => r.is_pole === true).length,
+    points: statsRows.reduce((sum, r) => sum + num(r.points), 0),
+    championships: titleCount,
+    bestChampionshipFinish: titleCount > 0 ? '1st' : '—',
+  }
 
   const titleSeasons = teamSeasonRows
     .filter((row) => unwrapRelation(row.seasons)?.champion_team_id === teamId)
@@ -347,7 +395,7 @@ async function loadTeamPageData(slug: string): Promise<LoadedTeam | null> {
   for (const row of dssRows) {
     const se = unwrapRelation(row.seasons)
     const dr = unwrapRelation(row.drivers)
-    if (!dr || se?.year !== thisYear) continue
+    if (!dr || se?.year !== currentSeason) continue
     const cp = row.championship_position != null ? Number(row.championship_position) : null
     const existing = driversCurrentYear.find((x) => x.slug === dr.slug)
     if (existing) {
@@ -420,11 +468,17 @@ async function loadTeamPageData(slug: string): Promise<LoadedTeam | null> {
   }
 
   const showFlColumn = teamSeasonRows.some((row) => num(row.fastest_laps) > 0)
+  const currentDriversSidebar = driversCurrentYear
+    .filter((driver) => Boolean(driver.slug))
+    .map((driver) => ({ slug: driver.slug, full_name: driver.full_name }))
 
   return {
     team: t,
     teamSeasonRows,
     aggregates,
+    titleCount,
+    currentSeason,
+    careerStats,
     titleSeasons,
     driverAggs,
     champions,
@@ -435,6 +489,7 @@ async function loadTeamPageData(slug: string): Promise<LoadedTeam | null> {
     relatedPosts: relatedPosts.slice(0, 8),
     flag,
     showFlColumn,
+    currentDriversSidebar,
   }
 }
 
@@ -526,6 +581,8 @@ export default async function TeamDetailPage({ params }: PageProps) {
     team,
     teamSeasonRows,
     aggregates,
+    currentSeason,
+    careerStats,
     titleSeasons,
     champions,
     topScorers,
@@ -535,13 +592,13 @@ export default async function TeamDetailPage({ params }: PageProps) {
     relatedPosts,
     flag,
     showFlColumn,
+    currentDriversSidebar,
   } = data
 
   const name = String(team.name ?? 'Team')
   const accent = (team.primary_color as string) || 'var(--accent)'
-  const thisYear = new Date().getFullYear()
   const careerEnd =
-    aggregates.maxYear != null && aggregates.maxYear >= thisYear ? 'Present' : aggregates.maxYear != null ? String(aggregates.maxYear) : '—'
+    aggregates.maxYear != null && aggregates.maxYear >= currentSeason ? 'Present' : aggregates.maxYear != null ? String(aggregates.maxYear) : '—'
   const showChampBadge = Boolean(team.is_constructor_champion) || titleSeasons.length > 0 || num(team.championships) > 0
   const titleCount = Math.max(aggregates.titleCount, num(team.championships))
 
@@ -564,89 +621,43 @@ export default async function TeamDetailPage({ params }: PageProps) {
     <main className="min-h-screen bg-[var(--bg)] text-[var(--text)]">
       <JsonLd data={jsonLd} id={`team-jsonld-${slug}`} />
 
-      <section
-        className="border-b border-[var(--border)] bg-gradient-to-b to-transparent px-6 py-10 md:py-14"
-        style={{
-          backgroundImage: `linear-gradient(180deg, color-mix(in srgb, ${accent} 18%, transparent) 0%, transparent 100%)`,
-        }}
-      >
-        <div className="mx-auto max-w-6xl">
-          <div className="mb-6 text-sm">
-            <Link href="/teams" className="text-[var(--muted)] no-underline hover:text-[var(--accent)]">
-              ← All Teams
-            </Link>
-          </div>
-          <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
-            <div>
-              <p className="font-display text-xs font-bold uppercase tracking-[0.2em]" style={{ color: accent }}>
-                Constructor
-              </p>
-              <h1 className="mt-1 font-display text-[clamp(2rem,5vw,3.25rem)] font-black leading-tight text-[var(--text)]">
-                {name}
-              </h1>
-              <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-[var(--muted)]">
-                {team.nationality ? (
-                  <span className="inline-flex items-center gap-2">
-                    {flag ? <span aria-hidden>{flag}</span> : null}
-                    {String(team.nationality)}
-                  </span>
-                ) : null}
-                {team.team_principal ? (
-                  <span>
-                    Team Principal: <span className="text-[var(--text)]">{String(team.team_principal)}</span>
-                  </span>
-                ) : null}
-                {aggregates.minYear != null ? (
-                  <span className="font-mono text-xs text-[var(--text)]">
-                    {aggregates.minYear} – {careerEnd}
-                  </span>
-                ) : null}
-                {team.base ? <span>Base: {String(team.base)}</span> : null}
-                {team.founded_year ? <span>Founded {String(team.founded_year)}</span> : null}
-              </div>
-              {showChampBadge ? (
-                <div className="mt-4 inline-flex items-center gap-2 rounded-md border border-[color-mix(in_srgb,var(--gold)_35%,transparent)] bg-[color-mix(in_srgb,var(--gold)_12%,transparent)] px-4 py-2 font-display text-xs font-bold uppercase tracking-wider text-[var(--gold)]">
-                  <span aria-hidden>🏆</span>
-                  {titleCount > 0 ? `${titleCount}× Constructor Champion` : 'Constructor Champion'}
-                </div>
-              ) : null}
-            </div>
-            <Link
-              href="/leaderboards?tab=constructors"
-              className="inline-flex shrink-0 items-center justify-center rounded-lg border border-[var(--border)] bg-[var(--bg2)] px-5 py-3 font-display text-xs font-bold uppercase tracking-wider text-[var(--text)] no-underline hover:border-[var(--accent)]"
-            >
-              Leaderboards →
-            </Link>
-          </div>
+      <header className="mx-auto max-w-7xl px-4 py-12">
+        <div className="mb-3 text-sm uppercase tracking-widest text-[var(--accent)]">Constructor</div>
+        <h1 className="font-display text-6xl font-bold leading-[1.05] tracking-tight" style={{ color: team.primary_color ? String(team.primary_color) : 'var(--text)' }}>
+          {name}
+        </h1>
+        <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-2 text-base text-[var(--muted)]">
+          {team.base ? <span>{String(team.base)}</span> : null}
+          {team.team_principal ? <span>· Principal: {String(team.team_principal)}</span> : null}
+          {team.founded_year ? <span>· Founded {String(team.founded_year)}</span> : null}
+          {team.nationality ? <span>· {flag ? `${flag} ` : ''}{String(team.nationality)}</span> : null}
+          {aggregates.minYear != null ? <span>· {aggregates.minYear} - {careerEnd}</span> : null}
         </div>
-      </section>
+        {showChampBadge ? (
+          <div className="mt-6 inline-flex items-center gap-2 rounded-lg border border-[var(--gold)]/40 bg-[var(--gold)]/5 px-4 py-2">
+            <span className="text-xs uppercase tracking-widest text-[var(--gold)]">
+              {titleCount > 0 ? `${titleCount}× Constructor Champion` : 'Constructor Champion'}
+            </span>
+          </div>
+        ) : null}
+      </header>
 
-      <div className="mx-auto max-w-6xl px-6 py-10 md:py-14">
+      <div className="mx-auto max-w-7xl px-4 pb-12">
+        <div className="blog-layout">
+          <div className="blog-layout__main">
         <section className="mb-12">
           <h2 className="mb-4 font-display text-lg font-extrabold tracking-wide text-[var(--text)]">
             Career <span className="text-[var(--accent)]">totals</span>
           </h2>
-          <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
-            <StatCard label="Seasons" value={aggregates.seasonCount.toLocaleString()} />
-            <StatCard label="Races" value={aggregates.totalRaces.toLocaleString()} />
-            <StatCard label="Wins" value={aggregates.totalWins.toLocaleString()} accent={aggregates.totalWins > 0} />
-            <StatCard label="Podiums" value={aggregates.totalPodiums.toLocaleString()} />
-            <StatCard label="Poles" value={aggregates.totalPoles.toLocaleString()} />
-            <StatCard label="Points" value={fmtPoints(aggregates.totalPoints)} />
-            <StatCard label="Championships" value={titleCount} gold={titleCount > 0} />
-            {aggregates.totalFastestLaps > 0 ? (
-              <StatCard label="Fastest laps" value={aggregates.totalFastestLaps.toLocaleString()} />
-            ) : null}
-            {aggregates.totalDnfs > 0 ? <StatCard label="DNFs" value={aggregates.totalDnfs.toLocaleString()} /> : null}
-            <StatCard
-              label="Best championship"
-              value={
-                aggregates.bestChampOrdinal
-                  ? `${aggregates.bestChampOrdinal}${aggregates.bestChampYear ? ` (${aggregates.bestChampYear})` : ''}`
-                  : '—'
-              }
-              gold={aggregates.bestChampPos === 1}
-            />
+          <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+            <StatCard label="Seasons" value={careerStats.seasons.toLocaleString()} />
+            <StatCard label="Races" value={careerStats.races.toLocaleString()} />
+            <StatCard label="Wins" value={careerStats.wins.toLocaleString()} gold={careerStats.wins > 0} />
+            <StatCard label="Podiums" value={careerStats.podiums.toLocaleString()} />
+            <StatCard label="Poles" value={careerStats.poles.toLocaleString()} gold={careerStats.poles > 0} />
+            <StatCard label="Points" value={fmtPoints(careerStats.points)} />
+            <StatCard label="Championships" value={careerStats.championships} gold={careerStats.championships > 0} />
+            <StatCard label="Best Finish" value={careerStats.bestChampionshipFinish} gold={careerStats.bestChampionshipFinish === '1st'} />
           </div>
         </section>
 
@@ -810,7 +821,7 @@ export default async function TeamDetailPage({ params }: PageProps) {
         {driversCurrentYear.length > 0 ? (
           <section className="mb-12">
             <h2 className="mb-4 font-display text-lg font-extrabold tracking-wide text-[var(--text)]">
-              {thisYear} <span className="text-[var(--accent)]">drivers</span>
+              {currentSeason} <span className="text-[var(--accent)]">drivers</span>
             </h2>
             <div className="grid gap-4 sm:grid-cols-2">
               {driversCurrentYear.map((d, idx) => {
@@ -980,6 +991,22 @@ export default async function TeamDetailPage({ params }: PageProps) {
         <section className="max-w-3xl">
           <EmailCapture source="team-page" />
         </section>
+          </div>
+          <aside className="blog-layout__sidebar">
+            <TeamSidebar
+              team={{
+                name,
+                base: (team.base as string | null) ?? null,
+                team_principal: (team.team_principal as string | null) ?? null,
+                founded_year: (team.founded_year as number | null) ?? null,
+                nationality: (team.nationality as string | null) ?? null,
+              }}
+              championshipYears={titleSeasons.map((item) => item.year)}
+              currentDrivers={currentDriversSidebar}
+              currentSeason={currentSeason}
+            />
+          </aside>
+        </div>
       </div>
     </main>
   )
