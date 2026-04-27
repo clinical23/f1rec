@@ -24,7 +24,7 @@ function prettifyCategory(category: string) {
 
 export default function SidebarCards({ relatedDriver, relatedRace, morePostsInCategory, category }: SidebarCardsProps) {
   return (
-    <div className="mx-auto flex w-full max-w-[340px] flex-col gap-4 lg:max-w-none">
+    <div className="flex w-full flex-col gap-4">
       {relatedDriver ? (
         <Link
           href={`/drivers/${relatedDriver.slug}`}

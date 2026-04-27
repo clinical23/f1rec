@@ -375,8 +375,8 @@ export default async function BlogArticlePage({ params }: PageProps) {
   return (
     <main className="min-h-screen bg-[var(--bg)] text-[var(--text)]">
       <JsonLd data={articleJsonLd} />
-      <section className="mx-auto max-w-7xl px-4 py-8 lg:px-6 lg:py-12">
-        <nav className="mb-6 flex flex-wrap gap-2 text-xs text-[var(--muted)] sm:text-sm">
+      <section className="mx-auto max-w-7xl px-6 py-12">
+        <nav className="mb-6 flex flex-wrap gap-2 text-sm text-[var(--muted)]">
           <Link href="/" className="transition-colors hover:text-[var(--text)]">
             Home
           </Link>
@@ -390,19 +390,19 @@ export default async function BlogArticlePage({ params }: PageProps) {
           <span className="text-[var(--text)]">{cleanTitle(post.title)}</span>
         </nav>
 
-        <div className="flex flex-col gap-10 lg:flex-row lg:gap-12">
-          <div className="min-w-0 flex-1">
+        <div className="blog-layout">
+          <div className="blog-layout__main">
             <header className="mb-10">
               <div className="mb-6 flex items-center gap-3">
                 <span className="rounded-full border border-[var(--gold)]/30 bg-[var(--gold)]/10 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-[var(--gold)]">
                   {categoryLabel(post.category)}
                 </span>
               </div>
-              <h1 className="font-display mb-6 text-4xl font-bold leading-[1.05] tracking-tight text-[var(--text)] sm:text-5xl lg:text-6xl">
+              <h1 className="font-display mb-6 text-5xl font-bold leading-[1.05] tracking-tight text-[var(--text)]">
                 {cleanTitle(post.title)}
               </h1>
               {post.excerpt ? (
-                <p className="mb-6 max-w-[65ch] text-lg leading-relaxed text-[var(--muted)] sm:text-xl">{post.excerpt}</p>
+                <p className="mb-6 max-w-[65ch] text-xl leading-relaxed text-[var(--muted)]">{post.excerpt}</p>
               ) : null}
               <div className="flex items-center gap-3 text-sm text-[var(--muted)]">
                 <time dateTime={post.published_at ?? undefined}>{formatDate(post.published_at)}</time>
@@ -422,7 +422,7 @@ export default async function BlogArticlePage({ params }: PageProps) {
             </div>
           </div>
 
-          <aside className="w-full self-start lg:sticky lg:top-24 lg:w-[320px] lg:flex-shrink-0">
+          <aside className="blog-layout__sidebar">
             <SidebarCards
               relatedDriver={
                 driverRes.data

@@ -63,6 +63,39 @@ h1, h2, h3, h4, h5, h6 {
   border-color: var(--accent);
 }
 
+/* Blog article desktop-first layout utilities */
+.blog-layout {
+  display: flex;
+  flex-direction: row;
+  gap: 3rem;
+  align-items: flex-start;
+}
+
+.blog-layout__main {
+  min-width: 0;
+  flex: 1;
+}
+
+.blog-layout__sidebar {
+  width: 320px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 6rem;
+}
+
+@media (max-width: 1023px) {
+  .blog-layout {
+    flex-direction: column;
+    gap: 2.5rem;
+  }
+
+  .blog-layout__sidebar {
+    width: 100%;
+    position: static;
+    top: auto;
+  }
+}
+
 @media (max-width: 640px) {
   .home-email-capture form {
     flex-direction: column;
