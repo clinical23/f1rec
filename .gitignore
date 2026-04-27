@@ -49,3 +49,7 @@ exec-*.json
 .claude/settings.local.json
 
 .claude/settings.local.json
+
+tmp/
+
+logs/
