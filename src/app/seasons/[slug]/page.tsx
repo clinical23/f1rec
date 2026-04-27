@@ -19,7 +19,6 @@ type SeasonRow = {
 }
 
 type JoinedWinnerRow = {
-  finish_position: number | null
   position: number | null
   season_year: number | null
   round: number | null
@@ -86,7 +85,7 @@ export default async function SeasonDetailPage({ params }: PageProps) {
       : Promise.resolve({ data: null, error: null }),
     supabase
       .from('results')
-      .select('season_year, round, race_name, race_slug, race_date, driver_name, driver_slug, constructor_name, constructor_slug, position, finish_position')
+      .select('season_year, round, race_name, race_slug, race_date, driver_name, driver_slug, constructor_name, constructor_slug, position')
       .eq('season_year', season.year)
       .eq('position', 1)
       .eq('is_sprint', false)
@@ -101,13 +100,15 @@ export default async function SeasonDetailPage({ params }: PageProps) {
       .eq('season_id', season.id),
     supabase
       .from('results')
-      .select('driver_slug, driver_name, position, finish_position')
+      .select('driver_slug, driver_name, position')
       .eq('season_year', season.year)
+      .eq('position', 1)
       .eq('is_sprint', false),
     supabase
       .from('results')
-      .select('constructor_slug, constructor_name, position, finish_position')
+      .select('constructor_slug, constructor_name, position')
       .eq('season_year', season.year)
+      .eq('position', 1)
       .eq('is_sprint', false),
     supabase
       .from('seasons')
@@ -147,8 +148,7 @@ export default async function SeasonDetailPage({ params }: PageProps) {
 
   const driverWinsMap = new Map<string, { slug: string; name: string; count: number }>()
   for (const row of topDriversRawRes.data ?? []) {
-    const pos = typeof row.finish_position === 'number' ? row.finish_position : row.position
-    if (pos !== 1) continue
+    if (row.position !== 1) continue
     if (!row.driver_slug || !row.driver_name) continue
     const existing = driverWinsMap.get(row.driver_slug) ?? { slug: row.driver_slug, name: row.driver_name, count: 0 }
     existing.count += 1
@@ -158,8 +158,7 @@ export default async function SeasonDetailPage({ params }: PageProps) {
 
   const constructorWinsMap = new Map<string, { slug: string; name: string; count: number }>()
   for (const row of topConstructorsRawRes.data ?? []) {
-    const pos = typeof row.finish_position === 'number' ? row.finish_position : row.position
-    if (pos !== 1) continue
+    if (row.position !== 1) continue
     if (!row.constructor_slug || !row.constructor_name) continue
     const existing = constructorWinsMap.get(row.constructor_slug) ?? {
       slug: row.constructor_slug,

@@ -321,7 +321,7 @@ async function loadTeamPageData(slug: string): Promise<LoadedTeam | null> {
       .limit(1),
     supabase
       .from('results')
-      .select('race_id, finish_position, is_pole, points, season_year')
+      .select('race_id, position, is_sprint, is_pole, points, season_year')
       .eq('team_id', teamId),
     supabase
       .from('results')
@@ -354,7 +354,8 @@ async function loadTeamPageData(slug: string): Promise<LoadedTeam | null> {
   const statsRows = (resultsAggRes.data ??
     []) as Array<{
     race_id: string | null
-    finish_position: number | null
+    position: number | null
+    is_sprint: boolean | null
     is_pole: boolean | null
     points: number | string | null
     season_year: number | null
@@ -362,8 +363,8 @@ async function loadTeamPageData(slug: string): Promise<LoadedTeam | null> {
   const careerStats = {
     seasons: new Set(statsRows.map((r) => r.season_year).filter((y): y is number => typeof y === 'number')).size,
     races: new Set(statsRows.map((r) => r.race_id).filter((id): id is string => typeof id === 'string')).size,
-    wins: statsRows.filter((r) => r.finish_position === 1).length,
-    podiums: statsRows.filter((r) => typeof r.finish_position === 'number' && r.finish_position <= 3).length,
+    wins: statsRows.filter((r) => r.position === 1 && r.is_sprint !== true).length,
+    podiums: statsRows.filter((r) => typeof r.position === 'number' && r.position <= 3 && r.is_sprint !== true).length,
     poles: statsRows.filter((r) => r.is_pole === true).length,
     points: statsRows.reduce((sum, r) => sum + num(r.points), 0),
     championships: titleCount,
