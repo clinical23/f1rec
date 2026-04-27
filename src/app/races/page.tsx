@@ -14,6 +14,7 @@ interface RaceResult {
 
 export default function RacesPage() {
   const [races, setRaces] = useState<RaceResult[]>([])
+  const [raceCount, setRaceCount] = useState<number | null>(null)
   const [loading, setLoading] = useState(true)
   const [expandedYears, setExpandedYears] = useState<Set<number>>(new Set())
   const [search, setSearch] = useState('')
@@ -24,13 +25,19 @@ export default function RacesPage() {
 
   useEffect(() => {
     async function fetchRaces() {
-      const { data, error } = await supabase
-        .from('results')
-        .select('season_year, round, race_name, race_slug, driver_name')
-        .eq('position', 1)
-        .eq('is_sprint', false)
-        .order('season_year', { ascending: false })
-        .order('round', { ascending: false })
+      const [{ data, error }, countRes] = await Promise.all([
+        supabase
+          .from('results')
+          .select('season_year, round, race_name, race_slug, driver_name')
+          .eq('position', 1)
+          .eq('is_sprint', false)
+          .order('season_year', { ascending: false })
+          .order('round', { ascending: false }),
+        supabase.from('races').select('id', { count: 'exact', head: true }),
+      ])
+      if (!countRes.error && typeof countRes.count === 'number') {
+        setRaceCount(countRes.count)
+      }
       if (!error && data) {
         const seen = new Set<string>()
         const deduped: RaceResult[] = []
@@ -88,7 +95,7 @@ export default function RacesPage() {
           Every Race.<br /><span style={{ color: 'var(--accent, #e8002d)' }}>Every Winner.</span>
         </h1>
         <p style={{ color: 'var(--muted, #889)', maxWidth: '500px', margin: '1rem auto 0', fontSize: '0.95rem' }}>
-          {races.length > 0 ? `${races.length} grands prix` : '...'} from 1950 to today. Every race result at a glance.
+          {raceCount != null ? `${raceCount.toLocaleString()} grands prix` : races.length > 0 ? `${races.length} grands prix` : '...'} from 1950 to today. Every race result at a glance.
         </p>
       </section>
 

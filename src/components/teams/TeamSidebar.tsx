@@ -24,11 +24,9 @@ export default function TeamSidebar({ team, championshipYears, currentDrivers, c
         {team.nationality ? <div className="blog-card__meta">Country: {team.nationality}</div> : null}
       </div>
 
-      <div className="blog-card">
-        <div className="blog-card__eyebrow">Current Drivers ({currentSeason})</div>
-        {currentDrivers.length === 0 ? (
-          <div className="blog-card__meta">No 2026 results yet for this team.</div>
-        ) : (
+      {currentDrivers.length > 0 ? (
+        <div className="blog-card">
+          <div className="blog-card__eyebrow">Current Drivers ({currentSeason})</div>
           <ul className="blog-card__list">
             {currentDrivers.map((driver) => (
               <li key={driver.id} className="blog-card__list-item">
@@ -39,8 +37,8 @@ export default function TeamSidebar({ team, championshipYears, currentDrivers, c
               </li>
             ))}
           </ul>
-        )}
-      </div>
+        </div>
+      ) : null}
 
       {championshipYears.length > 0 ? (
         <div className="blog-card">

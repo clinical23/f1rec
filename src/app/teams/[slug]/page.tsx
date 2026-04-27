@@ -1039,7 +1039,8 @@ export default async function TeamDetailPage({ params }: PageProps) {
           </section>
         ) : null}
 
-        <section className="max-w-3xl">
+        <section className="max-w-3xl blog-card">
+          <div className="blog-card__eyebrow">Stay updated</div>
           <EmailCapture source="team-page" />
         </section>
           </div>
