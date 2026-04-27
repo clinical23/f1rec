@@ -23,18 +23,17 @@ function prettifyCategory(category: string) {
 }
 
 export default function SidebarCards({ relatedDriver, relatedRace, morePostsInCategory, category }: SidebarCardsProps) {
+  const compareHref = relatedDriver ? `/compare?d1=${encodeURIComponent(relatedDriver.slug)}` : '/compare'
+
   return (
     <div className="flex w-full flex-col gap-4">
       {relatedDriver ? (
-        <Link
-          href={`/drivers/${relatedDriver.slug}`}
-          className="block rounded-lg border border-[var(--border)] bg-[var(--bg2)] p-4 transition-colors hover:border-[var(--gold)]"
-        >
-          <div className="mb-3 text-xs uppercase tracking-widest text-[var(--gold)]">Related Driver</div>
-          <div className="font-display text-3xl font-bold leading-none text-[var(--text)]">{relatedDriver.full_name}</div>
-          {relatedDriver.current_team ? <p className="mt-2 text-sm text-[var(--muted)]">{relatedDriver.current_team}</p> : null}
+        <Link href={`/drivers/${relatedDriver.slug}`} className="blog-card">
+          <div className="blog-card__eyebrow">Related Driver</div>
+          <div className="blog-card__title">{relatedDriver.full_name}</div>
+          {relatedDriver.current_team ? <p className="blog-card__meta">{relatedDriver.current_team}</p> : null}
           {relatedDriver.championship_position ? (
-            <span className="mt-3 inline-flex rounded-full border border-[var(--border)] bg-[var(--bg3)] px-2 py-1 text-xs text-[var(--muted)]">
+            <span className="blog-card__meta" style={{ display: 'inline-block', marginTop: '0.5rem' }}>
               P{relatedDriver.championship_position} in {new Date().getFullYear()} WDC
             </span>
           ) : null}
@@ -42,46 +41,40 @@ export default function SidebarCards({ relatedDriver, relatedRace, morePostsInCa
       ) : null}
 
       {relatedRace ? (
-        <Link
-          href={`/races/${relatedRace.slug}`}
-          className="block rounded-lg border border-[var(--border)] bg-[var(--bg2)] p-4 transition-colors hover:border-[var(--gold)]"
-        >
-          <div className="mb-3 text-xs uppercase tracking-widest text-[var(--gold)]">From This Race</div>
-          <div className="text-xs uppercase tracking-[0.08em] text-[var(--muted)]">
+        <Link href={`/races/${relatedRace.slug}`} className="blog-card">
+          <div className="blog-card__eyebrow">From This Race</div>
+          <div className="blog-card__meta" style={{ textTransform: 'uppercase', letterSpacing: '0.08em', fontSize: '0.75rem' }}>
             R{relatedRace.round_number} · {relatedRace.season_year}
           </div>
-          <div className="mt-2 font-display text-3xl font-bold leading-none text-[var(--text)]">{relatedRace.name}</div>
-          <p className="mt-2 text-sm text-[var(--muted)]">{formatDate(relatedRace.race_date)}</p>
-          {relatedRace.winner_name ? <p className="mt-1 text-sm text-[var(--muted)]">Won by {relatedRace.winner_name}</p> : null}
+          <div className="blog-card__title" style={{ marginTop: '0.5rem' }}>{relatedRace.name}</div>
+          <p className="blog-card__meta">{formatDate(relatedRace.race_date)}</p>
+          {relatedRace.winner_name ? <p className="blog-card__meta">Won by {relatedRace.winner_name}</p> : null}
         </Link>
       ) : null}
 
       {morePostsInCategory.length > 0 ? (
-        <div className="rounded-lg border border-[var(--border)] bg-[var(--bg2)] p-4">
-          <div className="mb-3 text-xs uppercase tracking-widest text-[var(--gold)]">More In {prettifyCategory(category)}</div>
-          <div className="space-y-3">
+        <div className="blog-card">
+          <div className="blog-card__eyebrow">More In {prettifyCategory(category)}</div>
+          <div className="blog-card__list">
             {morePostsInCategory.map((post) => (
-              <Link key={post.slug} href={`/blog/${post.slug}`} className="block border-b border-[var(--border)] pb-3 last:border-b-0 last:pb-0">
-                <p className="line-clamp-2 text-sm font-semibold text-[var(--text)]">{post.title}</p>
-                <p className="mt-1 text-xs text-[var(--muted)]">{formatDate(post.published_at)}</p>
+              <Link key={post.slug} href={`/blog/${post.slug}`} className="blog-card__list-item">
+                <p className="blog-card__list-item-title">{post.title}</p>
+                <p className="blog-card__list-item-date">{formatDate(post.published_at)}</p>
               </Link>
             ))}
           </div>
         </div>
       ) : null}
 
-      <Link
-        href={relatedDriver ? `/compare?d1=${encodeURIComponent(relatedDriver.slug)}` : '/compare'}
-        className="block rounded-lg border border-[var(--border)] bg-[var(--bg2)] p-4 text-[var(--text)] transition-colors hover:border-[var(--gold)]"
-      >
-        <div className="mb-3 text-xs uppercase tracking-widest text-[var(--gold)]">Compare</div>
-        <p className="text-sm text-[var(--muted)]">
+      <div className="blog-card">
+        <div className="blog-card__eyebrow">Compare</div>
+        <p className="blog-card__meta">
           See how {relatedDriver?.full_name ?? 'this driver'} stacks up against the rest of the grid.
         </p>
-        <span className="mt-3 inline-flex rounded-md border border-[var(--gold)]/40 bg-[var(--gold)]/10 px-3 py-2 text-xs font-semibold uppercase tracking-[0.08em] text-[var(--gold)]">
-          Open Comparison
-        </span>
-      </Link>
+        <Link href={compareHref} className="blog-card__cta">
+          Open compare tool
+        </Link>
+      </div>
     </div>
   )
 }
