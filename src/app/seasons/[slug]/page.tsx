@@ -18,17 +18,30 @@ type SeasonRow = {
   champion_team_id: string | null
 }
 
-type JoinedWinnerRow = {
-  position: number | null
+type RaceWinnerQueryRow = {
   season_year: number | null
   round: number | null
-  race_name: string | null
+  position: number | null
+  races: { slug: string | null; name: string | null; race_date: string | null; round: number | null } | Array<{ slug: string | null; name: string | null; race_date: string | null; round: number | null }> | null
+  drivers: { slug: string | null; full_name: string | null } | Array<{ slug: string | null; full_name: string | null }> | null
+  teams: { slug: string | null; name: string | null } | Array<{ slug: string | null; name: string | null }> | null
+}
+
+type RaceWinnerRow = {
+  season_year: number | null
+  round: number | null
   race_slug: string | null
+  race_name: string | null
   race_date: string | null
   driver_slug: string | null
   driver_name: string | null
-  team_slug: string | null
-  team_name: string | null
+  constructor_slug: string | null
+  constructor_name: string | null
+}
+
+function unwrapRelation<T>(rel: T | T[] | null | undefined): T | null {
+  if (rel == null) return null
+  return Array.isArray(rel) ? rel[0] ?? null : rel
 }
 
 async function getSeason(slug: string) {
@@ -85,10 +98,10 @@ export default async function SeasonDetailPage({ params }: PageProps) {
       : Promise.resolve({ data: null, error: null }),
     supabase
       .from('results')
-      .select('season_year, round, race_name, race_slug, race_date, driver_name, driver_slug, constructor_name, constructor_slug, position')
-      .eq('season_year', season.year)
+      .select('season_year, round, position, drivers!inner(slug, full_name), teams(slug, name), races!inner(slug, name, race_date, round)')
       .eq('position', 1)
       .eq('is_sprint', false)
+      .eq('season_year', season.year)
       .order('round', { ascending: true }),
     supabase
       .from('driver_season_stats')
@@ -121,11 +134,30 @@ export default async function SeasonDetailPage({ params }: PageProps) {
   const championTeam = champTeamRes.data
 
   const seenRounds = new Set<number>()
-  const raceWinners = ((raceWinnersRes.data ?? []) as JoinedWinnerRow[]).filter((row) => {
-    if (seenRounds.has(row.round)) return false
-    seenRounds.add(row.round)
-    return true
-  })
+  const raceWinners = ((raceWinnersRes.data ?? []) as RaceWinnerQueryRow[])
+    .map((row): RaceWinnerRow => {
+      const race = unwrapRelation(row.races)
+      const driver = unwrapRelation(row.drivers)
+      const team = unwrapRelation(row.teams)
+      return {
+        season_year: row.season_year ?? season.year,
+        round: race?.round ?? row.round ?? null,
+        race_slug: race?.slug ?? null,
+        race_name: race?.name ?? null,
+        race_date: race?.race_date ?? null,
+        driver_slug: driver?.slug ?? null,
+        driver_name: driver?.full_name ?? null,
+        constructor_slug: team?.slug ?? null,
+        constructor_name: team?.name ?? null,
+      }
+    })
+    .filter((row) => {
+      const round = row.round
+      if (typeof round !== 'number') return false
+      if (seenRounds.has(round)) return false
+      seenRounds.add(round)
+      return true
+    })
   const completedRaceWinners = raceWinners.filter((row) => row.driver_slug || row.driver_name)
 
   const driverStandings = (driverStandingsRes.data ?? [])
