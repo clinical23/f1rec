@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { createServerClient } from '@/lib/supabase/server'
 import JsonLd from '@/components/JsonLd'
+import SeasonSidebar from '@/components/seasons/SeasonSidebar'
 
 type PageProps = {
   params: Promise<{ slug: string }>
@@ -17,6 +18,20 @@ type SeasonRow = {
   champion_team_id: string | null
 }
 
+type JoinedWinnerRow = {
+  finish_position: number | null
+  position: number | null
+  season_year: number | null
+  round: number | null
+  race_name: string | null
+  race_slug: string | null
+  race_date: string | null
+  driver_slug: string | null
+  driver_name: string | null
+  team_slug: string | null
+  team_name: string | null
+}
+
 async function getSeason(slug: string) {
   const supabase = createServerClient()
   return supabase
@@ -24,6 +39,15 @@ async function getSeason(slug: string) {
     .select('id, year, slug, rounds, champion_driver_id, champion_team_id')
     .eq('slug', slug)
     .maybeSingle<SeasonRow>()
+}
+
+function formatDate(value: string | null) {
+  if (!value) return 'TBC'
+  return new Date(value).toLocaleDateString('en-GB', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  })
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -50,16 +74,19 @@ export default async function SeasonDetailPage({ params }: PageProps) {
   const { data: season } = await getSeason(slug)
   if (!season) notFound()
 
-  const [champDriverRes, champTeamRes, raceWinnersRes, driverStandingsRes, constructorStandingsRes] = await Promise.all([
+  const isCompleted = Boolean(season.champion_driver_id)
+  const isOngoing = !isCompleted
+
+  const [champDriverRes, champTeamRes, raceWinnersRes, driverStandingsRes, constructorStandingsRes, topDriversRawRes, topConstructorsRawRes, adjacentSeasonsRes] = await Promise.all([
     season.champion_driver_id
       ? supabase.from('drivers').select('full_name, slug').eq('id', season.champion_driver_id).maybeSingle()
       : Promise.resolve({ data: null, error: null }),
     season.champion_team_id
-      ? supabase.from('teams').select('name, slug').eq('id', season.champion_team_id).maybeSingle()
+      ? supabase.from('teams').select('name, slug, primary_color').eq('id', season.champion_team_id).maybeSingle()
       : Promise.resolve({ data: null, error: null }),
     supabase
       .from('results')
-      .select('season_year, round, race_name, race_slug, driver_name, driver_slug, constructor_name, constructor_slug')
+      .select('season_year, round, race_name, race_slug, race_date, driver_name, driver_slug, constructor_name, constructor_slug, position, finish_position')
       .eq('season_year', season.year)
       .eq('position', 1)
       .eq('is_sprint', false)
@@ -72,17 +99,33 @@ export default async function SeasonDetailPage({ params }: PageProps) {
       .from('team_season_stats')
       .select('id, championship_position, points, wins, podiums, teams!inner(name, slug, primary_color)')
       .eq('season_id', season.id),
+    supabase
+      .from('results')
+      .select('driver_slug, driver_name, position, finish_position')
+      .eq('season_year', season.year)
+      .eq('is_sprint', false),
+    supabase
+      .from('results')
+      .select('constructor_slug, constructor_name, position, finish_position')
+      .eq('season_year', season.year)
+      .eq('is_sprint', false),
+    supabase
+      .from('seasons')
+      .select('slug, year')
+      .in('year', [season.year - 1, season.year + 1])
+      .order('year', { ascending: true }),
   ])
 
   const championDriver = champDriverRes.data
   const championTeam = champTeamRes.data
 
   const seenRounds = new Set<number>()
-  const raceWinners = (raceWinnersRes.data ?? []).filter((row) => {
+  const raceWinners = ((raceWinnersRes.data ?? []) as JoinedWinnerRow[]).filter((row) => {
     if (seenRounds.has(row.round)) return false
     seenRounds.add(row.round)
     return true
   })
+  const completedRaceWinners = raceWinners.filter((row) => row.driver_slug || row.driver_name)
 
   const driverStandings = (driverStandingsRes.data ?? [])
     .slice()
@@ -102,6 +145,35 @@ export default async function SeasonDetailPage({ params }: PageProps) {
       return Number(b.points ?? 0) - Number(a.points ?? 0)
     })
 
+  const driverWinsMap = new Map<string, { slug: string; name: string; count: number }>()
+  for (const row of topDriversRawRes.data ?? []) {
+    const pos = typeof row.finish_position === 'number' ? row.finish_position : row.position
+    if (pos !== 1) continue
+    if (!row.driver_slug || !row.driver_name) continue
+    const existing = driverWinsMap.get(row.driver_slug) ?? { slug: row.driver_slug, name: row.driver_name, count: 0 }
+    existing.count += 1
+    driverWinsMap.set(row.driver_slug, existing)
+  }
+  const topDrivers = [...driverWinsMap.values()].sort((a, b) => b.count - a.count).slice(0, 3)
+
+  const constructorWinsMap = new Map<string, { slug: string; name: string; count: number }>()
+  for (const row of topConstructorsRawRes.data ?? []) {
+    const pos = typeof row.finish_position === 'number' ? row.finish_position : row.position
+    if (pos !== 1) continue
+    if (!row.constructor_slug || !row.constructor_name) continue
+    const existing = constructorWinsMap.get(row.constructor_slug) ?? {
+      slug: row.constructor_slug,
+      name: row.constructor_name,
+      count: 0,
+    }
+    existing.count += 1
+    constructorWinsMap.set(row.constructor_slug, existing)
+  }
+  const topConstructors = [...constructorWinsMap.values()].sort((a, b) => b.count - a.count).slice(0, 3)
+
+  const prevSeason = (adjacentSeasonsRes.data ?? []).find((s) => s.year === season.year - 1)
+  const nextSeason = (adjacentSeasonsRes.data ?? []).find((s) => s.year === season.year + 1)
+
   const seasonPageUrl = `https://f1rec.com/seasons/${season.slug}`
 
   return (
@@ -116,68 +188,79 @@ export default async function SeasonDetailPage({ params }: PageProps) {
           url: seasonPageUrl,
         }}
       />
-      <section style={{ borderBottom: '1px solid var(--border)', padding: '3rem 1.5rem 2.2rem', background: 'linear-gradient(180deg, rgba(232,0,45,0.08) 0%, transparent 100%)' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          <div style={{ marginBottom: '1rem' }}>
-            <Link href="/seasons" style={{ color: 'var(--muted)', textDecoration: 'none', fontSize: '0.8rem' }}>← All Seasons</Link>
-          </div>
-          <p style={{ fontFamily: 'var(--font-barlow-condensed)', textTransform: 'uppercase', letterSpacing: '0.18em', fontSize: '0.72rem', color: 'var(--accent)', marginBottom: '0.5rem' }}>
-            Formula 1 World Championship
-          </p>
-          <h1 style={{ fontFamily: 'var(--font-barlow-condensed)', fontSize: 'clamp(4rem, 15vw, 8rem)', lineHeight: 0.9, fontWeight: 900, letterSpacing: '-0.03em', margin: 0 }}>
-            {season.year}
-          </h1>
-          <p style={{ color: 'var(--muted)', margin: '0.6rem 0 1.2rem', fontSize: '0.92rem' }}>
-            {season.rounds ?? raceWinners.length} rounds
-          </p>
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '0.75rem' }}>
-            <div style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: '8px', padding: '1rem' }}>
-              <div style={{ fontFamily: 'var(--font-barlow-condensed)', textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: '0.68rem', color: 'var(--gold)', marginBottom: '0.5rem' }}>
-                Driver Champion
-              </div>
-              {championDriver ? (
-                championDriver.slug ? (
-                  <Link href={`/drivers/${championDriver.slug}`} style={{ color: 'var(--text)', textDecoration: 'none', fontFamily: 'var(--font-barlow-condensed)', fontWeight: 800, textTransform: 'uppercase', fontSize: '1.45rem' }}>
-                    {championDriver.full_name ?? '—'}
-                  </Link>
-                ) : (
-                  <span style={{ color: 'var(--text)', fontFamily: 'var(--font-barlow-condensed)', fontWeight: 800, textTransform: 'uppercase', fontSize: '1.45rem' }}>{championDriver.full_name ?? '—'}</span>
-                )
-              ) : (
-                <div style={{ color: 'var(--muted)' }}>TBD</div>
-              )}
-            </div>
-            <div style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: '8px', padding: '1rem' }}>
-              <div style={{ fontFamily: 'var(--font-barlow-condensed)', textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: '0.68rem', color: 'var(--gold)', marginBottom: '0.5rem' }}>
-                Constructor Champion
-              </div>
-              {championTeam ? (
-                championTeam.slug ? (
-                  <Link href={`/teams/${championTeam.slug}`} style={{ color: 'var(--text)', textDecoration: 'none', fontFamily: 'var(--font-barlow-condensed)', fontWeight: 800, textTransform: 'uppercase', fontSize: '1.45rem' }}>
-                    {championTeam.name ?? '—'}
-                  </Link>
-                ) : (
-                  <span style={{ color: 'var(--text)', fontFamily: 'var(--font-barlow-condensed)', fontWeight: 800, textTransform: 'uppercase', fontSize: '1.45rem' }}>{championTeam.name ?? '—'}</span>
-                )
-              ) : (
-                <div style={{ color: 'var(--muted)' }}>TBD</div>
-              )}
-            </div>
-          </div>
+      <header className="mx-auto max-w-7xl px-4 py-12">
+        <Link href="/seasons" className="mb-6 inline-flex text-sm text-[var(--muted)] no-underline hover:text-[var(--text)]">
+          ← All Seasons
+        </Link>
+        <div className="mb-3 text-sm uppercase tracking-widest text-[var(--accent)]">Formula 1 World Championship</div>
+        <h1 className="font-display text-7xl font-bold leading-[1.05] tracking-tight">{season.year}</h1>
+        <div className="mt-4 text-base text-[var(--muted)]">
+          {season.rounds ?? completedRaceWinners.length} rounds
+          {isOngoing ? (
+            <span className="ml-3 inline-flex items-center rounded-full border border-[var(--accent)]/40 bg-[var(--accent)]/10 px-3 py-1 text-xs uppercase tracking-widest text-[var(--accent)]">
+              In Progress
+            </span>
+          ) : null}
         </div>
-      </section>
+      </header>
 
-      <section style={{ maxWidth: '1200px', margin: '0 auto', padding: '2rem 1.5rem 3rem' }}>
+      <div className="mx-auto max-w-7xl px-4 pb-8">
+        {isCompleted ? (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem' }}>
+            {championDriver ? (
+              <Link href={championDriver.slug ? `/drivers/${championDriver.slug}` : '#'} className="group rounded-lg border border-[var(--gold)]/40 bg-[var(--gold)]/5 p-6 no-underline transition-colors hover:border-[var(--gold)]">
+                <div className="text-xs uppercase tracking-widest text-[var(--gold)]">World Drivers&apos; Champion</div>
+                <div className="mt-2 font-display text-3xl font-bold text-[var(--text)]">{championDriver.full_name ?? '—'}</div>
+              </Link>
+            ) : null}
+            {championTeam ? (
+              <Link href={championTeam.slug ? `/teams/${championTeam.slug}` : '#'} className="group rounded-lg border border-[var(--gold)]/40 bg-[var(--gold)]/5 p-6 no-underline transition-colors hover:border-[var(--gold)]">
+                <div className="text-xs uppercase tracking-widest text-[var(--gold)]">World Constructors&apos; Champion</div>
+                <div
+                  className="mt-2 font-display text-3xl font-bold"
+                  style={{ color: (championTeam as { primary_color?: string | null }).primary_color || 'var(--text)' }}
+                >
+                  {championTeam.name ?? '—'}
+                </div>
+              </Link>
+            ) : null}
+          </div>
+        ) : (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem' }}>
+            {topDrivers[0] ? (
+              <div className="blog-card">
+                <div className="blog-card__eyebrow">Drivers&apos; Standings Leader</div>
+                <Link href={`/drivers/${topDrivers[0].slug}`} className="blog-card__title no-underline hover:text-[var(--accent)]">
+                  {topDrivers[0].name}
+                </Link>
+                <div className="blog-card__meta">{topDrivers[0].count} wins so far</div>
+              </div>
+            ) : null}
+            {topConstructors[0] ? (
+              <div className="blog-card">
+                <div className="blog-card__eyebrow">Constructors&apos; Standings Leader</div>
+                <Link href={`/teams/${topConstructors[0].slug}`} className="blog-card__title no-underline hover:text-[var(--accent)]">
+                  {topConstructors[0].name}
+                </Link>
+                <div className="blog-card__meta">{topConstructors[0].count} wins so far</div>
+              </div>
+            ) : null}
+          </div>
+        )}
+      </div>
+
+      <div className="mx-auto max-w-7xl px-4 pb-12">
+        <div className="blog-layout">
+          <div className="blog-layout__main">
         <h2 style={{ fontFamily: 'var(--font-barlow-condensed)', letterSpacing: '0.1em', fontSize: '1.1rem', fontWeight: 700, marginBottom: '0.8rem' }}>
           Race Winners
         </h2>
-        {raceWinners.length > 0 ? (
+        {completedRaceWinners.length > 0 ? (
           <div style={{ overflowX: 'auto', borderRadius: '8px', border: '1px solid var(--border)', marginBottom: '2rem' }}>
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem' }}>
               <thead>
                 <tr style={{ background: 'var(--bg2)' }}>
-                  {['Round', 'Race', 'Winner', 'Team'].map((h) => (
+                  {['Round', 'Race', 'Date', 'Winner', 'Team'].map((h) => (
                     <th key={h} style={{ padding: '0.65rem 0.75rem', textAlign: h === 'Round' ? 'right' : 'left', borderBottom: '1px solid var(--border)', fontFamily: 'var(--font-barlow-condensed)', textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--muted)', fontWeight: 600, fontSize: '0.68rem' }}>
                       {h}
                     </th>
@@ -185,13 +268,22 @@ export default async function SeasonDetailPage({ params }: PageProps) {
                 </tr>
               </thead>
               <tbody>
-                {raceWinners.map((row) => (
+                {completedRaceWinners.map((row) => (
                   <tr key={`${row.season_year}-${row.round}`} style={{ borderBottom: '1px solid var(--border)' }}>
                     <td style={{ padding: '0.55rem 0.75rem', textAlign: 'right', fontFamily: 'var(--font-jetbrains, monospace)', color: 'var(--muted)' }}>
                       R{row.round}
                     </td>
                     <td style={{ padding: '0.55rem 0.75rem', color: 'var(--text)' }}>
-                      {row.race_name ?? row.race_slug ?? '—'}
+                      {row.race_slug ? (
+                        <Link href={`/races/${row.race_slug}`} style={{ color: 'var(--text)', textDecoration: 'none' }}>
+                          {row.race_name ?? row.race_slug}
+                        </Link>
+                      ) : (
+                        row.race_name ?? row.race_slug ?? '—'
+                      )}
+                    </td>
+                    <td style={{ padding: '0.55rem 0.75rem', color: 'var(--muted)' }}>
+                      {formatDate(row.race_date)}
                     </td>
                     <td style={{ padding: '0.55rem 0.75rem' }}>
                       {row.driver_slug?.trim() ? (
@@ -307,7 +399,18 @@ export default async function SeasonDetailPage({ params }: PageProps) {
             </tbody>
           </table>
         </div>
-      </section>
+          </div>
+          <aside className="blog-layout__sidebar">
+            <SeasonSidebar
+              season={{ year: season.year, rounds: season.rounds, isCompleted }}
+              topDrivers={topDrivers}
+              topConstructors={topConstructors}
+              prevSeason={prevSeason ? { slug: prevSeason.slug, year: prevSeason.year } : undefined}
+              nextSeason={nextSeason ? { slug: nextSeason.slug, year: nextSeason.year } : undefined}
+            />
+          </aside>
+        </div>
+      </div>
     </main>
   )
 }
