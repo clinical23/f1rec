@@ -282,7 +282,7 @@ type LoadedTeam = {
   relatedPosts: PostRow[]
   flag: string | null
   showFlColumn: boolean
-  currentDriversSidebar: Array<{ slug: string; full_name: string }>
+  currentDriversSidebar: Array<{ id: string; slug: string; full_name: string; nationality: string | null }>
 }
 
 async function loadTeamPageData(slug: string): Promise<LoadedTeam | null> {
@@ -294,7 +294,7 @@ async function loadTeamPageData(slug: string): Promise<LoadedTeam | null> {
   const teamId = t.id
   const fallbackYear = new Date().getFullYear()
 
-  const [tssRes, dssRes, postsRes, countriesRes, fwRes, resultsAggRes, latestSeasonRes] = await Promise.all([
+  const [tssRes, dssRes, postsRes, countriesRes, fwRes, resultsAggRes, latestSeasonRes, currentDriversRes] = await Promise.all([
     supabase
       .from('team_season_stats')
       .select(
@@ -330,6 +330,13 @@ async function loadTeamPageData(slug: string): Promise<LoadedTeam | null> {
       .order('season_year', { ascending: false })
       .limit(1)
       .maybeSingle(),
+    supabase
+      .from('results')
+      .select(
+        'driver_id, drivers!inner(id, slug, full_name, image_url, nationality)'
+      )
+      .eq('season_year', 2026)
+      .eq('constructor_slug', slug),
   ])
 
   let teamSeasonRows = (tssRes.data ?? []) as TeamSeasonRow[]
@@ -468,10 +475,56 @@ async function loadTeamPageData(slug: string): Promise<LoadedTeam | null> {
     }
   }
 
+  if (currentDriversRes.error) {
+    console.error('[teams/[slug]] current drivers query failed', currentDriversRes.error)
+  }
+  const currentDriverRows = (currentDriversRes.data ?? []) as Array<{
+    driver_id: string | null
+    drivers:
+      | {
+          id: string
+          slug: string | null
+          full_name: string | null
+          image_url: string | null
+          nationality: string | null
+        }
+      | Array<{
+          id: string
+          slug: string | null
+          full_name: string | null
+          image_url: string | null
+          nationality: string | null
+        }>
+      | null
+  }>
+  const seen = new Set<string>()
+  const currentDriversSidebar = currentDriverRows
+    .map((row) => unwrapRelation(row.drivers))
+    .filter(
+      (
+        driver
+      ): driver is {
+        id: string
+        slug: string | null
+        full_name: string | null
+        image_url: string | null
+        nationality: string | null
+      } => driver !== null
+    )
+    .filter((driver) => {
+      if (seen.has(driver.id)) return false
+      seen.add(driver.id)
+      return true
+    })
+    .filter((driver) => Boolean(driver.slug?.trim()) && Boolean(driver.full_name?.trim()))
+    .map((driver) => ({
+      id: driver.id,
+      slug: String(driver.slug).trim(),
+      full_name: String(driver.full_name).trim(),
+      nationality: driver.nationality?.trim() ?? null,
+    }))
+
   const showFlColumn = teamSeasonRows.some((row) => num(row.fastest_laps) > 0)
-  const currentDriversSidebar = driversCurrentYear
-    .filter((driver) => Boolean(driver.slug))
-    .map((driver) => ({ slug: driver.slug, full_name: driver.full_name }))
 
   return {
     team: t,

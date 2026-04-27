@@ -9,7 +9,7 @@ type TeamSidebarProps = {
     nationality?: string | null
   }
   championshipYears: number[]
-  currentDrivers: Array<{ slug: string; full_name: string }>
+  currentDrivers: Array<{ id: string; slug: string; full_name: string; nationality: string | null }>
   currentSeason: number
 }
 
@@ -24,18 +24,23 @@ export default function TeamSidebar({ team, championshipYears, currentDrivers, c
         {team.nationality ? <div className="blog-card__meta">Country: {team.nationality}</div> : null}
       </div>
 
-      {currentDrivers.length > 0 ? (
-        <div className="blog-card">
-          <div className="blog-card__eyebrow">Current Drivers ({currentSeason})</div>
-          <div className="blog-card__list">
+      <div className="blog-card">
+        <div className="blog-card__eyebrow">Current Drivers ({currentSeason})</div>
+        {currentDrivers.length === 0 ? (
+          <div className="blog-card__meta">No 2026 results yet for this team.</div>
+        ) : (
+          <ul className="blog-card__list">
             {currentDrivers.map((driver) => (
-              <Link key={driver.slug} href={`/drivers/${driver.slug}`} className="blog-card__list-item">
-                <div className="blog-card__list-item-title">{driver.full_name}</div>
-              </Link>
+              <li key={driver.id} className="blog-card__list-item">
+                <Link href={`/drivers/${driver.slug}`} className="blog-card__list-item-title">
+                  {driver.full_name}
+                </Link>
+                {driver.nationality ? <div className="blog-card__list-item-date">{driver.nationality}</div> : null}
+              </li>
             ))}
-          </div>
-        </div>
-      ) : null}
+          </ul>
+        )}
+      </div>
 
       {championshipYears.length > 0 ? (
         <div className="blog-card">
