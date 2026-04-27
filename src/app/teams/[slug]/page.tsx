@@ -333,7 +333,7 @@ async function loadTeamPageData(slug: string): Promise<LoadedTeam | null> {
     supabase
       .from('results')
       .select(
-        'driver_id, drivers!inner(id, slug, full_name, image_url, nationality)'
+        'driver_id, drivers!inner(id, slug, full_name, nationality)'
       )
       .eq('season_year', 2026)
       .eq('constructor_slug', slug),
@@ -485,14 +485,12 @@ async function loadTeamPageData(slug: string): Promise<LoadedTeam | null> {
           id: string
           slug: string | null
           full_name: string | null
-          image_url: string | null
           nationality: string | null
         }
       | Array<{
           id: string
           slug: string | null
           full_name: string | null
-          image_url: string | null
           nationality: string | null
         }>
       | null
@@ -507,7 +505,6 @@ async function loadTeamPageData(slug: string): Promise<LoadedTeam | null> {
         id: string
         slug: string | null
         full_name: string | null
-        image_url: string | null
         nationality: string | null
       } => driver !== null
     )
