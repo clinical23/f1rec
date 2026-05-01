@@ -101,6 +101,13 @@ function qualifyingBestTime(q: JolpicaQualifyingResult): string | null {
   return q.Q3?.trim() || q.Q2?.trim() || q.Q1?.trim() || null;
 }
 
+/** PostgREST `.in.(...)` list with quoted values (handles commas/special chars). */
+function postgrestInList(values: Iterable<string>): string {
+  return [...values]
+    .map((v) => `"${String(v).replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"`)
+    .join(',');
+}
+
 export async function syncSession(input: SyncSessionInput): Promise<SyncSessionResult> {
   const session_type_norm = normalizeSessionType(input.session_type);
   const emptyErr = (
@@ -199,8 +206,11 @@ export async function syncSession(input: SyncSessionInput): Promise<SyncSessionR
 
   const [driverRes, teamRes] = await Promise.all([
     driverIds.size
-      ? supabase.from('drivers').select('id, slug').in('slug', [...driverIds])
-      : Promise.resolve({ data: [] as { id: string; slug: string }[], error: null }),
+      ? supabase
+          .from('drivers')
+          .select('id, slug, driver_id')
+          .or(`slug.in.(${postgrestInList(driverIds)}),driver_id.in.(${postgrestInList(driverIds)})`)
+      : Promise.resolve({ data: [] as { id: string; slug: string; driver_id: string | null }[], error: null }),
     teamIds.size
       ? supabase.from('teams').select('id, slug').in('slug', [...teamIds])
       : Promise.resolve({ data: [] as { id: string; slug: string }[], error: null }),
@@ -213,8 +223,15 @@ export async function syncSession(input: SyncSessionInput): Promise<SyncSessionR
     return emptyErr([`team_lookup_failed:${teamRes.error.message}`], jolpica_url);
   }
 
-  const driverIdBySlug = new Map<string, string>();
-  for (const d of driverRes.data ?? []) driverIdBySlug.set(d.slug, d.id);
+  type DriverMatch = { id: string; slug: string };
+  const driverLookup = new Map<string, DriverMatch>();
+  for (const d of driverRes.data ?? []) {
+    const row = { id: d.id, slug: d.slug };
+    if (d.slug) driverLookup.set(d.slug, row);
+    if (d.driver_id != null && String(d.driver_id).trim() !== '') {
+      driverLookup.set(String(d.driver_id), row);
+    }
+  }
 
   const teamIdBySlug = new Map<string, string>();
   for (const t of teamRes.data ?? []) teamIdBySlug.set(t.slug, t.id);
@@ -227,21 +244,21 @@ export async function syncSession(input: SyncSessionInput): Promise<SyncSessionR
 
   if (session_type === 'qualifying') {
     for (const qr of rawRows as JolpicaQualifyingResult[]) {
-      const driverSlug = qr.Driver?.driverId;
+      const jolpicaDriverId = qr.Driver?.driverId;
       const constructorSlug = qr.Constructor?.constructorId ?? null;
-      if (!driverSlug) {
+      if (!jolpicaDriverId) {
         errors.push('qualifying_row_missing_driver');
         continue;
       }
       if (!constructorSlug) {
-        errors.push(`constructor_missing:${driverSlug}`);
+        errors.push(`constructor_missing:${jolpicaDriverId}`);
         continue;
       }
 
-      const driverUuid = driverIdBySlug.get(driverSlug);
+      const driverMatch = driverLookup.get(jolpicaDriverId);
       const teamUuid = teamIdBySlug.get(constructorSlug);
-      if (!driverUuid) {
-        errors.push(`driver_not_found:${driverSlug}`);
+      if (!driverMatch) {
+        errors.push(`driver_not_found:${jolpicaDriverId}:tried_slug_and_driver_id`);
         continue;
       }
       if (!teamUuid) {
@@ -252,10 +269,11 @@ export async function syncSession(input: SyncSessionInput): Promise<SyncSessionR
       const posNum = Number.parseInt(qr.position ?? '', 10);
       const position = Number.isFinite(posNum) ? posNum : null;
       const position_text = qr.position ?? null;
+      const canonicalDriverSlug = driverMatch.slug;
       const driverName =
-        `${qr.Driver.givenName ?? ''} ${qr.Driver.familyName ?? ''}`.trim() || driverSlug;
+        `${qr.Driver.givenName ?? ''} ${qr.Driver.familyName ?? ''}`.trim() || canonicalDriverSlug;
 
-      const slug = `${input.season}-${input.round}-${circuitSlug}-${driverSlug}-${slugPositionSegment(
+      const slug = `${input.season}-${input.round}-${circuitSlug}-${canonicalDriverSlug}-${slugPositionSegment(
         position,
         position_text
       )}${suffix}`;
@@ -263,7 +281,7 @@ export async function syncSession(input: SyncSessionInput): Promise<SyncSessionR
       upsertPayload.push({
         slug,
         race_id: raceRow.id,
-        driver_id: driverUuid,
+        driver_id: driverMatch.id,
         team_id: teamUuid,
         season_id: raceRow.season_id,
         session_type,
@@ -272,7 +290,7 @@ export async function syncSession(input: SyncSessionInput): Promise<SyncSessionR
         season_year: input.season,
         round: input.round,
         race_name: raceName,
-        driver_slug: driverSlug,
+        driver_slug: canonicalDriverSlug,
         driver_code: qr.Driver.code ?? null,
         driver_name: driverName,
         constructor_slug: constructorSlug,
@@ -291,21 +309,21 @@ export async function syncSession(input: SyncSessionInput): Promise<SyncSessionR
     }
   } else {
     for (const rr of rawRows as JolpicaRaceResult[]) {
-      const driverSlug = rr.Driver?.driverId;
+      const jolpicaDriverId = rr.Driver?.driverId;
       const constructorSlug = rr.Constructor?.constructorId ?? null;
-      if (!driverSlug) {
+      if (!jolpicaDriverId) {
         errors.push('race_row_missing_driver');
         continue;
       }
       if (!constructorSlug) {
-        errors.push(`constructor_missing:${driverSlug}`);
+        errors.push(`constructor_missing:${jolpicaDriverId}`);
         continue;
       }
 
-      const driverUuid = driverIdBySlug.get(driverSlug);
+      const driverMatch = driverLookup.get(jolpicaDriverId);
       const teamUuid = teamIdBySlug.get(constructorSlug);
-      if (!driverUuid) {
-        errors.push(`driver_not_found:${driverSlug}`);
+      if (!driverMatch) {
+        errors.push(`driver_not_found:${jolpicaDriverId}:tried_slug_and_driver_id`);
         continue;
       }
       if (!teamUuid) {
@@ -319,10 +337,11 @@ export async function syncSession(input: SyncSessionInput): Promise<SyncSessionR
       const grid = Number.isFinite(gridNum) ? gridNum : null;
       const pointsNum = Number.parseFloat(rr.points ?? '');
       const points = Number.isFinite(pointsNum) ? pointsNum : null;
+      const canonicalDriverSlug = driverMatch.slug;
       const driverName =
-        `${rr.Driver.givenName ?? ''} ${rr.Driver.familyName ?? ''}`.trim() || driverSlug;
+        `${rr.Driver.givenName ?? ''} ${rr.Driver.familyName ?? ''}`.trim() || canonicalDriverSlug;
 
-      const slug = `${input.season}-${input.round}-${circuitSlug}-${driverSlug}-${slugPositionSegment(
+      const slug = `${input.season}-${input.round}-${circuitSlug}-${canonicalDriverSlug}-${slugPositionSegment(
         position,
         rr.positionText ?? null
       )}${suffix}`;
@@ -330,7 +349,7 @@ export async function syncSession(input: SyncSessionInput): Promise<SyncSessionR
       upsertPayload.push({
         slug,
         race_id: raceRow.id,
-        driver_id: driverUuid,
+        driver_id: driverMatch.id,
         team_id: teamUuid,
         season_id: raceRow.season_id,
         session_type,
@@ -339,7 +358,7 @@ export async function syncSession(input: SyncSessionInput): Promise<SyncSessionR
         season_year: input.season,
         round: input.round,
         race_name: raceName,
-        driver_slug: driverSlug,
+        driver_slug: canonicalDriverSlug,
         driver_code: rr.Driver.code ?? null,
         driver_name: driverName,
         constructor_slug: constructorSlug,
