@@ -132,7 +132,7 @@ export async function generateAndQueueTweet(
   let rawText = '';
   try {
     const completion = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 600,
       system: [{ type: 'text', text: TWEET_BIBLE, cache_control: { type: 'ephemeral' } }],
       messages: [{ role: 'user', content: JSON.stringify(safeFactsheet) }],
