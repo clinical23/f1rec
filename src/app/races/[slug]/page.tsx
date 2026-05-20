@@ -1,3 +1,5 @@
+export const revalidate = 3600 // 1 hour — race results don't change
+
 import Link from 'next/link'
 import { createServerClient } from '@/lib/supabase/server'
 
