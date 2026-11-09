@@ -65,6 +65,7 @@ export type CatchupReport = {
   sessions: { round: number; session: string; status: string; rows: number; errors: string[] }[];
   winners_set: number;
   standings: { drivers: number; teams: number } | null;
+  careers_updated: number;
   stopped_early: boolean;
   errors: string[];
 };
@@ -436,6 +437,30 @@ async function rebuildStandings(db: SupabaseClient, season: number, seasonId: st
   return { drivers: driverRows.length, teams: teamRows.length };
 }
 
+/** Career wins, podiums and starts for everyone who raced this season, counted from results (race sessions
+ * only: sprint wins aren't Grand Prix wins). Career points are left alone: earlier seasons' sprint points
+ * aren't in results, so a recount would lose them. */
+async function updateCareerTotals(db: SupabaseClient, season: number): Promise<number> {
+  const { data: entrants } = await db.from('results').select('driver_id').eq('season_year', season).eq('session_type', 'race').limit(2000);
+  const ids = [...new Set((entrants ?? []).map((r) => String(r.driver_id)).filter(Boolean))];
+  let updated = 0;
+  for (const id of ids) {
+    const rows: { position: number | null }[] = [];
+    for (let from = 0; ; from += 1000) {
+      const { data, error } = await db.from('results').select('position').eq('driver_id', id).eq('session_type', 'race').range(from, from + 999);
+      if (error) throw new Error(`career_results_failed:${error.message}`);
+      rows.push(...(data ?? []));
+      if (!data || data.length < 1000) break;
+    }
+    const career_wins = rows.filter((r) => r.position === 1).length;
+    const career_podiums = rows.filter((r) => r.position != null && r.position <= 3).length;
+    const career_starts = rows.length;
+    const { error } = await db.from('drivers').update({ career_wins, career_podiums, career_starts, is_active: true }).eq('id', id);
+    if (!error) updated++;
+  }
+  return updated;
+}
+
 export async function seasonCatchup(season: number, opts: { budgetMs?: number; now?: Date } = {}): Promise<CatchupReport> {
   const started = Date.now();
   const budget = opts.budgetMs ?? 240_000;
@@ -448,6 +473,7 @@ export async function seasonCatchup(season: number, opts: { budgetMs?: number; n
     sessions: [],
     winners_set: 0,
     standings: null,
+    careers_updated: 0,
     stopped_early: false,
     errors: [],
   };
@@ -511,6 +537,8 @@ export async function seasonCatchup(season: number, opts: { budgetMs?: number; n
   try {
     report.winners_set = await setWinners(db, season);
     report.standings = await rebuildStandings(db, season, seasonId);
+    // Only once the season is fully imported, so a part-run doesn't leave half-counted careers.
+    if (!report.stopped_early) report.careers_updated = await updateCareerTotals(db, season);
   } catch (e) {
     report.errors.push(e instanceof Error ? e.message : String(e));
   }
