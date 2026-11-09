@@ -15,6 +15,8 @@ export default async function RacesPage() {
       .select('season_year, round, race_name, race_slug, driver_name')
       .eq('position', 1)
       .eq('session_type', 'race')
+      .not('season_year', 'is', null)
+      .not('race_slug', 'is', null)
       .order('season_year', { ascending: false })
       .order('round', { ascending: false })
       .range(from, from + 999)
