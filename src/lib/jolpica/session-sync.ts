@@ -6,6 +6,8 @@ export type SyncSessionInput = {
   season: number;
   round: number;
   session_type: string;
+  /** Optional: the races row to attach results to. Without it the row is found by season + round. */
+  race_id?: string;
 };
 
 export type SyncSessionResult = {
@@ -171,11 +173,10 @@ export async function syncSession(input: SyncSessionInput): Promise<SyncSessionR
 
   const supabase = createAdminClient();
 
-  const { data: raceRows, error: raceLookupError } = await supabase
-    .from('races')
-    .select('id, slug, circuit_slug, season_id')
-    .eq('season_year', input.season)
-    .eq('round', input.round);
+  const raceQuery = supabase.from('races').select('id, slug, circuit_slug, season_id');
+  const { data: raceRows, error: raceLookupError } = input.race_id
+    ? await raceQuery.eq('id', input.race_id)
+    : await raceQuery.eq('season_year', input.season).eq('round', input.round);
 
   if (raceLookupError) {
     return emptyErr([`race_lookup_failed:${raceLookupError.message}`], jolpica_url);
