@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { createServerClient } from '@/lib/supabase/server'
 import EmailCapture from '@/components/EmailCapture'
 import DidYouKnowWidget from '@/components/random/DidYouKnowWidget'
+import { SECTIONS } from '@/lib/features'
 
 /** Refresh homepage data hourly via ISR. */
 export const revalidate = 3600
@@ -327,6 +328,7 @@ async function loadHomePageData() {
           .from('results')
           .select('driver_slug, driver_name, constructor_slug, constructor_name, points, position, is_sprint')
           .eq('season_year', season2026.year)
+          .in('session_type', ['race', 'sprint'])
 
         const derived = deriveStandingsFromResults((derivedRows ?? []) as ResultStandingRow[])
         if (wdc2026.length === 0) wdc2026 = derived.wdc2026
@@ -363,7 +365,7 @@ async function loadHomePageData() {
       .select('race_slug, driver_name, driver_slug')
       .eq('season_year', 2026)
       .eq('position', 1)
-      .eq('is_sprint', false)
+      .eq('session_type', 'race')
 
     const winnerByRace = new Map<string, { name: string; slug: string | null }>()
     for (const w of winnersRes.data ?? []) {
@@ -623,7 +625,9 @@ export default async function HomePage() {
               { href: '/seasons', emoji: '📅', title: 'Seasons', desc: 'Year-by-year championships and results.', count: `${counts.seasons.toLocaleString()} seasons` },
               { href: '/compare', emoji: '⚖️', title: 'Compare', desc: 'Head-to-head driver comparisons.', count: 'Tool' },
               { href: '/leaderboards', emoji: '📊', title: 'Leaderboards', desc: 'All-time rankings and records.', count: 'Records' },
-              { href: '/sim-racing', emoji: '🎮', title: 'Sim Racing', desc: 'Hardware, reviews, and setups.', count: 'Hub' },
+              SECTIONS.simRacing
+                ? { href: '/sim-racing', emoji: '🎮', title: 'Sim Racing', desc: 'Hardware, reviews, and setups.', count: 'Hub' }
+                : { href: '/calendar', emoji: '🗓️', title: 'Calendar', desc: 'Every race weekend this season.', count: 'This season' },
             ].map((card) => (
               <Link key={card.href} href={card.href} style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: '8px', padding: '1.25rem', textDecoration: 'none', transition: 'border-color 0.2s, transform 0.15s' }}>
                 <div style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>{card.emoji}</div>
@@ -636,7 +640,7 @@ export default async function HomePage() {
         </div>
 
         {/* ── Sim Racing CTA ── */}
-        <div style={{ borderTop: '1px solid var(--border)', paddingTop: '2rem', marginBottom: '2.5rem' }}>
+        {SECTIONS.simRacing && <div style={{ borderTop: '1px solid var(--border)', paddingTop: '2rem', marginBottom: '2.5rem' }}>
           <div style={{ background: 'linear-gradient(135deg, var(--bg2) 0%, var(--bg3) 100%)', border: '1px solid var(--accent)', borderRadius: '8px', padding: '2.5rem', textAlign: 'center' }}>
             <p style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '11px', fontWeight: 700, letterSpacing: '0.2em', textTransform: 'uppercase', color: 'var(--accent)', marginBottom: '0.5rem' }}>Sim Racing Section</p>
             <h2 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '28px', fontWeight: 900, color: 'var(--text)', margin: '0 0 0.5rem' }}>
@@ -649,7 +653,7 @@ export default async function HomePage() {
               Open Sim Racing
             </Link>
           </div>
-        </div>
+        </div>}
 
         {/* ── Email Capture ── */}
         <div style={{ borderTop: '1px solid var(--border)', paddingTop: '2rem', marginBottom: '2.5rem' }}>
@@ -682,7 +686,7 @@ export default async function HomePage() {
             </div>
             <div style={{ padding: '12px 16px 16px' }}>
               <p style={{ color: 'var(--muted)', fontSize: '14px', margin: '0 0 8px 0' }}>
-                Race results, driver stats, sim racing deals — no spam, unsubscribe anytime.
+                Race results and driver stats after every Grand Prix. No spam, unsubscribe any time.
               </p>
               <EmailCapture source="homepage" hideIntro />
             </div>

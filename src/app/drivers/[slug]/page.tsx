@@ -269,7 +269,7 @@ async function loadDriverProfileData(slug: string) {
       .from('results')
       .select('id, season_year, race_name, race_slug, grid_position, position, status, points, constructor_name')
       .eq('driver_slug', slug)
-      .eq('is_sprint', false)
+      .eq('session_type', 'race')
       .order('season_year', { ascending: false })
       .order('round', { ascending: false }),
   ])
@@ -313,7 +313,7 @@ async function loadDriverProfileData(slug: string) {
       .from('results')
       .select('season_year, round, race_name, race_slug')
       .eq('driver_slug', slug)
-      .eq('is_sprint', false)
+      .eq('session_type', 'race')
       .order('season_year', { ascending: true })
       .order('round', { ascending: true })
       .limit(1),
@@ -322,7 +322,7 @@ async function loadDriverProfileData(slug: string) {
       .select('season_year, round, race_name, race_slug')
       .eq('driver_slug', slug)
       .eq('position', 1)
-      .eq('is_sprint', false)
+      .eq('session_type', 'race')
       .order('season_year', { ascending: true })
       .order('round', { ascending: true })
       .limit(1),

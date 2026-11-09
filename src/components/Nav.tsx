@@ -4,8 +4,9 @@ import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useSound } from '@/components/SoundProvider'
+import { pathEnabled } from '@/lib/features'
 
-const navLinks = [
+const allNavLinks = [
   { label: 'Home', href: '/', sound: 'home' },
   { label: 'Live', href: '/live' },
   { label: 'Drivers', href: '/drivers' },
@@ -21,6 +22,7 @@ const navLinks = [
   { label: 'Sim Racing', href: '/sim-racing' },
   { label: 'Memes', href: '/memes', sound: 'memes' },
 ]
+const navLinks = allNavLinks.filter((l) => pathEnabled(l.href))
 
 export default function Nav() {
   const [open, setOpen] = useState(false)

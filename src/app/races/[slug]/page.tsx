@@ -1,8 +1,10 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { createServerClient } from '@/lib/supabase/server'
 import RaceSidebar from '@/components/races/RaceSidebar'
 import { CountdownTimer } from '@/components/races/CountdownTimer'
+import JsonLd from '@/components/JsonLd'
 
 type PageProps = { params: Promise<{ slug: string }> }
 
@@ -78,6 +80,42 @@ function normalizePastWinnerRows(
     .slice(0, 5)
 }
 
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { slug } = await params
+  const supabase = createServerClient()
+  const { data: race } = await supabase
+    .from('races')
+    .select('name, full_name, season_year, race_date, circuit_slug')
+    .eq('slug', slug)
+    .maybeSingle()
+  if (!race) return { title: 'Race not found' }
+  const name = String(race.name ?? race.full_name ?? 'Grand Prix')
+  const year = race.season_year ? ` ${race.season_year}` : ''
+  const upcoming = race.race_date ? new Date(String(race.race_date)) > new Date() : false
+  const { data: winner } = upcoming
+    ? { data: null }
+    : await supabase
+        .from('results')
+        .select('driver_name, constructor_name')
+        .eq('race_slug', slug)
+        .eq('session_type', 'race')
+        .eq('position', 1)
+        .maybeSingle()
+  const when = race.race_date ? formatLongDate(String(race.race_date)) : ''
+  const description = upcoming
+    ? `${name}${year}: date, start time and circuit, plus past winners at this track.${when ? ` ${when}.` : ''}`
+    : winner?.driver_name
+      ? `${name}${year} results: ${winner.driver_name}${winner.constructor_name ? ` (${winner.constructor_name})` : ''} won. Full finishing order, grid, points and race times.`
+      : `${name}${year} results: full finishing order, grid, points and race times.`
+  const title = `${name}${year} ${upcoming ? 'Preview' : 'Results'}`
+  return {
+    title,
+    description,
+    alternates: { canonical: `/races/${slug}` },
+    openGraph: { title: `${title} | F1Rec`, description, url: `/races/${slug}` },
+  }
+}
+
 export default async function RacePage({ params }: PageProps) {
   const { slug } = await params
   const supabase = createServerClient()
@@ -98,7 +136,7 @@ export default async function RacePage({ params }: PageProps) {
       .from('results')
       .select('id, position, driver_slug, driver_name, constructor_slug, constructor_name, grid, points, status, time_text, is_sprint')
       .eq('race_slug', slug)
-      .eq('is_sprint', false)
+      .eq('session_type', 'race')
       .order('position', { ascending: true }),
     supabase
       .from('posts')
@@ -113,6 +151,7 @@ export default async function RacePage({ params }: PageProps) {
           .from('results')
           .select('position, drivers!inner(slug, full_name), races!inner(id, slug, name, season_year, race_date, circuit_slug)')
           .eq('position', 1)
+          .eq('session_type', 'race')
           .eq('races.circuit_slug', String(race.circuit_slug))
           .lt('races.race_date', String(race.race_date))
           .order('races(race_date)', { ascending: false })
@@ -124,6 +163,7 @@ export default async function RacePage({ params }: PageProps) {
           .from('results')
           .select('position, drivers!inner(slug, full_name), races!inner(id, slug, season_year, race_date, circuit_slug)')
           .eq('position', 1)
+          .eq('session_type', 'race')
           .eq('races.circuit_slug', String(race.circuit_slug))
           .order('races(race_date)', { ascending: false })
           .limit(5)
@@ -166,8 +206,23 @@ export default async function RacePage({ params }: PageProps) {
       }
     : null
 
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://f1rec.com'
+  const eventLd = {
+    '@context': 'https://schema.org',
+    '@type': 'SportsEvent',
+    name: `${raceName}${seasonYear ? ` ${seasonYear}` : ''}`,
+    sport: 'Formula 1',
+    startDate: race.race_date ? String(race.race_date) : undefined,
+    eventStatus: 'https://schema.org/EventScheduled',
+    location: circuitName
+      ? { '@type': 'Place', name: circuitName, address: country ?? undefined }
+      : undefined,
+    url: `${siteUrl}/races/${slug}`,
+  }
+
   return (
     <main data-race-slug={slug} className="min-h-screen bg-[var(--bg)] text-[var(--text)]">
+      <JsonLd id="race-ld" data={eventLd} />
       <section className="mx-auto max-w-7xl px-6 py-8">
         <nav className="mb-6 flex flex-wrap items-center gap-2 text-sm text-[var(--muted)]" aria-label="Breadcrumb">
           <Link href="/" className="transition-colors hover:text-[var(--text)]">

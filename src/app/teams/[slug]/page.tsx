@@ -315,14 +315,15 @@ async function loadTeamPageData(slug: string): Promise<LoadedTeam | null> {
       .select('season_year, round, race_name, race_slug')
       .eq('constructor_slug', slug)
       .eq('position', 1)
-      .eq('is_sprint', false)
+      .eq('session_type', 'race')
       .order('season_year', { ascending: true })
       .order('round', { ascending: true })
       .limit(1),
     supabase
       .from('results')
       .select('race_id, position, is_sprint, is_pole, points, season_year')
-      .eq('team_id', teamId),
+      .eq('team_id', teamId)
+      .in('session_type', ['race', 'sprint']),
     supabase
       .from('results')
       .select('season_year')
