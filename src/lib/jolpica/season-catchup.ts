@@ -461,6 +461,38 @@ async function updateCareerTotals(db: SupabaseClient, season: number): Promise<n
   return updated;
 }
 
+/** Past races (from 2018) whose race results are incomplete, re-imported a few per run. 2022 São Paulo and
+ * Abu Dhabi, for example, had only 10 placeholder rows with no drivers. Rows without a driver are never
+ * read by the pages (they have no race_slug), so nothing has to be deleted. */
+async function repairPastRaces(db: SupabaseClient, beforeSeason: number, report: CatchupReport, maxRaces = 4) {
+  const { data: races } = await db
+    .from('races')
+    .select('id, slug, round, season_year, race_date')
+    .gte('season_year', 2018)
+    .lt('season_year', beforeSeason)
+    .order('race_date', { ascending: true })
+    .limit(1000);
+  let done = 0;
+  for (const r of races ?? []) {
+    if (done >= maxRaces) break;
+    const { count } = await db
+      .from('results')
+      .select('id', { count: 'exact', head: true })
+      .eq('race_id', r.id)
+      .eq('session_type', 'race')
+      .not('driver_id', 'is', null);
+    if ((count ?? 0) >= 18) continue;
+    done++;
+    try {
+      await sleep(PAUSE_MS);
+      const res = await syncSession({ season: Number(r.season_year), round: Number(r.round), session_type: 'race', race_id: String(r.id) });
+      report.sessions.push({ round: Number(r.round), session: `race (repair ${r.season_year})`, status: res.status, rows: res.rows_upserted, errors: res.errors.slice(0, 5) });
+    } catch (e) {
+      report.sessions.push({ round: Number(r.round), session: `race (repair ${r.season_year})`, status: 'error', rows: 0, errors: [e instanceof Error ? e.message : String(e)] });
+    }
+  }
+}
+
 export async function seasonCatchup(season: number, opts: { budgetMs?: number; now?: Date } = {}): Promise<CatchupReport> {
   const started = Date.now();
   const budget = opts.budgetMs ?? 240_000;
@@ -532,6 +564,10 @@ export async function seasonCatchup(season: number, opts: { budgetMs?: number; n
       }
     }
     if (report.stopped_early) break;
+  }
+
+  if (!report.stopped_early && Date.now() - started < budget) {
+    await repairPastRaces(db, season, report);
   }
 
   try {
