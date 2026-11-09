@@ -57,7 +57,7 @@ export default async function CalendarPage() {
       .select('race_slug, driver_name, driver_slug')
       .eq('season_year', 2026)
       .eq('position', 1)
-      .eq('is_sprint', false),
+      .eq('session_type', 'race'),
     supabase
       .from('broadcast_channels')
       .select('id, country, country_code, channel_name, channel_type, url, notes')

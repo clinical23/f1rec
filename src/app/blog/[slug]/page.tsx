@@ -339,7 +339,7 @@ export default async function BlogArticlePage({ params }: PageProps) {
           .select('driver_name')
           .eq('race_slug', post.related_race_slug)
           .eq('position', 1)
-          .eq('is_sprint', false)
+          .eq('session_type', 'race')
           .limit(1)
       : Promise.resolve({ data: [], error: null }),
     supabase

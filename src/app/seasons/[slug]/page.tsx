@@ -100,7 +100,7 @@ export default async function SeasonDetailPage({ params }: PageProps) {
       .from('results')
       .select('season_year, round, position, drivers!inner(slug, full_name), teams(slug, name), races!inner(slug, name, race_date, round)')
       .eq('position', 1)
-      .eq('is_sprint', false)
+      .eq('session_type', 'race')
       .eq('season_year', season.year)
       .order('round', { ascending: true }),
     supabase
@@ -116,13 +116,13 @@ export default async function SeasonDetailPage({ params }: PageProps) {
       .select('driver_slug, driver_name, position')
       .eq('season_year', season.year)
       .eq('position', 1)
-      .eq('is_sprint', false),
+      .eq('session_type', 'race'),
     supabase
       .from('results')
       .select('constructor_slug, constructor_name, position')
       .eq('season_year', season.year)
       .eq('position', 1)
-      .eq('is_sprint', false),
+      .eq('session_type', 'race'),
     supabase
       .from('seasons')
       .select('slug, year')

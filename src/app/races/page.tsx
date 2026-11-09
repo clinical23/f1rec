@@ -30,7 +30,7 @@ export default function RacesPage() {
           .from('results')
           .select('season_year, round, race_name, race_slug, driver_name')
           .eq('position', 1)
-          .eq('is_sprint', false)
+          .eq('session_type', 'race')
           .order('season_year', { ascending: false })
           .order('round', { ascending: false }),
         supabase.from('races').select('id', { count: 'exact', head: true }),

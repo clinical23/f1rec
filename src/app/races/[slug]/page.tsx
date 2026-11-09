@@ -98,7 +98,7 @@ export default async function RacePage({ params }: PageProps) {
       .from('results')
       .select('id, position, driver_slug, driver_name, constructor_slug, constructor_name, grid, points, status, time_text, is_sprint')
       .eq('race_slug', slug)
-      .eq('is_sprint', false)
+      .eq('session_type', 'race')
       .order('position', { ascending: true }),
     supabase
       .from('posts')
@@ -113,6 +113,7 @@ export default async function RacePage({ params }: PageProps) {
           .from('results')
           .select('position, drivers!inner(slug, full_name), races!inner(id, slug, name, season_year, race_date, circuit_slug)')
           .eq('position', 1)
+          .eq('session_type', 'race')
           .eq('races.circuit_slug', String(race.circuit_slug))
           .lt('races.race_date', String(race.race_date))
           .order('races(race_date)', { ascending: false })
@@ -124,6 +125,7 @@ export default async function RacePage({ params }: PageProps) {
           .from('results')
           .select('position, drivers!inner(slug, full_name), races!inner(id, slug, season_year, race_date, circuit_slug)')
           .eq('position', 1)
+          .eq('session_type', 'race')
           .eq('races.circuit_slug', String(race.circuit_slug))
           .order('races(race_date)', { ascending: false })
           .limit(5)

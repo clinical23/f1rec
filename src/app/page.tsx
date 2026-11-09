@@ -328,6 +328,7 @@ async function loadHomePageData() {
           .from('results')
           .select('driver_slug, driver_name, constructor_slug, constructor_name, points, position, is_sprint')
           .eq('season_year', season2026.year)
+          .in('session_type', ['race', 'sprint'])
 
         const derived = deriveStandingsFromResults((derivedRows ?? []) as ResultStandingRow[])
         if (wdc2026.length === 0) wdc2026 = derived.wdc2026
@@ -364,7 +365,7 @@ async function loadHomePageData() {
       .select('race_slug, driver_name, driver_slug')
       .eq('season_year', 2026)
       .eq('position', 1)
-      .eq('is_sprint', false)
+      .eq('session_type', 'race')
 
     const winnerByRace = new Map<string, { name: string; slug: string | null }>()
     for (const w of winnersRes.data ?? []) {
