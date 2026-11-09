@@ -438,11 +438,12 @@ async function rebuildStandings(db: SupabaseClient, season: number, seasonId: st
 }
 
 /** Career wins, podiums and starts for everyone who raced this season, counted from results (race sessions
- * only: sprint wins aren't Grand Prix wins). Career points are left alone: earlier seasons' sprint points
- * aren't in results, so a recount would lose them. */
+ * only: sprint wins aren't Grand Prix wins); career points summed from Jolpica's season standings. */
 async function updateCareerTotals(db: SupabaseClient, season: number): Promise<number> {
   const { data: entrants } = await db.from('results').select('driver_id').eq('season_year', season).eq('session_type', 'race').limit(2000);
   const ids = [...new Set((entrants ?? []).map((r) => String(r.driver_id)).filter(Boolean))];
+  const { data: drv } = await db.from('drivers').select('id, driver_id').in('id', ids);
+  const driverIds = new Map((drv ?? []).filter((d) => d.driver_id).map((d) => [String(d.id), String(d.driver_id)]));
   let updated = 0;
   for (const id of ids) {
     const rows: { position: number | null }[] = [];
@@ -455,7 +456,25 @@ async function updateCareerTotals(db: SupabaseClient, season: number): Promise<n
     const career_wins = rows.filter((r) => r.position === 1).length;
     const career_podiums = rows.filter((r) => r.position != null && r.position <= 3).length;
     const career_starts = rows.length;
-    const { error } = await db.from('drivers').update({ career_wins, career_podiums, career_starts, is_active: true }).eq('id', id);
+    const patch: Record<string, unknown> = { career_wins, career_podiums, career_starts, is_active: true };
+    // Career points from the official season standings (sprints included), which results can't give for
+    // seasons before 2026: their sprint results aren't stored.
+    const jolpicaId = driverIds.get(id);
+    if (jolpicaId) {
+      try {
+        await sleep(PAUSE_MS);
+        const st = await jolpica<{ MRData?: { StandingsTable?: { StandingsLists?: { DriverStandings?: { points?: string }[] }[] } } }>(
+          `/drivers/${encodeURIComponent(jolpicaId)}/driverStandings.json?limit=100`
+        );
+        const lists = st.MRData?.StandingsTable?.StandingsLists ?? [];
+        if (lists.length) {
+          patch.career_points = Math.round(lists.reduce((n, l) => n + (Number(l.DriverStandings?.[0]?.points) || 0), 0) * 100) / 100;
+        }
+      } catch {
+        // Leave career points as they were.
+      }
+    }
+    const { error } = await db.from('drivers').update(patch).eq('id', id);
     if (!error) updated++;
   }
   return updated;
