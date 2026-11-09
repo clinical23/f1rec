@@ -49,9 +49,14 @@ type DbRace = {
   round: number;
   name: string;
   race_date: string;
+  circuit_id: string | null;
   circuit_slug: string | null;
   has_results: boolean;
 };
+
+/** Jolpica circuitId -> circuits row. Keyed by both circuits.circuit_id and circuits.slug, which differ for
+ * some tracks (F1Rec's slug isn't always Jolpica's id). */
+type CircuitMap = Map<string, { id: string; slug: string }>;
 
 export type CatchupReport = {
   season: number;
@@ -100,7 +105,7 @@ export function sessionDone(date: string | undefined, time: string | undefined, 
 async function loadDbRaces(db: SupabaseClient, season: number): Promise<DbRace[]> {
   const { data, error } = await db
     .from('races')
-    .select('id, slug, round, name, race_date, circuit_slug')
+    .select('id, slug, round, name, race_date, circuit_id, circuit_slug')
     .eq('season_year', season);
   if (error) throw new Error(`races_load_failed:${error.message}`);
   const ids = (data ?? []).map((r) => r.id);
@@ -113,13 +118,21 @@ async function loadDbRaces(db: SupabaseClient, season: number): Promise<DbRace[]
   return (data ?? []).map((r) => ({ ...r, has_results: withResults.has(r.id) })) as DbRace[];
 }
 
-async function ensureCircuit(db: SupabaseClient, c: JolpicaCircuit, report: CatchupReport): Promise<string> {
-  const { data } = await db
-    .from('circuits')
-    .select('id')
-    .or(`slug.eq.${c.circuitId},circuit_id.eq.${c.circuitId}`)
-    .limit(1);
-  if (data && data[0]) return String(data[0].id);
+async function loadCircuits(db: SupabaseClient): Promise<CircuitMap> {
+  const { data, error } = await db.from('circuits').select('id, slug, circuit_id').limit(1000);
+  if (error) throw new Error(`circuits_load_failed:${error.message}`);
+  const map: CircuitMap = new Map();
+  for (const c of data ?? []) {
+    const row = { id: String(c.id), slug: String(c.slug) };
+    if (c.circuit_id) map.set(String(c.circuit_id), row);
+    if (c.slug && !map.has(String(c.slug))) map.set(String(c.slug), row);
+  }
+  return map;
+}
+
+async function ensureCircuit(db: SupabaseClient, circuits: CircuitMap, c: JolpicaCircuit, report: CatchupReport): Promise<{ id: string; slug: string }> {
+  const known = circuits.get(c.circuitId);
+  if (known) return known;
   const loc = c.Location ?? {};
   const { data: made, error } = await db
     .from('circuits')
@@ -139,7 +152,14 @@ async function ensureCircuit(db: SupabaseClient, c: JolpicaCircuit, report: Catc
     .single();
   if (error || !made) throw new Error(`circuit_insert_failed:${c.circuitId}:${error?.message}`);
   report.calendar.circuits_added.push(c.circuitId);
-  return String(made.id);
+  const row = { id: String(made.id), slug: c.circuitId };
+  circuits.set(c.circuitId, row);
+  return row;
+}
+
+async function slugFree(db: SupabaseClient, slug: string, exceptId?: string): Promise<boolean> {
+  const { data } = await db.from('races').select('id').eq('slug', slug).limit(2);
+  return !(data ?? []).some((r) => r.id !== exceptId);
 }
 
 async function reconcileCalendar(
@@ -150,11 +170,13 @@ async function reconcileCalendar(
   report: CatchupReport
 ) {
   let dbRaces = await loadDbRaces(db, season);
-  const officialCircuits = new Set(schedule.map((r) => r.Circuit.circuitId));
+  const circuits = await loadCircuits(db);
+  const officialCircuitIds = new Set<string>();
 
   for (const s of schedule) {
     const round = Number(s.round);
-    const circuit = s.Circuit.circuitId;
+    const circuit = await ensureCircuit(db, circuits, s.Circuit, report);
+    officialCircuitIds.add(circuit.id);
     const fields = {
       round,
       name: s.raceName,
@@ -163,12 +185,15 @@ async function reconcileCalendar(
       qualifying_date: s.Qualifying?.date ?? null,
       sprint_date: s.Sprint?.date ?? null,
       url: s.url ?? null,
+      circuit_id: circuit.id,
+      circuit_slug: circuit.slug,
     };
-    const atCircuit = dbRaces.filter((r) => r.circuit_slug === circuit);
+    const atCircuit = dbRaces.filter((r) => r.circuit_id === circuit.id || r.circuit_slug === circuit.slug || r.circuit_slug === s.Circuit.circuitId);
     if (atCircuit.length > 1) {
-      report.calendar.refused.push(`${circuit}: ${atCircuit.length} rows in ${season}`);
+      report.calendar.refused.push(`${s.Circuit.circuitId}: ${atCircuit.length} rows in ${season}`);
       continue;
     }
+    const wantSlug = raceSlug(season, s.raceName);
     const existing = atCircuit[0];
     if (existing) {
       if (existing.has_results && existing.round !== round) {
@@ -176,32 +201,35 @@ async function reconcileCalendar(
         report.calendar.refused.push(`${existing.slug}: has results at round ${existing.round}, official round ${round}`);
         continue;
       }
+      // A renamed race gets the matching address, unless it already has results (its pages may be linked).
+      const patch: Record<string, unknown> = { ...fields };
+      if (!existing.has_results && existing.slug !== wantSlug && (await slugFree(db, wantSlug, existing.id))) {
+        patch.slug = wantSlug;
+      }
       const changed =
-        existing.round !== round || existing.race_date !== s.date || existing.name !== s.raceName;
-      const { error } = await db.from('races').update(fields).eq('id', existing.id);
+        existing.round !== round || existing.race_date !== s.date || existing.name !== s.raceName || patch.slug !== undefined;
+      const { error } = await db.from('races').update(patch).eq('id', existing.id);
       if (error) report.errors.push(`race_update_failed:${existing.slug}:${error.message}`);
-      else if (changed) report.calendar.updated.push(`${existing.slug} -> round ${round}, ${s.date}`);
+      else if (changed) report.calendar.updated.push(`${existing.slug} -> ${patch.slug ?? existing.slug}, round ${round}, ${s.date}`);
       continue;
     }
-    const circuitId = await ensureCircuit(db, s.Circuit, report);
-    const slug = raceSlug(season, s.raceName);
+    const slug = (await slugFree(db, wantSlug)) ? wantSlug : `${wantSlug}-${circuit.slug.replace(/_/g, '-')}`;
     const { error } = await db.from('races').insert({
       ...fields,
       slug,
       full_name: s.raceName,
       season_id: seasonId,
       season_year: season,
-      circuit_id: circuitId,
-      circuit_slug: circuit,
     });
     if (error) report.errors.push(`race_insert_failed:${slug}:${error.message}`);
     else report.calendar.inserted.push(`${slug} (round ${round})`);
+    dbRaces = await loadDbRaces(db, season);
   }
 
   // Rows for races that aren't on the official calendar: listed for T, never deleted here.
   dbRaces = await loadDbRaces(db, season);
-  for (const r of dbRaces.filter((x) => x.circuit_slug && !officialCircuits.has(x.circuit_slug))) {
-    report.calendar.not_on_calendar.push(`${r.slug}${r.has_results ? ' (has results)' : ''}`);
+  for (const r of dbRaces.filter((x) => !x.circuit_id || !officialCircuitIds.has(x.circuit_id))) {
+    report.calendar.not_on_calendar.push(`${r.slug} (round ${r.round})${r.has_results ? ' (has results)' : ''}`);
   }
 
   await db.from('seasons').update({ rounds: schedule.length }).eq('id', seasonId);
@@ -368,7 +396,7 @@ export function computeStandings(rows: ResultRow[]) {
     poles: d.poles,
     starts: d.starts,
     dnfs: d.dnfs,
-    points_per_race: d.starts ? Math.round((d.points / d.starts) * 100) / 100 : 0,
+    // points_per_race is a generated column: the database works it out.
   }));
   const teamRows = [...teams.values()]
     .sort((a, b) => b.points - a.points || b.wins - a.wins)
@@ -440,12 +468,14 @@ export async function seasonCatchup(season: number, opts: { budgetMs?: number; n
   await reconcileCalendar(db, season, seasonId, schedule, report);
 
   const dbRaces = await loadDbRaces(db, season);
+  const circuits = await loadCircuits(db);
   const counts = await sessionCounts(db, dbRaces.map((r) => r.id));
 
   for (const s of schedule) {
     const round = Number(s.round);
     // Matched by circuit and round together: a leftover placeholder at the same round can't be picked.
-    const dbRace = dbRaces.find((r) => r.round === round && r.circuit_slug === s.Circuit.circuitId);
+    const circuit = circuits.get(s.Circuit.circuitId);
+    const dbRace = dbRaces.find((r) => r.round === round && !!circuit && r.circuit_id === circuit.id);
     if (!dbRace) continue; // refused above
     const kinds: { kind: SessionKind; date?: string; time?: string }[] = [
       { kind: 'qualifying', date: s.Qualifying?.date, time: s.Qualifying?.time },
