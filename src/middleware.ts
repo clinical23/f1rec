@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { pathEnabled } from "@/lib/features";
 
 // The launch switch. Production pages sit behind a password until SITE_PUBLIC=on is set in Vercel
 // (Production) and the site is redeployed; removing it locks the site again the same way.
@@ -12,6 +13,11 @@ export const config = {
 };
 
 export function middleware(req: NextRequest) {
+  // Sections switched off in src/lib/features.ts are a 404 before anything renders.
+  if (!pathEnabled(req.nextUrl.pathname)) {
+    return NextResponse.rewrite(new URL("/__section-off", req.url), { status: 404 });
+  }
+
   // Fail closed: only a known preview or local build skips the gate; anything else is treated as production.
   const env = process.env.VERCEL_ENV;
   if (env === "preview" || (!process.env.VERCEL && process.env.NODE_ENV === "development")) {
