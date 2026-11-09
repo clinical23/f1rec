@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 import EmailCapture from '@/components/EmailCapture'
+import { SECTIONS } from '@/lib/features'
 
 type CreatorRow = {
   id: string
@@ -221,9 +222,9 @@ export default function CommunityPage() {
               Sim Racing <span style={{ color: 'var(--green, #00d4a0)' }}>Creators</span>
             </h2>
             <PlatformBadge platform="Sim Racing" />
-            <Link href="/sim-racing/reviews" style={{ marginLeft: 'auto', color: 'var(--muted)', textDecoration: 'none', fontFamily: 'var(--font-barlow-condensed)', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 700 }}>
+            {SECTIONS.simRacing && <Link href="/sim-racing/reviews" style={{ marginLeft: 'auto', color: 'var(--muted)', textDecoration: 'none', fontFamily: 'var(--font-barlow-condensed)', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 700 }}>
               See our hardware reviews →
-            </Link>
+            </Link>}
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.5rem' }}>
             {(expandedSections.simYoutube ? sections.simYoutube : sections.simYoutube.slice(0, 6)).map(ch => (

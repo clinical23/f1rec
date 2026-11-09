@@ -1,5 +1,6 @@
 import type { MetadataRoute } from 'next'
 import { createClient } from '@supabase/supabase-js'
+import { pathEnabled } from '@/lib/features'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://f1rec.com'
@@ -44,5 +45,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.6,
   }))
 
-  return [...staticRoutes, ...driverRoutes, ...seasonRoutes, ...blogRoutes]
+  return [...staticRoutes, ...driverRoutes, ...seasonRoutes, ...blogRoutes].filter((r) =>
+    pathEnabled(new URL(r.url).pathname)
+  )
 }

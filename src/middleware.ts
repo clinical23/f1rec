@@ -1,14 +1,24 @@
 import { NextRequest, NextResponse } from "next/server";
 
-// Gate every human-facing page, but DO NOT touch:
-//  - /api/*            → the autonomous tweet/blog pipeline + cron (already secret-protected)
-//  - _next static/image, favicon, robots, sitemap → assets / crawl files
-// To FULLY freeze (including the pipeline), change the matcher to: ["/(.*)"]
+// The launch switch. Production pages sit behind a password until SITE_PUBLIC=on is set in Vercel
+// (Production) and the site is redeployed; removing it locks the site again the same way.
+// Previews are never gated here: Vercel already requires a sign-in for them.
+//
+// Never touched by the gate:
+//  - /api/*            → the tweet/blog pipeline and crons (each checks its own secret)
+//  - _next static/image, favicon, robots, sitemap, ads.txt → assets and crawl files
 export const config = {
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml).*)"],
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico|robots.txt|sitemap.xml|ads.txt).*)"],
 };
 
 export function middleware(req: NextRequest) {
+  // Fail closed: only a known preview or local build skips the gate; anything else is treated as production.
+  const env = process.env.VERCEL_ENV;
+  if (env === "preview" || (!process.env.VERCEL && process.env.NODE_ENV === "development")) {
+    return NextResponse.next();
+  }
+  if (process.env.SITE_PUBLIC === "on") return NextResponse.next();
+
   const USER = process.env.BASIC_AUTH_USER;
   const PASS = process.env.BASIC_AUTH_PASS;
 

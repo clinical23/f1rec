@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import { pathEnabled } from '@/lib/features'
 
 const exploreLinks = [
   { label: 'Drivers', href: '/drivers' },
@@ -12,7 +13,7 @@ const exploreLinks = [
   { label: 'Leaderboards', href: '/leaderboards' },
 ]
 
-const moreLinks = [
+const allMoreLinks = [
   { label: 'Live', href: '/live' },
   { label: 'Paddock', href: '/paddock' },
   { label: 'Sim Racing', href: '/sim-racing' },
@@ -22,6 +23,10 @@ const moreLinks = [
   { label: 'Blog', href: '/blog' },
   { label: 'Privacy Policy', href: '/privacy' },
 ]
+const moreLinks = allMoreLinks.filter((l) => pathEnabled(l.href))
+
+// Ko-fi / Buy Me a Coffee page. Set NEXT_PUBLIC_DONATE_URL in Vercel to show the button; unset hides it.
+const DONATE_URL = process.env.NEXT_PUBLIC_DONATE_URL ?? ''
 
 export default function Footer() {
   return (
@@ -78,6 +83,21 @@ export default function Footer() {
           >
             @F1RecStats on X
           </a>
+          {DONATE_URL && (
+            <div style={{ marginTop: '20px' }}>
+              <a
+                href={DONATE_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ display: 'inline-block', background: 'var(--accent)', color: '#fff', fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 700, fontSize: '14px', textTransform: 'uppercase', letterSpacing: '0.08em', padding: '10px 18px', borderRadius: '3px', textDecoration: 'none' }}
+              >
+                Support F1Rec
+              </a>
+              <p style={{ color: 'var(--muted)', fontSize: '12px', lineHeight: 1.5, marginTop: '8px', maxWidth: '240px' }}>
+                F1Rec is free and independent. Tips go towards licensed race photos and keeping the stats current.
+              </p>
+            </div>
+          )}
         </div>
       </div>
 
