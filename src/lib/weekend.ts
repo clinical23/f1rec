@@ -20,6 +20,8 @@ export type NextRace = {
   country: string | null
   shape: CircuitShape | null
   roundsInSeason: number
+  /** Races still to run this season, this one included. */
+  racesLeft: number
 }
 
 export type Standing = {
@@ -60,7 +62,10 @@ export async function getNextRace(now = new Date()): Promise<NextRace | null> {
   const c = one(row.circuits as { name: string; locality: string; country: string } | null)
   const season = Number(row.season_year)
   const { data: rounds } = await sb.from('races').select('race_date').eq('season_year', season)
-  const roundsInSeason = new Set((rounds ?? []).map((r: { race_date: string | null }) => r.race_date)).size
+  const dates = new Set((rounds ?? []).map((r: { race_date: string | null }) => r.race_date).filter(Boolean) as string[])
+  const roundsInSeason = dates.size
+  // Counted by date, not round number: the table has duplicate round numbers, so round arithmetic is off.
+  const racesLeft = [...dates].filter((d) => d >= (row.race_date as string)).length
   const time = (row.race_time as string | null) ?? null
   const date = row.race_date as string
   return {
@@ -77,6 +82,7 @@ export async function getNextRace(now = new Date()): Promise<NextRace | null> {
     country: c?.country ?? null,
     shape: circuitShape(row.circuit_slug as string),
     roundsInSeason,
+    racesLeft,
   }
 }
 
@@ -134,13 +140,14 @@ export async function getStandings(season: number, limit = 10): Promise<Standing
 export async function getWinsAtCircuit(circuitSlug: string | null): Promise<PastWin[]> {
   if (!circuitSlug) return []
   const sb = createServerClient()
-  const { data: races } = await sb.from('races').select('slug, season_year').eq('circuit_slug', circuitSlug)
-  const slugs = (races ?? []).map((r: { slug: string }) => r.slug)
-  if (!slugs.length) return []
+  // Results join races by race_id: results.race_slug uses a different scheme ("2025-23-losail") from races.slug.
+  const { data: races } = await sb.from('races').select('id').eq('circuit_slug', circuitSlug)
+  const ids = (races ?? []).map((r: { id: string }) => r.id)
+  if (!ids.length) return []
   const { data } = await sb
     .from('results')
     .select('season_year, driver_name, constructor_name, grid, position, is_sprint')
-    .in('race_slug', slugs)
+    .in('race_id', ids)
     .eq('position', 1)
   const bySeason = new Map<number, PastWin>()
   for (const r of (data ?? []) as Record<string, unknown>[]) {

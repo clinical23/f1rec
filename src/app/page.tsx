@@ -43,7 +43,7 @@ export default async function Home() {
   const leader = standings[0]
   const second = standings[1]
   const streak = winStreak(wins)
-  const roundsLeft = next ? Math.max(next.roundsInSeason - next.round + 1, 1) : 0
+  const roundsLeft = next?.racesLeft ?? 0
   const circuitShort = next?.circuitName?.replace(/ (International )?(Grand Prix )?Circuit$/i, '').replace(/^Autódromo /, '') ?? ''
   const mostWins = standings.length ? Math.max(...standings.map((s) => s.wins)) : 0
   const winsHere = (name: string) => wins.filter((w) => w.winner === name).length

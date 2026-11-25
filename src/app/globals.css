@@ -345,7 +345,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 .pb-trackfacts b { display: block; font-family: var(--font-display); font-weight: 800; font-size: 34px; line-height: 1; color: var(--text); }
 .pb-trackfacts span { font-size: 13px; color: var(--muted); font-weight: 600; }
 
-.pb-tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: -34px; position: relative; z-index: 2; }
+.pb-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-top: -34px; position: relative; z-index: 2; }
 .pb-tile { background: var(--bg2); border: 1px solid var(--border); border-top: 3px solid #FFD200; border-radius: 6px; padding: 18px 20px; }
 .pb-tile b { font-family: var(--font-display); font-weight: 900; font-size: 56px; line-height: .9; display: block; color: var(--text); }
 .pb-tile p { margin-top: 6px; color: var(--muted); font-size: 14px; line-height: 1.4; }
