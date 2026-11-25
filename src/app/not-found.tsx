@@ -41,7 +41,7 @@ export default function NotFound() {
             display: 'inline-block',
             padding: '0.85rem 2.2rem',
             background: 'var(--accent)',
-            color: '#fff',
+            color: 'var(--on-accent)',
             textDecoration: 'none',
             fontFamily: "'Barlow Condensed', sans-serif",
             fontWeight: 800,

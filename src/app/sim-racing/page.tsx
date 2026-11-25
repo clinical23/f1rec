@@ -155,7 +155,7 @@ export default async function SimRacingPage() {
           </SoundLink>
           <SoundLink href="/sim-racing/rig-builder" soundId="wheel-gun" style={{
             background: 'var(--accent)',
-            color: '#fff',
+            color: 'var(--on-accent)',
             padding: '14px 32px',
             fontFamily: 'var(--font-display)',
             fontWeight: 700,

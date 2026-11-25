@@ -18,7 +18,7 @@ const GAMES = [
 
 const gameColors: Record<string, { bg: string; text: string }> = {
   acc: { bg: 'rgba(59,130,246,0.12)', text: 'var(--blue, #3b82f6)' },
-  iracing: { bg: 'rgba(232,0,45,0.12)', text: 'var(--accent, #e8002d)' },
+  iracing: { bg: 'rgba(232,0,45,0.12)', text: 'var(--accent)' },
   ace: { bg: 'rgba(0,212,160,0.12)', text: 'var(--green, #00d4a0)' },
 }
 
@@ -147,9 +147,9 @@ export default function SetupsPage() {
   return (
     <main style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--text)' }}>
       <section style={{ padding: '5rem 1.5rem 3rem', textAlign: 'center', borderBottom: '1px solid var(--border)', background: 'linear-gradient(180deg, rgba(232,0,45,0.06) 0%, transparent 100%)' }}>
-        <p style={{ fontFamily: 'var(--font-barlow-condensed, "Barlow Condensed", sans-serif)', textTransform: 'uppercase', letterSpacing: '0.2em', fontSize: '0.75rem', color: 'var(--accent, #e8002d)', marginBottom: '0.5rem' }}>Sim Racing</p>
+        <p style={{ fontFamily: 'var(--font-barlow-condensed, "Barlow Condensed", sans-serif)', textTransform: 'uppercase', letterSpacing: '0.2em', fontSize: '0.75rem', color: 'var(--accent)', marginBottom: '0.5rem' }}>Sim Racing</p>
         <h1 className="hero-title" style={{ fontFamily: 'var(--font-barlow-condensed, "Barlow Condensed", sans-serif)', fontSize: 'clamp(2.5rem, 5vw, 4rem)', fontWeight: 800, margin: 0, lineHeight: 1.1 }}>
-          Car<br /><span style={{ color: 'var(--accent, #e8002d)' }}>Setups</span>
+          Car<br /><span style={{ color: 'var(--accent)' }}>Setups</span>
         </h1>
         <p style={{ color: 'var(--muted, #889)', maxWidth: '500px', margin: '1rem auto 0', fontSize: '0.95rem' }}>
           Free community-tested setups for ACC, iRacing, and Assetto Corsa Evo.

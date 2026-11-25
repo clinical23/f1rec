@@ -43,7 +43,7 @@ export default function ComingSoonPage() {
           marginBottom: '2rem',
         }}
       >
-        <span style={{ color: '#e8e8f0' }}>F1</span>
+        <span style={{ color: 'var(--text)' }}>F1</span>
         <span style={{ color: '#e8002d' }}>REC</span>
       </h1>
 
@@ -52,7 +52,7 @@ export default function ComingSoonPage() {
           fontFamily: 'var(--font-barlow-condensed), sans-serif',
           fontSize: 'clamp(1.5rem, 4vw, 3rem)',
           fontWeight: 600,
-          color: '#e8e8f0',
+          color: 'var(--text)',
           fontStyle: 'italic',
           maxWidth: '700px',
           lineHeight: 1.3,
@@ -66,7 +66,7 @@ export default function ComingSoonPage() {
         style={{
           fontFamily: 'var(--font-barlow), sans-serif',
           fontSize: '0.9rem',
-          color: '#8888aa',
+          color: 'var(--muted)',
           marginBottom: '3rem',
         }}
       >
@@ -78,7 +78,7 @@ export default function ComingSoonPage() {
           fontFamily: 'var(--font-barlow-condensed), sans-serif',
           fontSize: 'clamp(1rem, 2.5vw, 1.4rem)',
           fontWeight: 600,
-          color: '#f5c842',
+          color: 'var(--gold)',
           letterSpacing: '0.15em',
           textTransform: 'uppercase',
           marginBottom: '1.5rem',
@@ -122,7 +122,7 @@ export default function ComingSoonPage() {
                 fontFamily: 'var(--font-jetbrains-mono), monospace',
                 fontSize: '2rem',
                 fontWeight: 700,
-                color: '#e8e8f0',
+                color: 'var(--text)',
               }}
             >
               {num}
@@ -134,7 +134,7 @@ export default function ComingSoonPage() {
                 fontWeight: 600,
                 letterSpacing: '0.1em',
                 textTransform: 'uppercase',
-                color: '#8888aa',
+                color: 'var(--muted)',
               }}
             >
               {label}

@@ -563,7 +563,7 @@ export default async function DriverProfilePage({ params, searchParams }: PagePr
                   <div style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '64px', fontWeight: 800, color: 'var(--accent)', lineHeight: 1 }}>#{driver.number}</div>
                 ) : null}
                 {driver.code ? (
-                  <div style={{ width: '32px', height: '32px', borderRadius: '999px', background: 'var(--accent)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'JetBrains Mono, monospace', fontSize: '12px', fontWeight: 700 }}>
+                  <div style={{ width: '32px', height: '32px', borderRadius: '999px', background: 'var(--accent)', color: 'var(--on-accent)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'JetBrains Mono, monospace', fontSize: '12px', fontWeight: 700 }}>
                     {String(driver.code)}
                   </div>
                 ) : null}

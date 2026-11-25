@@ -105,7 +105,7 @@ export default function CalendarBoard({
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 14px', background: 'var(--bg3)', borderBottom: '1px solid var(--border)' }}>
-                  <span style={{ padding: '2px 10px', borderRadius: '999px', background: 'var(--accent)', color: '#fff', fontFamily: "'Barlow Condensed', sans-serif", fontSize: '13px', fontWeight: 700 }}>R{race.round}</span>
+                  <span style={{ padding: '2px 10px', borderRadius: '999px', background: 'var(--accent)', color: 'var(--on-accent)', fontFamily: "'Barlow Condensed', sans-serif", fontSize: '13px', fontWeight: 700 }}>R{race.round}</span>
                   <span style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '11px', letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--muted)' }}>{race.dateLabel}</span>
                 </div>
                 <div style={{ padding: '16px' }}>

@@ -3,13 +3,13 @@ import type { Metadata } from 'next'
 import { createServerClient } from '@/lib/supabase/server'
 
 const tokens = {
-  bg: '#0a0a0f',
-  bg2: '#111118',
-  border: '#2a2a3a',
-  text: '#e8e8f0',
-  muted: '#888899',
+  bg: 'var(--bg)',
+  bg2: 'var(--bg2)',
+  border: 'var(--border)',
+  text: 'var(--text)',
+  muted: 'var(--muted)',
   accent: '#e8002d',
-  gold: '#f5c842',
+  gold: 'var(--gold)',
 } as const
 
 const font = {
@@ -33,7 +33,7 @@ const categoryMeta: Record<string, { label: string; color: string; bg: string }>
   'race-review': { label: 'Race Reviews', color: '#ff8a80', bg: 'rgba(255, 138, 128, 0.14)' },
   'driver-analysis': { label: 'Driver Analysis', color: '#80cbc4', bg: 'rgba(128, 203, 196, 0.14)' },
   'season-preview': { label: 'Season Preview', color: '#90caf9', bg: 'rgba(144, 202, 249, 0.14)' },
-  history: { label: 'History', color: '#f5c842', bg: 'rgba(245, 200, 66, 0.14)' },
+  history: { label: 'History', color: 'var(--gold)', bg: 'rgba(245, 200, 66, 0.14)' },
   tech: { label: 'Tech', color: '#ce93d8', bg: 'rgba(206, 147, 216, 0.14)' },
 }
 

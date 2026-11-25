@@ -221,7 +221,7 @@ function MemeVisual({ meme }: { meme: MemeRow }) {
               ))}
             </ul>
           </div>
-          <div style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)', width: '34px', height: '34px', borderRadius: '999px', background: 'var(--accent)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-barlow-condensed)', fontWeight: 900, fontSize: '0.72rem', border: '2px solid rgba(255,255,255,0.3)' }}>
+          <div style={{ position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%, -50%)', width: '34px', height: '34px', borderRadius: '999px', background: 'var(--accent)', color: 'var(--on-accent)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-barlow-condensed)', fontWeight: 900, fontSize: '0.72rem', border: '2px solid rgba(255,255,255,0.3)' }}>
             VS
           </div>
         </div>
@@ -331,11 +331,11 @@ export default function MemesPage() {
   return (
     <main style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--text)' }}>
       <section style={{ padding: '5rem 1.5rem 3rem', textAlign: 'center', borderBottom: '1px solid var(--border)', background: 'linear-gradient(180deg, rgba(232,0,45,0.08) 0%, transparent 100%)' }}>
-        <p style={{ fontFamily: 'var(--font-barlow-condensed, "Barlow Condensed", sans-serif)', textTransform: 'uppercase', letterSpacing: '0.2em', fontSize: '0.75rem', color: 'var(--accent, #e8002d)', marginBottom: '0.5rem' }}>
+        <p style={{ fontFamily: 'var(--font-barlow-condensed, "Barlow Condensed", sans-serif)', textTransform: 'uppercase', letterSpacing: '0.2em', fontSize: '0.75rem', color: 'var(--accent)', marginBottom: '0.5rem' }}>
           F1Rec Culture
         </p>
         <h1 className="hero-title" style={{ fontFamily: 'var(--font-barlow-condensed, "Barlow Condensed", sans-serif)', fontSize: 'clamp(2.5rem, 5vw, 4rem)', fontWeight: 800, margin: 0, lineHeight: 1.1 }}>
-          Memes &<br /><span style={{ color: 'var(--accent, #e8002d)' }}>Humour</span>
+          Memes &<br /><span style={{ color: 'var(--accent)' }}>Humour</span>
         </h1>
         <p style={{ color: 'var(--muted, #889)', maxWidth: '620px', margin: '1rem auto 0', fontSize: '0.95rem' }}>
           Curated F1 and sim racing memes, tier lists, starter packs, and relatable content for race-weekend chaos.

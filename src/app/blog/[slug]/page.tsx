@@ -11,12 +11,12 @@ import SidebarCards from '@/components/blog/SidebarCards'
 import { calculateReadTime } from '@/lib/blog/read-time'
 
 const tokens = {
-  bg: '#0a0a0f',
-  bg2: '#111118',
-  bg3: '#1a1a24',
-  border: '#2a2a3a',
-  text: '#e8e8f0',
-  muted: '#888899',
+  bg: 'var(--bg)',
+  bg2: 'var(--bg2)',
+  bg3: 'var(--bg3)',
+  border: 'var(--border)',
+  text: 'var(--text)',
+  muted: 'var(--muted)',
   accent: '#e8002d',
 } as const
 

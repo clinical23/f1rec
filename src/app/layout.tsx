@@ -1,9 +1,10 @@
-﻿import type { Metadata } from 'next'
+import type { Metadata } from 'next'
 import Script from 'next/script'
 import { GoogleAnalytics } from '@next/third-parties/google'
 import './globals.css'
 import Nav from '@/components/Nav'
 import Footer from '@/components/Footer'
+import Ticker from '@/components/Ticker'
 import { SoundProvider } from '@/components/SoundProvider'
 import JsonLd from '@/components/JsonLd'
 import CookieConsent from '@/components/CookieConsent'
@@ -33,8 +34,10 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
+    <html lang="en-GB" suppressHydrationWarning>
       <head>
+        {/* Applies the saved Night/Day theme before the first paint. */}
+        <script dangerouslySetInnerHTML={{ __html: "try{if(localStorage.getItem('f1rec-theme')==='day')document.documentElement.dataset.theme='day'}catch(e){}" }} />
         <Script
           async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5181795059219175"
@@ -60,6 +63,7 @@ export default function RootLayout({
           }}
         />
         <SoundProvider>
+          <Ticker />
           <Nav />
           {children}
           <Footer />

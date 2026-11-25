@@ -153,11 +153,11 @@ export default function ProductsClient() {
   return (
     <main style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--text)' }}>
       <section style={{ padding: '5rem 1.5rem 3rem', textAlign: 'center', borderBottom: '1px solid var(--border)', background: 'linear-gradient(180deg, rgba(232,0,45,0.06) 0%, transparent 100%)' }}>
-        <p style={{ fontFamily: 'var(--font-barlow-condensed, "Barlow Condensed", sans-serif)', textTransform: 'uppercase', letterSpacing: '0.2em', fontSize: '0.75rem', color: 'var(--accent, #e8002d)', marginBottom: '0.5rem' }}>
+        <p style={{ fontFamily: 'var(--font-barlow-condensed, "Barlow Condensed", sans-serif)', textTransform: 'uppercase', letterSpacing: '0.2em', fontSize: '0.75rem', color: 'var(--accent)', marginBottom: '0.5rem' }}>
           Sim Racing Hardware
         </p>
         <h1 className="hero-title" style={{ fontFamily: 'var(--font-barlow-condensed, "Barlow Condensed", sans-serif)', fontSize: 'clamp(2.5rem, 5vw, 4rem)', fontWeight: 800, margin: 0, lineHeight: 1.05 }}>
-          Sim Racing<br /><span style={{ color: 'var(--accent, #e8002d)' }}>Hardware</span>
+          Sim Racing<br /><span style={{ color: 'var(--accent)' }}>Hardware</span>
         </h1>
         <p style={{ color: 'var(--muted, #889)', maxWidth: '560px', margin: '1rem auto 0', fontSize: '0.95rem' }}>
           Every wheel, pedal, and rig — reviewed and rated.
@@ -282,7 +282,7 @@ export default function ProductsClient() {
                     {product.price_gbp != null ? `£${product.price_gbp.toLocaleString()}` : 'Price TBC'}
                   </span>
                   {product.affiliate_url ? (
-                    <a href={product.affiliate_url} target="_blank" rel="noopener noreferrer" onClick={() => playSound('wheel-gun')} style={{ textDecoration: 'none', border: '1px solid var(--accent)', background: 'var(--accent)', color: '#fff', borderRadius: '4px', padding: '0.45rem 0.75rem', fontFamily: 'var(--font-barlow-condensed)', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 700, fontSize: '0.68rem' }}>
+                    <a href={product.affiliate_url} target="_blank" rel="noopener noreferrer" onClick={() => playSound('wheel-gun')} style={{ textDecoration: 'none', border: '1px solid var(--accent)', background: 'var(--accent)', color: 'var(--on-accent)', borderRadius: '4px', padding: '0.45rem 0.75rem', fontFamily: 'var(--font-barlow-condensed)', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 700, fontSize: '0.68rem' }}>
                       Buy
                     </a>
                   ) : (

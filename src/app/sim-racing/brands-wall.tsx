@@ -32,10 +32,10 @@ export default function BrandsWall() {
 
   return (
     <section style={{ maxWidth: '1200px', margin: '0 auto', padding: '38px 24px 20px' }}>
-      <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: '24px', color: '#e8e8f0', marginBottom: '6px' }}>
+      <h2 style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: '24px', color: 'var(--text)', marginBottom: '6px' }}>
         Brands <span style={{ color: 'var(--accent)' }}>we cover</span>
       </h2>
-      <p style={{ margin: '0 0 18px', color: '#888899', fontSize: '14px' }}>
+      <p style={{ margin: '0 0 18px', color: 'var(--muted)', fontSize: '14px' }}>
         57 products from 27 of the world&apos;s best sim racing manufacturers
       </p>
       <div className="sim-brand-wall" style={{ display: 'grid', gridTemplateColumns: 'repeat(6, minmax(0, 1fr))', gap: '10px' }}>
@@ -46,7 +46,7 @@ export default function BrandsWall() {
             className="sim-brand-card"
             style={{
               textDecoration: 'none',
-              background: '#111118',
+              background: 'var(--bg2)',
               border: '1px solid #2a2a3a',
               borderRadius: '8px',
               minHeight: '60px',
@@ -58,7 +58,7 @@ export default function BrandsWall() {
               transition: 'transform 0.2s ease, border-color 0.2s ease',
             }}
           >
-            <span style={{ color: '#e8e8f0', fontFamily: '\'Barlow Condensed\', sans-serif', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', fontSize: '14px', lineHeight: 1 }}>
+            <span style={{ color: 'var(--text)', fontFamily: '\'Barlow Condensed\', sans-serif', fontWeight: 700, letterSpacing: '1px', textTransform: 'uppercase', fontSize: '14px', lineHeight: 1 }}>
               {brand.name}
             </span>
           </Link>
