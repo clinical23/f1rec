@@ -14,6 +14,9 @@ export const metadata: Metadata = {
   openGraph: { title: 'F1Rec', url: 'https://f1rec.com', siteName: 'F1Rec', type: 'website' },
 }
 
+/** Flip to true when the first weekly challenge opens (2027 round 1). Until then the band says when it starts. */
+const CHALLENGE_LIVE = false
+
 const LD = (path: string) => `https://lapdoctor.gg${path}?from=f1rec`
 const plateName = (name: string) => name.replace(/ Grand Prix$/i, ' GP').toUpperCase()
 const uk = (iso: string, opts: Intl.DateTimeFormatOptions) => new Date(iso).toLocaleString('en-GB', { ...opts, timeZone: 'Europe/London' })
@@ -162,11 +165,20 @@ export default async function Home() {
         <div className="pb-wrap pb-sim-in">
           <div>
             <span className="pb-tag">Sim challenge</span>
-            <h2 id="sim-h">{next?.circuitName ? `Drive ${circuitShort || next.circuitName} this week` : 'Drive the next track this week'}</h2>
-            <p className="l">The real race is on Sunday. Your turn is now: set a lap from your own rig and see where you&apos;d line up.</p>
+            {CHALLENGE_LIVE ? (
+              <>
+                <h2 id="sim-h">{next?.circuitName ? `Drive ${circuitShort || next.circuitName} this week` : 'Drive the next track this week'}</h2>
+                <p className="l">The real race is on Sunday. Your turn is now: set a lap from your own rig and see where you&apos;d line up.</p>
+              </>
+            ) : (
+              <>
+                <h2 id="sim-h">Drive every race track yourself</h2>
+                <p className="l">From the first race of 2027, every race week has a sim challenge on the same track. Set a lap from your own rig and see where you&apos;d line up. Get your rig sorted before then.</p>
+              </>
+            )}
             <ol className="pb-steps">
               <li>Join Lap Doctor, free, on Discord</li>
-              <li>Drive this week&apos;s track in the chosen sim and car</li>
+              <li>Drive the week&apos;s track in the chosen sim and car</li>
               <li>Your best lap goes on the board</li>
             </ol>
             <a className="btn-plate" href={LD('/discord')}>Join Lap Doctor</a>

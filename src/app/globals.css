@@ -472,3 +472,4 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   .pb-track { max-height: 260px; }
   .pb-note { display: none; }
 }
+.pb-monitor .mh { flex-wrap: wrap; }
