@@ -82,7 +82,7 @@ export default async function Home() {
             <div className="pb-trackwrap">
               <div className="pb-trackname">
                 <b>{next.circuitName}</b>
-                <span>{[next.locality, next.country].filter(Boolean).join(', ')}{next.sprint ? '. Sprint weekend.' : '.'}</span>
+                <span>{[next.locality, next.country].filter(Boolean).join(', ')}{next.sprint ? '. Sprint weekend' : ''}</span>
               </div>
               <TrackMap shape={next.shape} label={`${next.circuitName} layout`} />
               <div className="pb-trackfacts">

@@ -468,3 +468,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 :root[data-theme='day'] .pb-trackname span, :root[data-theme='day'] .pb-trackfacts span { color: #3A3F45; }
 /* Night hero: let more of the start lights through on the right */
 .pb-hero-video { filter: grayscale(.2) brightness(.7); }
+@media (max-width: 560px) {
+  .pb-track { max-height: 260px; }
+  .pb-note { display: none; }
+}
