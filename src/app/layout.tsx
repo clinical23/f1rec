@@ -5,7 +5,6 @@ import './globals.css'
 import Nav from '@/components/Nav'
 import Footer from '@/components/Footer'
 import Ticker from '@/components/Ticker'
-import { SoundProvider } from '@/components/SoundProvider'
 import JsonLd from '@/components/JsonLd'
 import CookieConsent from '@/components/CookieConsent'
 
@@ -62,12 +61,10 @@ export default function RootLayout({
     `,
           }}
         />
-        <SoundProvider>
           <Ticker />
           <Nav />
           {children}
           <Footer />
-        </SoundProvider>
         <CookieConsent />
         <JsonLd data={{
           '@context': 'https://schema.org',

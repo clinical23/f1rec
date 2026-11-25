@@ -13,13 +13,13 @@ export default function Icon() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          background: 'var(--bg)',
+          background: '#FFD200',
           borderRadius: '6px',
         }}
       >
         <span style={{ fontSize: '18px', fontWeight: 900, fontFamily: 'Arial, sans-serif', letterSpacing: '-1px' }}>
-          <span style={{ color: '#ffffff' }}>F1</span>
-          <span style={{ color: '#e8002d' }}>R</span>
+          <span style={{ color: '#111214' }}>F1</span>
+          <span style={{ color: '#111214' }}>R</span>
         </span>
       </div>
     ),
