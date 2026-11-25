@@ -37,7 +37,7 @@ export default function Nav() {
   return (
     <header className="pb-header">
       <div className="pb-header-in">
-        <Link href="/" className="pb-logo" aria-label="F1Rec home">F1<i>REC</i></Link>
+        <Link href="/" className="pb-logo" aria-label="F1Rec home"><b>F1</b><i>REC</i></Link>
         <nav className="pb-nav" aria-label="Main">
           {main.map((l) => (
             <Link key={l.href} href={l.href} aria-current={isActive(pathname, l.href) ? 'page' : undefined}>{l.label}</Link>

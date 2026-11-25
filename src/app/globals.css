@@ -457,3 +457,14 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 .pb-simfoot a { color: var(--link); }
 @media (max-width: 900px) { .pb-ready { grid-template-columns: 1fr 1fr; } }
 @media (max-width: 560px) { .pb-ready { grid-template-columns: 1fr; } .pb-simblock h2 { font-size: 32px; } }
+
+/* Logo: "F1" on its own plate so the 1 never reads as an I */
+.pb-logo { display: inline-flex; align-items: center; gap: 3px; }
+.pb-logo b { background: #FFD200; color: #111214; border-radius: 3px; padding: 3px 5px 1px; font-weight: 900; letter-spacing: .02em; line-height: .9; }
+.pb-logo i { line-height: 1; }
+:root[data-theme='day'] .pb-header .pb-logo b { background: #151719; color: #FFD200; }
+/* Day hero: keep the track name and facts readable over the bright video */
+:root[data-theme='day'] .pb-hero::after { background: linear-gradient(90deg, rgba(var(--hero-fade), .96) 0, rgba(var(--hero-fade), .85) 42%, rgba(var(--hero-fade), .7) 100%), linear-gradient(0deg, var(--bg) 0, transparent 30%); }
+:root[data-theme='day'] .pb-trackname span, :root[data-theme='day'] .pb-trackfacts span { color: #3A3F45; }
+/* Night hero: let more of the start lights through on the right */
+.pb-hero-video { filter: grayscale(.2) brightness(.7); }

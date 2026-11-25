@@ -36,7 +36,7 @@ export default function Footer() {
     <footer className="pb-footer">
       <div className="pb-footer-in">
         <div className="pb-footer-brand">
-          <Link href="/" className="pb-logo">F1<i>REC</i></Link>
+          <Link href="/" className="pb-logo"><b>F1</b><i>REC</i></Link>
           <p>Every race since 1950, and how to drive this weekend&apos;s track in your own sim.</p>
           <a href="https://x.com/F1RecStats" target="_blank" rel="noopener noreferrer">@F1RecStats on X</a>
           {DONATE_URL && <a className="btn-plate" style={{ marginTop: 16 }} href={DONATE_URL} target="_blank" rel="noopener noreferrer">Support F1Rec</a>}
