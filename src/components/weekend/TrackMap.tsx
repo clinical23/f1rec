@@ -15,7 +15,7 @@ export default function TrackMap({ shape, label }: { shape: CircuitShape; label:
         </filter>
       </defs>
       <path d={shape.d} fill="none" className="pb-track-bed" strokeWidth="18" strokeLinejoin="round" />
-      <path d={shape.d} fill="none" stroke="#FFD200" strokeWidth="5" strokeLinejoin="round" filter="url(#pb-glow)" />
+      <path d={shape.d} fill="none" style={{ stroke: 'var(--sig)' }} strokeWidth="5" strokeLinejoin="round" filter="url(#pb-glow)" />
       <g transform={`translate(${sx} ${sy}) rotate(${ang.toFixed(0)})`}>
         <rect x="-14" y="-3" width="28" height="6" fill="#F2F2EC" />
         <rect x="-14" y="-3" width="7" height="3" fill="#0B0C0E" />

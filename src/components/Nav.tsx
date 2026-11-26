@@ -56,7 +56,7 @@ export default function Nav() {
           {[...main, ...more].map((l) => (
             <Link key={l.href} href={l.href} aria-current={isActive(pathname, l.href) ? 'page' : undefined}>{l.label}</Link>
           ))}
-          <div className="pb-menu-theme"><span>Theme</span><ThemeToggle /></div>
+          <div className="pb-menu-theme"><ThemeToggle /></div>
         </div>
       )}
     </header>
