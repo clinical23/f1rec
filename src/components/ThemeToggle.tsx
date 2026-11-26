@@ -34,6 +34,13 @@ const subscribe = (cb: () => void) => {
   return () => mo.disconnect()
 }
 
+function setAccent(next: string) {
+  const root = document.documentElement
+  if (next) root.dataset.accent = next
+  else delete root.dataset.accent
+  try { localStorage.setItem('f1rec-accent', next) } catch {}
+}
+
 /** Theme picker. The choice is kept in localStorage 'f1rec-theme'; the inline script in the layout applies it before
  *  the page paints, so there's no flash. Every picker on the page follows <html data-theme>. */
 export default function ThemeToggle() {
@@ -41,12 +48,7 @@ export default function ThemeToggle() {
   const theme = useSyncExternalStore(subscribe, read, () => 'night' as Theme)
   const accent = useSyncExternalStore(subscribe, readAccent, () => '')
   // Picking the colour that's already on clears it, back to the theme's own colour.
-  const pickAccent = (a: string) => {
-    const next = a === accent ? '' : a
-    if (next) document.documentElement.dataset.accent = next
-    else delete document.documentElement.dataset.accent
-    try { localStorage.setItem('f1rec-accent', next) } catch {}
-  }
+  const pickAccent = (a: string) => setAccent(a === accent ? '' : a)
   const pick = (t: Theme) => {
     if (t === 'night') delete document.documentElement.dataset.theme
     else document.documentElement.dataset.theme = t
