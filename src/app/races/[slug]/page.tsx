@@ -192,7 +192,7 @@ export default async function RacePage({ params }: PageProps) {
 
   const stats = [
     ...(roundNo ? [{ value: roundNo, label: seasonRaces.length ? `of ${seasonRaces.length} rounds` : 'round' }] : []),
-    ...(race.laps ? [{ value: Number(race.laps), label: 'laps' }] : lengthKm ? [{ value: lengthKm.toFixed(2), label: 'km a lap' }] : []),
+    ...(race.laps ? [{ value: Number(race.laps), label: 'laps' }] : !shape && lengthKm ? [{ value: lengthKm.toFixed(2), label: 'km a lap' }] : []),
     ...(winner
       ? [{ value: (winner.driver_name ?? '').split(' ').at(-1) ?? '', label: `won${winner.constructor_name ? ` for ${winner.constructor_name}` : ''}`, sig: true }]
       : pole
