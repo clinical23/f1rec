@@ -35,7 +35,7 @@ const COLS: { key: SortKey; label: string; hideSm?: boolean }[] = [
 
 const FILTERS: { key: FilterKey; label: string }[] = [
   { key: 'all', label: 'All' },
-  { key: 'active', label: 'On the 2026 grid' },
+  { key: 'active', label: 'On the grid now' },
   { key: 'champions', label: 'Champions' },
   { key: 'winners', label: 'Race winners' },
 ]
@@ -123,7 +123,7 @@ export default function DriversClient({ initialDrivers }: { initialDrivers: Driv
                   <td className="pos n">{i + 1}</td>
                   <td>
                     <Link href={`/drivers/${d.slug}`}>{d.full_name}</Link>
-                    <span className="sub">{[d.nationality, d.is_active ? 'racing in 2026' : null].filter(Boolean).join(' · ')}</span>
+                    <span className="sub">{[d.nationality, d.is_active ? `racing in ${d.last_season}` : null].filter(Boolean).join(' · ')}</span>
                   </td>
                   <td className="hide-sm muted">{d.first_season ? `${d.first_season}${d.last_season && d.last_season !== d.first_season ? `–${d.is_active ? 'now' : d.last_season}` : ''}` : '—'}</td>
                   {COLS.map((c) => {

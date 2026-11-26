@@ -465,10 +465,11 @@ export default async function DriverProfilePage({ params }: PageProps) {
   const wins = aggregates.totalWins || num(driver.career_wins as number | null)
   const podiums = aggregates.totalPodiums || num(driver.career_podiums as number | null)
   const poles = aggregates.totalPoles || num(driver.career_poles as number | null)
-  const active = Boolean(driver.is_active)
   const latest = seasonRows[0]
   const latestTeam = unwrapRelation(latest?.teams ?? null)
   const latestYear = unwrapRelation(latest?.seasons ?? null)?.year ?? null
+  const { data: newest } = await createServerClient().from('drivers').select('last_season').order('last_season', { ascending: false, nullsFirst: false }).limit(1).maybeSingle()
+  const active = latestYear != null && latestYear >= Number(newest?.last_season ?? 0)
   const years = minYear ? `${minYear}–${active ? 'now' : careerEndLabel}` : null
   const surname = name.split(' ').at(-1) ?? name
   const finishes = raceResults.filter((r) => r.position != null)
