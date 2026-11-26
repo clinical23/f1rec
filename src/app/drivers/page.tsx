@@ -18,6 +18,9 @@ interface Driver {
   last_season: number | null
 }
 
+/** Rebuilt hourly, so results and the next race stay current. */
+export const revalidate = 3600
+
 export default async function DriversPage() {
   const supabase = createServerClient()
   const { data, error } = await supabase

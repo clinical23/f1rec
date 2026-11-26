@@ -48,6 +48,9 @@ type BroadcastRow = {
   notes: string | null
 }
 
+/** Rebuilt hourly, so results and the next race stay current. */
+export const revalidate = 3600
+
 export default async function CalendarPage() {
   const supabase = createServerClient()
   // This year's calendar until its last race is run, then the next season's once Jolpica publishes it.

@@ -4,7 +4,8 @@ import { notFound, permanentRedirect } from 'next/navigation'
 import { resolveDriverSlug } from '@/lib/slugs'
 import { createServerClient } from '@/lib/supabase/server'
 import JsonLd from '@/components/JsonLd'
-import EmailCapture from '@/components/EmailCapture'
+import PageHead from '@/components/page/PageHead'
+import type { CSSProperties } from 'react'
 import { SITE_URL } from '@/lib/site'
 
 type PageProps = {
@@ -41,22 +42,13 @@ type SeasonStatRow = {
   dnfs: number | string | null
   team_id: string | null
   season_id: string | null
-  teams: { name: string; slug: string } | { name: string; slug: string }[] | null
+  teams: { name: string; slug: string; primary_color?: string | null } | { name: string; slug: string; primary_color?: string | null }[] | null
   seasons: {
     id: string
     year: number
     slug: string
     champion_driver_id: string | null
-  } | null
-}
-
-type PostRow = {
-  title: string | null
-  slug: string | null
-  category: string | null
-  published_at: string | null
-  body: string | null
-  related_driver_slug?: string | null
+  } | { id: string; year: number; slug: string; champion_driver_id: string | null }[] | null
 }
 
 type RpcTeammateRow = {
@@ -233,7 +225,7 @@ async function loadDriverProfileData(slug: string) {
   const d = driver as DriverRow
   const driverId = d.id
 
-  const [seasonStatsRes, postsRes, countriesRes, profileRes, videosRes, raceResultsRes] = await Promise.all([
+  const [seasonStatsRes, countriesRes, profileRes, videosRes, raceResultsRes] = await Promise.all([
     supabase
       .from('driver_season_stats')
       .select(
@@ -249,16 +241,12 @@ async function loadDriverProfileData(slug: string) {
         dnfs,
         team_id,
         season_id,
-        teams(name, slug),
+        teams(name, slug, primary_color),
         seasons(id, year, slug, champion_driver_id)
       `
       )
       .eq('driver_id', driverId)
       .order('seasons(year)', { ascending: false }),
-    supabase
-      .from('posts')
-      .select('title, slug, category, published_at, body, related_driver_slug')
-      .eq('is_published', true),
     supabase.from('countries').select('name, flag_emoji'),
     supabase.from('driver_profiles').select('*').eq('driver_slug', slug).maybeSingle(),
     supabase
@@ -276,13 +264,12 @@ async function loadDriverProfileData(slug: string) {
       .order('round', { ascending: false }),
   ])
 
-  const seasonRows = ((seasonStatsRes.data ?? []) as SeasonStatRow[]).sort((a, b) => {
+  const seasonRows = ((seasonStatsRes.data ?? []) as unknown as SeasonStatRow[]).sort((a, b) => {
     const ya = unwrapRelation(a.seasons)?.year ?? 0
     const yb = unwrapRelation(b.seasons)?.year ?? 0
     return yb - ya
   })
 
-  const posts = (postsRes.data ?? []) as PostRow[]
   const countryFlags = new Map<string, string>()
   if (!countriesRes.error && countriesRes.data) {
     for (const c of countriesRes.data as { name: string; flag_emoji: string | null }[]) {
@@ -389,18 +376,6 @@ async function loadDriverProfileData(slug: string) {
 
   const name = displayName(d)
 
-  const relatedPosts = posts.filter((p) => {
-    if (!p.slug) return false
-    if (p.related_driver_slug === slug) return true
-    const fullLower = name.toLowerCase()
-    const parts = name.split(/\s+/).filter(Boolean)
-    const lastName = (parts[parts.length - 1] ?? '').toLowerCase()
-    const t = (p.title ?? '').toLowerCase()
-    const b = (p.body ?? '').toLowerCase()
-    if (lastName.length >= 3 && (t.includes(lastName) || b.includes(lastName))) return true
-    return t.includes(fullLower) || b.includes(fullLower)
-  })
-
   const titleSeasonRows = seasonRows.filter((r) => unwrapRelation(r.seasons)?.champion_driver_id === driverId)
   const profile = (profileRes.data as DriverProfileRow | null) ?? null
   const videos = ((videosRes.data ?? []) as DriverVideoRow[]).filter((video) => video.youtube_id && video.title)
@@ -421,7 +396,6 @@ async function loadDriverProfileData(slug: string) {
     currentTeamLink,
     minYear,
     careerEndLabel,
-    relatedPosts: relatedPosts.slice(0, 8),
     titleSeasonRows,
     profile,
     videos,
@@ -434,14 +408,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const data = await loadDriverProfileData(slug)
   if (!data) {
     return {
-      title: 'Driver Not Found | Sunday Grid',
+      title: 'Driver Not Found',
       description: 'The requested Formula 1 driver could not be found on Sunday Grid.',
     }
   }
   const { name, aggregates } = data
   const desc = `Complete Formula 1 career statistics for ${name}. ${aggregates.totalWins} wins, ${aggregates.totalPodiums} podiums, ${Math.round(aggregates.totalPoints).toLocaleString()} points across ${aggregates.totalRaces} races.`
   return {
-    title: `${name} — Career Stats, Results & Records | Sunday Grid`,
+    title: `${name}: F1 Career Stats, Results and Records`,
     description: desc,
     openGraph: {
       title: `${name} — F1 Career Stats | Sunday Grid`,
@@ -458,43 +432,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 }
 
-function StatCard({
-  label,
-  value,
-  accent,
-  gold,
-}: {
-  label: string
-  value: string | number
-  accent?: boolean
-  gold?: boolean
-}) {
-  return (
-    <div className="rounded-lg border border-[var(--border)] bg-[var(--bg2)] px-4 py-4 text-center">
-      <div
-        className={`font-mono text-2xl font-bold leading-tight md:text-[1.65rem] ${
-          gold ? 'text-[var(--gold)]' : accent ? 'text-[var(--accent)]' : 'text-[var(--text)]'
-        }`}
-      >
-        {value}
-      </div>
-      <div className="mt-1 font-display text-[0.65rem] font-semibold uppercase tracking-[0.12em] text-[var(--muted)]">
-        {label}
-      </div>
-    </div>
-  )
-}
+const tcStyle = (c?: string | null) => ({ '--tc': c ? (c.startsWith('#') ? c : `#${c}`) : undefined }) as CSSProperties
 
-function RecordRow({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="grid grid-cols-1 gap-1 border-b border-[var(--border)] py-3 sm:grid-cols-2 sm:gap-4">
-      <dt className="text-sm text-[var(--muted)]">{label}</dt>
-      <dd className="font-mono text-sm text-[var(--text)] sm:text-right">{value}</dd>
-    </div>
-  )
-}
-
-export default async function DriverProfilePage({ params, searchParams }: PageProps) {
+export default async function DriverProfilePage({ params }: PageProps) {
   const { slug } = await params
   const data = await loadDriverProfileData(slug)
   if (!data) {
@@ -503,35 +443,9 @@ export default async function DriverProfilePage({ params, searchParams }: PagePr
     notFound()
   }
 
-  const {
-    driver,
-    name,
-    seasonRows,
-    aggregates,
-    teammates,
-    firstRace,
-    firstWin,
-    titleCount,
-    showChampionBadge,
-    nationality,
-    flag,
-    currentTeamLink,
-    minYear,
-    careerEndLabel,
-    relatedPosts,
-    titleSeasonRows,
-    profile,
-    videos,
-    raceResults,
-  } = data
+  const { driver, name, seasonRows, aggregates, teammates, firstRace, firstWin, titleCount, nationality, flag, currentTeamLink, minYear, careerEndLabel, profile, raceResults } = data
 
-  const resolvedSearchParams = (await searchParams) ?? {}
-  const activeTab = resolvedSearchParams.tab === 'seasons' ? 'seasons' : 'results'
-  const seasonsCount = minYear != null && Number(careerEndLabel) ? Number(careerEndLabel) - minYear + 1 : seasonRows.length
-
-  const affiliationName =
-    (driver.current_team as string | null)?.trim() || currentTeamLink?.name || null
-
+  const affiliationName = currentTeamLink?.name ?? null
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Person',
@@ -539,195 +453,165 @@ export default async function DriverProfilePage({ params, searchParams }: PagePr
     jobTitle: 'Formula 1 Driver',
     url: `${SITE_URL}/drivers/${slug}`,
     ...(nationality ? { nationality } : {}),
-    ...(affiliationName
-      ? {
-          affiliation: {
-            '@type': 'SportsTeam',
-            name: affiliationName,
-            ...(currentTeamLink?.slug ? { url: `${SITE_URL}/teams/${currentTeamLink.slug}` } : {}),
-          },
-        }
-      : {}),
-    description: `${name} Formula 1 career statistics, season results, and records on Sunday Grid.`,
+    ...(affiliationName ? { affiliation: { '@type': 'SportsTeam', name: affiliationName, ...(currentTeamLink?.slug ? { url: `${SITE_URL}/teams/${currentTeamLink.slug}` } : {}) } } : {}),
+    description: `${name}'s Formula 1 career: every season and race result.`,
   }
 
+  const starts = aggregates.totalRaces || num(driver.career_starts as number | null)
+  const wins = aggregates.totalWins || num(driver.career_wins as number | null)
+  const podiums = aggregates.totalPodiums || num(driver.career_podiums as number | null)
+  const poles = aggregates.totalPoles || num(driver.career_poles as number | null)
+  const active = Boolean(driver.is_active)
+  const latest = seasonRows[0]
+  const latestTeam = unwrapRelation(latest?.teams ?? null)
+  const latestYear = unwrapRelation(latest?.seasons ?? null)?.year ?? null
+  const years = minYear ? `${minYear}–${active ? 'now' : careerEndLabel}` : null
+  const surname = name.split(' ').at(-1) ?? name
+  const finishes = raceResults.filter((r) => r.position != null)
+  const best = finishes.length ? Math.min(...finishes.map((r) => r.position as number)) : null
+  const recent = raceResults.slice(0, 12)
+  const pct = (n: number) => (starts ? `${((n / starts) * 100).toFixed(1)}%` : '—')
+
+  const lede = (
+    <>
+      {flag ? <span aria-hidden="true">{flag} </span> : null}
+      {[nationality, years].filter(Boolean).join(', ')}.{' '}
+      {active && latestTeam ? <>Races for <Link href={`/teams/${latestTeam.slug}`}>{latestTeam.name}</Link> in {latestYear}.</> : null}
+      {!active && titleCount > 0 ? <>World champion {titleCount === 1 ? 'once' : `${titleCount} times`}.</> : null}
+    </>
+  )
+
   return (
-    <main style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--text)' }}>
+    <main className="pg">
       <JsonLd data={jsonLd} id={`driver-jsonld-${slug}`} />
-      <section style={{ maxWidth: '1200px', margin: '0 auto', padding: '24px' }}>
-        <div style={{ marginBottom: '10px' }}>
-          <Link href="/drivers" style={{ color: 'var(--muted)', textDecoration: 'none', fontSize: '14px' }}>
-            ← All Drivers
-          </Link>
-        </div>
-
-        <div style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: '8px', overflow: 'hidden', marginBottom: '16px' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1.6fr 1fr', gap: '20px', padding: '32px', minHeight: '240px' }}>
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                {driver.number != null && Number(driver.number) > 0 ? (
-                  <div style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '64px', fontWeight: 800, color: 'var(--accent)', lineHeight: 1 }}>#{driver.number}</div>
-                ) : null}
-                {driver.code ? (
-                  <div style={{ width: '32px', height: '32px', borderRadius: '999px', background: 'var(--accent)', color: 'var(--on-accent)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'JetBrains Mono, monospace', fontSize: '12px', fontWeight: 700 }}>
-                    {String(driver.code)}
-                  </div>
-                ) : null}
-              </div>
-              <h1 style={{ margin: '8px 0 6px', fontFamily: "'Barlow Condensed', sans-serif", fontSize: '56px', fontWeight: 800, lineHeight: 1, color: '#fff', textTransform: 'uppercase' }}>
-                <span style={{ color: 'var(--muted)', fontWeight: 400 }}>{String(driver.first_name ?? '').toUpperCase()} </span>
-                {String(driver.last_name ?? name).toUpperCase()}
-              </h1>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', color: 'var(--muted)', fontSize: '14px' }}>
-                {flag ? <span>{flag}</span> : null}
-                {nationality ? <span>{nationality}</span> : null}
-                {minYear != null ? <span>· {minYear}-{careerEndLabel} · {seasonsCount} seasons</span> : null}
-              </div>
-              {showChampionBadge ? (
-                <div style={{ marginTop: '14px', display: 'inline-flex', alignItems: 'center', gap: '8px', borderRadius: '999px', padding: '6px 12px', border: '1px solid color-mix(in srgb, var(--gold) 40%, transparent)', background: 'color-mix(in srgb, var(--gold) 14%, transparent)', color: 'var(--gold)', fontFamily: "'Barlow Condensed', sans-serif", fontSize: '12px', fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
-                  <span>👑</span>
-                  {titleCount}x World Champion
-                </div>
-              ) : null}
-            </div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '12px' }}>
-              {[
-                { label: 'Wins', value: aggregates.totalWins, gold: aggregates.totalWins > 0 },
-                { label: 'Poles', value: aggregates.totalPoles, gold: false },
-                { label: 'Podiums', value: aggregates.totalPodiums, gold: false },
-                { label: 'Titles', value: titleCount, gold: titleCount > 0 },
-                { label: 'Points', value: Math.round(aggregates.totalPoints).toLocaleString(), gold: false },
-                { label: 'Starts', value: aggregates.totalRaces, gold: false },
-              ].map((stat) => (
-                <div key={stat.label} style={{ background: 'var(--bg3)', border: '1px solid var(--border)', borderRadius: '6px', padding: '16px', textAlign: 'center' }}>
-                  <div style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '10px', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--muted)' }}>{stat.label}</div>
-                  <div style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '32px', fontWeight: 800, color: stat.gold ? 'var(--gold)' : '#fff', lineHeight: 1, marginTop: '6px' }}>{stat.value}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 300px', gap: '20px', alignItems: 'start' }}>
+      <PageHead
+        crumbs={[{ label: 'Sunday Grid', href: '/' }, { label: 'Drivers', href: '/drivers' }, { label: name }]}
+        title={name}
+        small={driver.number ? `#${driver.number}` : undefined}
+        teamColor={active ? latestTeam?.primary_color ? (latestTeam.primary_color.startsWith('#') ? latestTeam.primary_color : `#${latestTeam.primary_color}`) : null : null}
+        lede={lede}
+        stats={[
+          { value: titleCount, label: titleCount === 1 ? 'world title' : 'world titles', sig: titleCount > 0 },
+          { value: wins, label: 'wins' },
+          { value: podiums, label: 'podiums' },
+          { value: poles, label: 'poles' },
+        ]}
+      />
+      <div className="pg-body">
+        <div className="pg-grid2">
           <div>
-            <div style={{ display: 'flex', gap: 0, borderBottom: '1px solid var(--border)', marginBottom: '24px' }}>
-              {[
-                { id: 'results', label: 'Race Results', href: `/drivers/${slug}?tab=results` },
-                { id: 'seasons', label: 'Season by Season', href: `/drivers/${slug}?tab=seasons` },
-              ].map((tab) => (
-                <Link
-                  key={tab.id}
-                  href={tab.href}
-                  style={{
-                    padding: '12px 20px',
-                    fontFamily: "'Barlow Condensed', sans-serif",
-                    fontSize: '14px',
-                    fontWeight: 800,
-                    letterSpacing: '0.08em',
-                    textTransform: 'uppercase',
-                    color: activeTab === tab.id ? '#fff' : 'var(--muted)',
-                    borderBottom: activeTab === tab.id ? '2px solid var(--accent)' : '2px solid transparent',
-                    marginBottom: '-1px',
-                    textDecoration: 'none',
-                  }}
-                >
-                  {tab.label}
-                </Link>
-              ))}
-            </div>
-
-            {activeTab === 'results' ? (
-              <div style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: '8px', overflow: 'hidden', marginBottom: '16px' }}>
-                <div style={{ padding: '10px 16px', borderBottom: '1px solid var(--border)', background: 'var(--bg3)', fontFamily: "'Barlow Condensed', sans-serif", fontSize: '12px', fontWeight: 800, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#fff' }}>Race Results</div>
-                <div style={{ overflowX: 'auto' }}>
-                  <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '980px' }}>
-                    <thead>
-                      <tr>
-                        {['Season', 'Race', 'Grid', 'Finish', 'Status', 'Points', 'Team'].map((h) => (
-                          <th key={h} style={{ padding: '12px 16px', borderBottom: '1px solid var(--border)', textAlign: h === 'Race' || h === 'Team' ? 'left' : 'right', fontFamily: "'Barlow Condensed', sans-serif", fontSize: '11px', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--muted)' }}>{h}</th>
-                        ))}
-                      </tr>
-                    </thead>
+            {recent.length > 0 && (
+              <section aria-labelledby="recent-h">
+                <div className="pb-ph"><h2 className="pg-h2" id="recent-h">{active ? 'Latest races' : 'Last races'}</h2></div>
+                <div className="pg-scroll">
+                  <table className="pg-table compact">
+                    <thead><tr><th>Race</th><th className="hide-sm">Team</th><th className="n hide-sm">Grid</th><th className="n">Finish</th><th className="n">Pts</th></tr></thead>
                     <tbody>
-                      {raceResults.slice(0, 100).map((row) => {
-                        const pos = Number(row.position ?? 0)
-                        const status = (row.status ?? '').toUpperCase()
-                        const finishColor = pos === 1 ? 'var(--gold)' : pos === 2 ? '#c0c8d8' : pos === 3 ? '#cd7f32' : 'var(--muted)'
-                        const statusColor = status.includes('DNF') ? '#ef4444' : status === 'WIN' || pos === 1 ? 'var(--green)' : 'var(--muted)'
+                      {recent.map((r) => (
+                        <tr key={r.id} className={r.position === 1 ? 'p1' : undefined}>
+                          <td>
+                            {r.race_slug ? <Link href={`/races/${r.race_slug}`}>{r.race_name ?? 'Grand Prix'}</Link> : r.race_name}
+                            <span className="sub">{r.season_year}</span>
+                          </td>
+                          <td className="hide-sm muted">{r.constructor_name ?? '—'}</td>
+                          <td className="n hide-sm muted">{r.grid_position ?? '—'}</td>
+                          <td className={`n${r.position === 1 ? ' top' : ''}`}>{r.position ?? <span className="muted" title={r.status ?? undefined}>{r.status && r.status.length < 14 ? r.status : 'DNF'}</span>}</td>
+                          <td className="n">{num(r.points) || ''}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </section>
+            )}
+
+            <section className="pg-sec" aria-labelledby="seasons-h">
+              <div className="pb-ph"><h2 className="pg-h2" id="seasons-h">Season by season</h2></div>
+              {seasonRows.length ? (
+                <div className="pg-scroll">
+                  <table className="pg-table">
+                    <thead><tr><th>Season</th><th>Team</th><th className="n">Pos</th><th className="n">Wins</th><th className="n hide-sm">Podiums</th><th className="n hide-sm">Poles</th><th className="n">Points</th></tr></thead>
+                    <tbody>
+                      {seasonRows.map((r) => {
+                        const se = unwrapRelation(r.seasons)
+                        const t = unwrapRelation(r.teams)
+                        const champ = se?.champion_driver_id === driver.id
                         return (
-                          <tr key={row.id} style={{ borderBottom: '1px solid var(--border)' }}>
-                            <td style={{ padding: '12px 16px', textAlign: 'right', fontFamily: 'JetBrains Mono, monospace' }}>{row.season_year ?? '—'}</td>
-                            <td style={{ padding: '12px 16px' }}>
-                              {row.race_slug ? <Link href={`/races/${row.race_slug}`} style={{ textDecoration: 'none', color: '#fff' }}>{row.race_name ?? 'Grand Prix'}</Link> : <span>{row.race_name ?? 'Grand Prix'}</span>}
-                            </td>
-                            <td style={{ padding: '12px 16px', textAlign: 'right', fontFamily: 'JetBrains Mono, monospace' }}>{row.grid_position ?? '—'}</td>
-                            <td style={{ padding: '12px 16px', textAlign: 'right' }}><span style={{ padding: '2px 8px', borderRadius: '999px', background: 'rgba(255,255,255,0.04)', color: finishColor, fontFamily: 'JetBrains Mono, monospace' }}>{row.position ?? '—'}</span></td>
-                            <td style={{ padding: '12px 16px', textAlign: 'right' }}><span style={{ padding: '2px 8px', borderRadius: '999px', background: 'rgba(255,255,255,0.04)', color: statusColor, fontFamily: "'Barlow Condensed', sans-serif", fontSize: '11px', letterSpacing: '0.08em', textTransform: 'uppercase' }}>{status || 'FIN'}</span></td>
-                            <td style={{ padding: '12px 16px', textAlign: 'right', fontFamily: 'JetBrains Mono, monospace' }}>{Math.round(num(row.points)).toLocaleString()}</td>
-                            <td style={{ padding: '12px 16px', color: 'var(--muted)' }}>{row.constructor_name ?? '—'}</td>
+                          <tr key={r.id} className={champ ? 'p1' : undefined} style={tcStyle(t?.primary_color)}>
+                            <td className="pos">{se ? <Link href={`/seasons/${se.slug}`}>{se.year}</Link> : '—'}</td>
+                            <td><span className="tc" aria-hidden="true" />{t ? <Link href={`/teams/${t.slug}`} style={{ fontWeight: 500 }}>{t.name}</Link> : '—'}</td>
+                            <td className={`n${champ ? ' top' : ''}`}>{r.championship_position ? (champ ? 'Champion' : ordinal(r.championship_position)) : '—'}</td>
+                            <td className="n">{num(r.wins)}</td>
+                            <td className="n hide-sm">{num(r.podiums)}</td>
+                            <td className="n hide-sm">{num(r.poles)}</td>
+                            <td className="n">{Math.round(num(r.points) * 10) / 10}</td>
                           </tr>
                         )
                       })}
                     </tbody>
                   </table>
                 </div>
-              </div>
-            ) : null}
+              ) : <p className="pg-empty">No season records for {name} yet.</p>}
+            </section>
 
-            {activeTab === 'seasons' ? (
-              <div style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: '8px', overflow: 'hidden', marginBottom: '16px' }}>
-                <div style={{ padding: '10px 16px', borderBottom: '1px solid var(--border)', background: 'var(--bg3)', fontFamily: "'Barlow Condensed', sans-serif", fontSize: '12px', fontWeight: 800, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#fff' }}>Season by Season</div>
-                <div style={{ overflowX: 'auto' }}>
-                  <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '900px' }}>
-                    <thead>
-                      <tr>
-                        {['Season', 'Team', 'Position', 'Points', 'Wins', 'Poles', 'Podiums'].map((h) => (
-                          <th key={h} style={{ padding: '12px 16px', borderBottom: '1px solid var(--border)', textAlign: h === 'Team' ? 'left' : 'right', fontFamily: "'Barlow Condensed', sans-serif", fontSize: '11px', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--muted)' }}>{h}</th>
-                        ))}
+            {raceResults.length > recent.length && (
+              <details className="pg-fold" style={{ marginTop: 20 }}>
+                <summary><b style={{ fontSize: 26 }}>Every race</b><span>{raceResults.length} starts</span></summary>
+                <table className="pg-table compact">
+                  <thead><tr><th>Race</th><th className="n">Grid</th><th className="n">Finish</th><th className="n">Pts</th></tr></thead>
+                  <tbody>
+                    {raceResults.map((r) => (
+                      <tr key={r.id} className={r.position === 1 ? 'p1' : undefined}>
+                        <td>{r.race_slug ? <Link href={`/races/${r.race_slug}`}>{r.season_year} {r.race_name}</Link> : `${r.season_year} ${r.race_name}`}</td>
+                        <td className="n muted">{r.grid_position ?? '—'}</td>
+                        <td className="n">{r.position ?? <span className="muted">{r.status && r.status.length < 14 ? r.status : 'DNF'}</span>}</td>
+                        <td className="n">{num(r.points) || ''}</td>
                       </tr>
-                    </thead>
-                    <tbody>
-                      {seasonRows.map((row) => {
-                        const season = unwrapRelation(row.seasons)
-                        const team = unwrapRelation(row.teams)
-                        const isTitle = season?.champion_driver_id === driver.id
-                        return (
-                          <tr key={row.id} style={{ borderBottom: '1px solid var(--border)', borderLeft: isTitle ? '3px solid var(--gold)' : '3px solid transparent' }}>
-                            <td style={{ padding: '12px 16px', textAlign: 'right', fontFamily: 'JetBrains Mono, monospace' }}>{season?.year ?? '—'}</td>
-                            <td style={{ padding: '12px 16px' }}>{team?.slug ? <Link href={`/teams/${team.slug}`} style={{ textDecoration: 'none', color: '#fff' }}>{team.name}</Link> : <span style={{ color: 'var(--muted)' }}>—</span>}</td>
-                            <td style={{ padding: '12px 16px', textAlign: 'right', fontFamily: 'JetBrains Mono, monospace' }}>{row.championship_position ?? '—'}</td>
-                            <td style={{ padding: '12px 16px', textAlign: 'right', fontFamily: 'JetBrains Mono, monospace', color: isTitle ? 'var(--gold)' : '#fff' }}>{Math.round(num(row.points)).toLocaleString()}</td>
-                            <td style={{ padding: '12px 16px', textAlign: 'right', fontFamily: 'JetBrains Mono, monospace' }}>{num(row.wins)}</td>
-                            <td style={{ padding: '12px 16px', textAlign: 'right', fontFamily: 'JetBrains Mono, monospace' }}>{num(row.poles)}</td>
-                            <td style={{ padding: '12px 16px', textAlign: 'right', fontFamily: 'JetBrains Mono, monospace' }}>{num(row.podiums)}</td>
-                          </tr>
-                        )
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            ) : null}
+                    ))}
+                  </tbody>
+                </table>
+              </details>
+            )}
           </div>
 
-          <aside style={{ display: 'grid', gap: '12px' }}>
-            <div style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: '8px', overflow: 'hidden' }}>
-              <div style={{ padding: '10px 16px', borderBottom: '1px solid var(--border)', background: 'var(--bg3)', fontFamily: "'Barlow Condensed', sans-serif", fontSize: '12px', fontWeight: 800, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#fff' }}>Fast Facts</div>
-              <div style={{ padding: '12px 16px', fontSize: '13px', color: 'var(--muted)', display: 'grid', gap: '8px' }}>
-                <div>Nationality: <span style={{ color: '#fff' }}>{nationality ?? '—'}</span></div>
-                <div>Date of birth: <span style={{ color: '#fff' }}>{(driver.date_of_birth as string | null) ?? '—'}</span></div>
-                <div>First race: <span style={{ color: '#fff' }}>{firstRace?.race_name ?? '—'}</span></div>
-                <div>Last race: <span style={{ color: '#fff' }}>{raceResults[0]?.race_name ?? '—'}</span></div>
-                <div>Car number: <span style={{ color: '#fff' }}>{driver.number ?? '—'}</span></div>
+          <aside className="pg-side" aria-label={`${name} career facts`}>
+            <div className="pg-facts">
+              <div><b>{starts}</b><span>races started</span></div>
+              <div><b>{pct(wins)}</b><span>won</span></div>
+              <div><b>{pct(podiums)}</b><span>on the podium</span></div>
+              <div><b>{best ? ordinal(best) : '—'}</b><span>best finish</span></div>
+              {aggregates.maxWinsSeason && aggregates.maxWinsSeason.wins > 0 ? <div><b>{aggregates.maxWinsSeason.wins}</b><span>wins in {aggregates.maxWinsSeason.year}, the best season</span></div> : null}
+              {aggregates.totalFastestLaps > 0 ? <div><b>{aggregates.totalFastestLaps}</b><span>fastest laps</span></div> : null}
+            </div>
+
+            <div className="pg-panel">
+              <div className="pg-list">
+                {firstRace && <div><b style={{ fontWeight: 700 }}>First race</b><span>{firstRace.race_slug ? <Link href={`/races/${firstRace.race_slug}`} style={{ color: 'var(--text)' }}>{firstRace.season_year} {firstRace.race_name}</Link> : `${firstRace.season_year} ${firstRace.race_name ?? ''}`}</span></div>}
+                {firstWin && <div><b style={{ fontWeight: 700 }}>First win</b><span>{firstWin.race_slug ? <Link href={`/races/${firstWin.race_slug}`} style={{ color: 'var(--text)' }}>{firstWin.season_year} {firstWin.race_name}</Link> : `${firstWin.season_year} ${firstWin.race_name ?? ''}`}</span></div>}
+                {aggregates.bestChampOrdinal && titleCount === 0 && <div><b style={{ fontWeight: 700 }}>Best championship</b><span>{aggregates.bestChampOrdinal}{aggregates.bestChampYear ? ` in ${aggregates.bestChampYear}` : ''}</span></div>}
+                {profile?.nickname && <div><b style={{ fontWeight: 700 }}>Known as</b><span>{profile.nickname}</span></div>}
               </div>
             </div>
-            <Link href={`/compare?d1=${encodeURIComponent(slug)}`} style={{ textDecoration: 'none', background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: '8px', padding: '16px', color: '#fff' }}>
-              <div style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '12px', fontWeight: 800, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--accent)' }}>Compare</div>
-              <div style={{ marginTop: '6px' }}>Open head-to-head with {name}</div>
-            </Link>
-            <EmailCapture source="driver-page" hideIntro />
+
+            <div className="pg-panel">
+              <div className="pb-ph"><h2 className="pg-h2" style={{ fontSize: 28 }}>Compare {surname}</h2></div>
+              <div className="pg-list">
+                {teammates.slice(0, 6).map((t) => (
+                  <Link key={t.slug} href={`/compare?d1=${slug}&d2=${t.slug}`}><b style={{ fontWeight: 600 }}>{t.full_name}</b><span>teammate</span></Link>
+                ))}
+                <Link href={`/compare?d1=${slug}`}><b style={{ fontWeight: 600 }}>Anyone else</b><span>pick a driver</span></Link>
+              </div>
+            </div>
+
+            {profile?.fun_facts && profile.fun_facts.length > 0 && (
+              <div className="pg-panel">
+                <div className="pb-ph"><h2 className="pg-h2" style={{ fontSize: 28 }}>Worth knowing</h2></div>
+                <ul className="pb-rules">{profile.fun_facts.slice(0, 4).map((f) => <li key={f} style={{ fontSize: 15 }}>{f}</li>)}</ul>
+              </div>
+            )}
           </aside>
         </div>
-      </section>
+      </div>
     </main>
   )
 }

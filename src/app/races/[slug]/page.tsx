@@ -2,15 +2,21 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { createServerClient } from '@/lib/supabase/server'
-import RaceSidebar from '@/components/races/RaceSidebar'
-import { CountdownTimer } from '@/components/races/CountdownTimer'
+import PageHead from '@/components/page/PageHead'
+import Countdown from '@/components/weekend/Countdown'
+import TrackMap from '@/components/weekend/TrackMap'
+import { circuitShape, getWinsAtCircuit } from '@/lib/weekend'
 import JsonLd from '@/components/JsonLd'
 import { SITE_URL } from '@/lib/site'
 
 type PageProps = { params: Promise<{ slug: string }> }
 
+/** Race pages change only when a result lands, so an hour is plenty; the countdown ticks in the browser. */
+export const revalidate = 3600
+
 type ResultRow = {
   id: string
+  session_type?: string | null
   position: number | null
   driver_slug: string | null
   driver_name: string | null
@@ -22,63 +28,9 @@ type ResultRow = {
   time_text: string | null
 }
 
-type WinnerJoinRow = {
-  drivers: { slug: string | null; full_name: string | null } | { slug: string | null; full_name: string | null }[] | null
-  races: { id?: string | null; slug: string | null; name?: string | null; season_year: number | null; race_date: string | null; circuit_slug?: string | null } | { id?: string | null; slug: string | null; name?: string | null; season_year: number | null; race_date: string | null; circuit_slug?: string | null }[] | null
-}
-
-function unwrapRelation<T>(rel: T | T[] | null | undefined): T | null {
-  if (rel == null) return null
-  return Array.isArray(rel) ? rel[0] ?? null : rel
-}
-
 function formatLongDate(value: string | null) {
   if (!value) return 'TBC'
   return new Date(value).toLocaleDateString('en-GB', { weekday: 'short', day: 'numeric', month: 'long', year: 'numeric' })
-}
-
-function formatDate(value: string | null) {
-  if (!value) return 'TBC'
-  return new Date(value).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })
-}
-
-function rowStyle(position: number | null) {
-  if (position === 1) return { background: 'color-mix(in srgb, var(--gold) 10%, transparent)' }
-  if (position === 2 || position === 3) return { background: 'rgba(255,255,255,0.02)' }
-  return {}
-}
-
-function normalizePastWinnerRows(
-  rows: WinnerJoinRow[],
-  currentRaceSlug: string
-) {
-  return rows
-    .map((row) => {
-      const race = unwrapRelation(row.races)
-      const driver = unwrapRelation(row.drivers)
-      return {
-        slug: race?.slug ?? null,
-        season_year: race?.season_year ?? null,
-        winner_name: driver?.full_name ?? null,
-        winner_slug: driver?.slug ?? null,
-      }
-    })
-    .filter((row): row is { slug: string; season_year: number; winner_name: string; winner_slug: string } =>
-      typeof row.slug === 'string' &&
-      row.slug !== currentRaceSlug &&
-      typeof row.season_year === 'number' &&
-      typeof row.winner_name === 'string' &&
-      typeof row.winner_slug === 'string'
-    )
-    .map((row) => {
-      return {
-        slug: row.slug,
-        season_year: row.season_year,
-        winner_name: row.winner_name,
-        winner_slug: row.winner_slug,
-      }
-    })
-    .slice(0, 5)
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -117,6 +69,57 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 }
 
+const ukTime = (iso: string) =>
+  new Date(iso).toLocaleString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', hour: '2-digit', minute: '2-digit', timeZone: 'Europe/London' })
+
+const plate = (name: string) => name.replace(/ Grand Prix$/i, ' GP')
+
+function ResultsTable({ rows, kind }: { rows: ResultRow[]; kind: 'race' | 'sprint' | 'qualifying' }) {
+  return (
+    <div className="pg-scroll">
+      <table className="pg-table">
+        <thead>
+          <tr>
+            <th className="n">Pos</th>
+            <th>Driver</th>
+            <th className="hide-sm">Team</th>
+            {kind !== 'qualifying' && <th className="n hide-sm">Grid</th>}
+            <th className="n">{kind === 'qualifying' ? 'Best time' : 'Time or gap'}</th>
+            {kind !== 'qualifying' && <th className="n">Pts</th>}
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((r) => {
+            const finished = !r.status || /^(finished|\+\d+ laps?|lapped)$/i.test(r.status)
+            const gap = r.time_text ?? (finished ? '—' : r.status)
+            const gained = kind !== 'qualifying' && r.grid && r.position ? r.grid - r.position : 0
+            return (
+              <tr key={r.id} className={r.position === 1 ? 'p1' : undefined}>
+                <td className="pos n">{r.position ?? '—'}</td>
+                <td>
+                  {r.driver_slug ? <Link href={`/drivers/${r.driver_slug}`}>{r.driver_name ?? 'Unknown'}</Link> : r.driver_name ?? 'Unknown'}
+                  <span className="sub show-sm">{r.constructor_name ?? ''}</span>
+                </td>
+                <td className="hide-sm">
+                  {r.constructor_slug ? <Link href={`/teams/${r.constructor_slug}`} style={{ fontWeight: 500 }}>{r.constructor_name}</Link> : r.constructor_name ?? '—'}
+                </td>
+                {kind !== 'qualifying' && (
+                  <td className="n hide-sm muted">
+                    {r.grid === 0 ? 'Pit lane' : r.grid ?? '—'}
+                    {gained > 0 && <span style={{ color: 'var(--green)', marginLeft: 6 }}>+{gained}</span>}
+                  </td>
+                )}
+                <td className={`n${finished ? '' : ' muted'}`}>{gap}</td>
+                {kind !== 'qualifying' && <td className="n">{r.points ? Number(r.points) : ''}</td>}
+              </tr>
+            )
+          })}
+        </tbody>
+      </table>
+    </div>
+  )
+}
+
 export default async function RacePage({ params }: PageProps) {
   const { slug } = await params
   const supabase = createServerClient()
@@ -124,300 +127,181 @@ export default async function RacePage({ params }: PageProps) {
   const { data: race, error } = await supabase.from('races').select('*').eq('slug', slug).maybeSingle()
   if (error || !race) notFound()
 
-  const raceDateObj = race.race_date ? new Date(String(race.race_date)) : null
+  const raceId = String(race.id)
+  const date = race.race_date ? String(race.race_date) : null
+  const time = race.race_time ? String(race.race_time) : null
+  const startIso = date ? `${date}T${time ? (time.endsWith('Z') ? time : `${time}Z`) : '12:00:00Z'}` : null
   const now = new Date()
-  const isUpcoming = raceDateObj ? raceDateObj > now : false
-  const isCompleted = !isUpcoming
+  const isUpcoming = startIso ? new Date(startIso).getTime() + 3 * 3600_000 > now.getTime() : false
+  const seasonYear = typeof race.season_year === 'number' ? race.season_year : null
 
-  const [circuitRes, resultsRes, blogPostRes, lastYearWinnerRes, pastWinnersRes] = await Promise.all([
+  const [circuitRes, resultsRes, seasonRacesRes, wins] = await Promise.all([
     race.circuit_slug
-      ? supabase.from('circuits').select('slug, name, country').eq('slug', String(race.circuit_slug)).maybeSingle()
+      ? supabase.from('circuits').select('slug, name, country, locality, turns, total_length_km, lap_record_time, lap_record_driver, lap_record_year').eq('slug', String(race.circuit_slug)).maybeSingle()
       : Promise.resolve({ data: null, error: null }),
     supabase
       .from('results')
-      .select('id, position, driver_slug, driver_name, constructor_slug, constructor_name, grid, points, status, time_text, is_sprint')
-      .eq('race_id', String(race.id))
-      .eq('session_type', 'race')
+      .select('id, session_type, position, driver_slug, driver_name, constructor_slug, constructor_name, grid, points, status, time_text, is_sprint')
+      .eq('race_id', raceId)
       .order('position', { ascending: true }),
-    supabase
-      .from('posts')
-      .select('slug, title, published_at, excerpt, category')
-      .eq('related_race_slug', slug)
-      .eq('is_published', true)
-      .order('published_at', { ascending: false })
-      .limit(1)
-      .maybeSingle(),
-    isUpcoming && race.circuit_slug && race.race_date
-      ? supabase
-          .from('results')
-          .select('position, drivers!inner(slug, full_name), races!inner(id, slug, name, season_year, race_date, circuit_slug)')
-          .eq('position', 1)
-          .eq('session_type', 'race')
-          .eq('races.circuit_slug', String(race.circuit_slug))
-          .lt('races.race_date', String(race.race_date))
-          .order('races(race_date)', { ascending: false })
-          .limit(1)
-          .maybeSingle()
-      : Promise.resolve({ data: null, error: null }),
-    race.circuit_slug
-      ? supabase
-          .from('results')
-          .select('position, drivers!inner(slug, full_name), races!inner(id, slug, season_year, race_date, circuit_slug)')
-          .eq('position', 1)
-          .eq('session_type', 'race')
-          .eq('races.circuit_slug', String(race.circuit_slug))
-          .order('races(race_date)', { ascending: false })
-          .limit(5)
+    seasonYear
+      ? supabase.from('races').select('slug, name, race_date').eq('season_year', seasonYear).order('race_date', { ascending: true })
       : Promise.resolve({ data: [], error: null }),
+    getWinsAtCircuit(race.circuit_slug ? String(race.circuit_slug) : null).catch(() => []),
   ])
 
-  const results = (resultsRes.data ?? []) as ResultRow[]
-  const winner = results.find((row) => row.position === 1) ?? null
-
-  const lastYearWinner = (() => {
-    if (!lastYearWinnerRes.data) return null
-    const row = lastYearWinnerRes.data as WinnerJoinRow
-    const driver = unwrapRelation(row.drivers)
-    const raceRel = unwrapRelation(row.races)
-    if (!driver?.slug || !driver.full_name || !raceRel?.slug || typeof raceRel.season_year !== 'number') return null
-    return {
-      driverName: driver.full_name,
-      driverSlug: driver.slug,
-      raceSlug: raceRel.slug,
-      raceName: raceRel.name ?? 'Grand Prix',
-      seasonYear: raceRel.season_year,
-      raceDate: raceRel.race_date ?? null,
-    }
-  })()
-
-  const pastWinners = normalizePastWinnerRows((pastWinnersRes.data ?? []) as WinnerJoinRow[], slug)
+  const all = (resultsRes.data ?? []) as ResultRow[]
+  const raceRows = all.filter((r) => (r.session_type ?? 'race') === 'race' && !(r as { is_sprint?: boolean }).is_sprint)
+  const sprintRows = all.filter((r) => r.session_type === 'sprint' || (r as { is_sprint?: boolean }).is_sprint)
+  const qualiRows = all.filter((r) => r.session_type === 'qualifying')
+  const winner = raceRows.find((r) => r.position === 1) ?? null
+  const pole = qualiRows.find((r) => r.position === 1) ?? null
 
   const raceName = String(race.name ?? race.full_name ?? 'Grand Prix')
-  const circuitName = String(circuitRes.data?.name ?? race.circuit_slug ?? '')
-  const country = (circuitRes.data?.country as string | null) ?? null
-  const seasonYear = typeof race.season_year === 'number' ? race.season_year : null
-  const round = typeof race.round === 'number' ? race.round : null
-  const reviewPost = blogPostRes.data
-    ? {
-        slug: String(blogPostRes.data.slug),
-        title: String(blogPostRes.data.title),
-        published_at: String(blogPostRes.data.published_at),
-        excerpt: (blogPostRes.data.excerpt as string | null) ?? null,
-        category: (blogPostRes.data.category as string | null) ?? null,
-      }
-    : null
+  const circuit = circuitRes.data as Record<string, unknown> | null
+  const circuitName = String(circuit?.name ?? race.circuit_slug ?? '')
+  const country = (circuit?.country as string | null) ?? null
+  const locality = (circuit?.locality as string | null) ?? null
+  const shape = circuitShape(race.circuit_slug ? String(race.circuit_slug) : null)
 
-  const siteUrl = SITE_URL
+  const seasonRaces = (seasonRacesRes.data ?? []) as { slug: string; name: string; race_date: string | null }[]
+  const idx = seasonRaces.findIndex((r) => r.slug === slug)
+  const roundNo = idx >= 0 ? idx + 1 : typeof race.round === 'number' ? race.round : null
+  const prev = idx > 0 ? seasonRaces[idx - 1] : null
+  const next = idx >= 0 && idx < seasonRaces.length - 1 ? seasonRaces[idx + 1] : null
+
+  const pastWins = wins.filter((w) => w.season !== seasonYear).slice(0, 10)
+  const tally = new Map<string, number>()
+  for (const w of wins) tally.set(w.winner, (tally.get(w.winner) ?? 0) + 1)
+  const king = [...tally.entries()].sort((a, b) => b[1] - a[1])[0]
+  const lengthKm = Number(circuit?.total_length_km ?? 0) || (shape?.lengthM ? shape.lengthM / 1000 : 0)
+
   const eventLd = {
     '@context': 'https://schema.org',
     '@type': 'SportsEvent',
     name: `${raceName}${seasonYear ? ` ${seasonYear}` : ''}`,
     sport: 'Formula 1',
-    startDate: race.race_date ? String(race.race_date) : undefined,
+    startDate: startIso ?? undefined,
     eventStatus: 'https://schema.org/EventScheduled',
-    location: circuitName
-      ? { '@type': 'Place', name: circuitName, address: country ?? undefined }
-      : undefined,
-    url: `${siteUrl}/races/${slug}`,
+    location: circuitName ? { '@type': 'Place', name: circuitName, address: [locality, country].filter(Boolean).join(', ') || undefined } : undefined,
+    url: `${SITE_URL}/races/${slug}`,
   }
 
+  const stats = [
+    ...(roundNo ? [{ value: roundNo, label: seasonRaces.length ? `of ${seasonRaces.length} rounds` : 'round' }] : []),
+    ...(race.laps ? [{ value: Number(race.laps), label: 'laps' }] : lengthKm ? [{ value: lengthKm.toFixed(2), label: 'km a lap' }] : []),
+    ...(winner
+      ? [{ value: (winner.driver_name ?? '').split(' ').at(-1) ?? '', label: `won${winner.constructor_name ? ` for ${winner.constructor_name}` : ''}`, sig: true }]
+      : pole
+        ? [{ value: (pole.driver_name ?? '').split(' ').at(-1) ?? '', label: 'on pole', sig: true }]
+        : []),
+  ]
+
   return (
-    <main data-race-slug={slug} className="min-h-screen bg-[var(--bg)] text-[var(--text)]">
+    <main className="pg" data-race-slug={slug}>
       <JsonLd id="race-ld" data={eventLd} />
-      <section className="mx-auto max-w-7xl px-6 py-8">
-        <nav className="mb-6 flex flex-wrap items-center gap-2 text-sm text-[var(--muted)]" aria-label="Breadcrumb">
-          <Link href="/" className="transition-colors hover:text-[var(--text)]">
-            Home
-          </Link>
-          <span aria-hidden>›</span>
-          <Link href="/races" className="transition-colors hover:text-[var(--text)]">
-            Races
-          </Link>
-          <span aria-hidden>›</span>
-          <span className="text-[var(--text)]">{raceName}</span>
-        </nav>
-      </section>
-
-      <header className="mx-auto max-w-7xl px-6 py-12">
-        <div className="mb-3 text-sm uppercase tracking-widest text-[var(--accent)]">Round {round ?? '—'} · {seasonYear ?? 'N/A'} Season</div>
-        <h1 className="font-display text-5xl font-bold leading-[1.05] tracking-tight">{raceName}</h1>
-
-        {isUpcoming ? (
+      <PageHead
+        crumbs={[
+          { label: 'Sunday Grid', href: '/' },
+          { label: 'Results', href: '/races' },
+          ...(seasonYear ? [{ label: String(seasonYear), href: `/seasons/${seasonYear}` }] : []),
+          { label: plate(raceName) },
+        ]}
+        title={raceName}
+        small={seasonYear ?? undefined}
+        lede={
           <>
-            <div className="mt-4 text-xl text-[var(--muted)]">{circuitName}</div>
-            <div className="mt-8 flex flex-wrap items-center gap-6">
-              {race.race_date ? <CountdownTimer raceDate={String(race.race_date)} /> : null}
-              <div className="text-sm text-[var(--muted)]">
-                <div className="text-xs uppercase tracking-widest text-[var(--gold)]">Race Day</div>
-                <div className="mt-1 text-base text-[var(--text)]">{formatLongDate(race.race_date as string | null)}</div>
-              </div>
-            </div>
+            {[circuitName, locality && locality !== circuitName ? locality : null, country].filter(Boolean).join(', ')}
+            {startIso ? <>. {isUpcoming ? 'Lights out ' : ''}{ukTime(startIso)} UK.</> : null}
           </>
-        ) : (
-          <>
-            <div className="mt-4 text-xl text-[var(--muted)]">
-              {circuitName} · {formatLongDate(race.race_date as string | null)}
-            </div>
-            {winner ? (
-              <div className="mt-6 inline-flex items-center gap-3 rounded-lg border border-[var(--gold)]/40 bg-[var(--gold)]/5 px-5 py-3">
-                <span className="text-xs uppercase tracking-widest text-[var(--gold)]">Winner</span>
-                {winner.driver_slug ? (
-                  <Link href={`/drivers/${winner.driver_slug}`} className="text-lg font-semibold text-[var(--text)] transition-colors hover:text-[var(--gold)]">
-                    {winner.driver_name ?? 'Unknown driver'}
-                  </Link>
-                ) : (
-                  <span className="text-lg font-semibold text-[var(--text)]">{winner.driver_name ?? 'Unknown driver'}</span>
-                )}
-                <span className="text-sm text-[var(--muted)]">· {winner.constructor_name ?? 'Unknown team'}</span>
-              </div>
-            ) : null}
-          </>
-        )}
-      </header>
+        }
+        stats={stats}
+      />
 
-      <section className="mx-auto max-w-7xl px-6 pb-12">
-        <div className="blog-layout">
-          <div className="blog-layout__main">
-            {isUpcoming ? (
-              <div className="flex flex-col gap-4">
-                {reviewPost && reviewPost.category === 'season-preview' ? (
-                  <div className="blog-card">
-                    <div className="blog-card__eyebrow">What To Watch</div>
-                    <div className="blog-card__title">{reviewPost.title}</div>
-                    {reviewPost.excerpt ? <div className="blog-card__meta">{reviewPost.excerpt}</div> : null}
-                    <Link href={`/blog/${reviewPost.slug}`} className="blog-card__cta">
-                      Read season preview
-                    </Link>
-                  </div>
-                ) : null}
-
-                {lastYearWinner ? (
-                  <Link href={`/races/${lastYearWinner.raceSlug}`} className="blog-card">
-                    <div className="blog-card__eyebrow">Last Year At {circuitName}</div>
-                    <div className="blog-card__title">
-                      {lastYearWinner.seasonYear} {lastYearWinner.raceName}
-                    </div>
-                    <div className="blog-card__meta">
-                      Won by {lastYearWinner.driverName} · {formatDate(lastYearWinner.raceDate)}
-                    </div>
-                  </Link>
-                ) : null}
-
-                <div className="blog-card">
-                  <div className="blog-card__eyebrow">Past Winners</div>
-                  <div style={{ overflowX: 'auto' }}>
-                    <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-                      <thead>
-                        <tr>
-                          <th style={{ textAlign: 'left', paddingBottom: '0.5rem', color: 'var(--muted)', fontSize: '0.75rem', textTransform: 'uppercase' }}>Season</th>
-                          <th style={{ textAlign: 'left', paddingBottom: '0.5rem', color: 'var(--muted)', fontSize: '0.75rem', textTransform: 'uppercase' }}>Winner</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {pastWinners.length > 0 ? (
-                          pastWinners.map((item) => (
-                            <tr key={`${item.slug}-${item.season_year}`} style={{ borderTop: '1px solid var(--border)' }}>
-                              <td style={{ padding: '0.55rem 0.25rem 0.55rem 0', color: 'var(--muted)' }}>{item.season_year}</td>
-                              <td style={{ padding: '0.55rem 0' }}>
-                                <Link href={`/drivers/${item.winner_slug}`} style={{ color: 'var(--text)', textDecoration: 'none' }}>
-                                  {item.winner_name}
-                                </Link>
-                              </td>
-                            </tr>
-                          ))
-                        ) : (
-                          <tr>
-                            <td colSpan={2} style={{ padding: '0.75rem 0', color: 'var(--muted)' }}>
-                              No past winners available.
-                            </td>
-                          </tr>
-                        )}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <div className="flex flex-col gap-4">
-                <div className="blog-card">
-                  <div className="blog-card__eyebrow">Race Results</div>
-                  <div style={{ overflowX: 'auto' }}>
-                    <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: '860px' }}>
-                      <thead>
-                        <tr>
-                          {['Pos', 'Driver', 'Team', 'Grid', 'Points', 'Status', 'Time/Gap'].map((h) => (
-                            <th key={h} style={{ padding: '0.6rem 0.75rem', borderBottom: '1px solid var(--border)', textAlign: h === 'Driver' || h === 'Team' ? 'left' : 'right', fontSize: '0.7rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: 'var(--muted)' }}>
-                              {h}
-                            </th>
-                          ))}
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {results.map((row) => (
-                          <tr key={row.id} style={{ borderBottom: '1px solid var(--border)', ...rowStyle(row.position) }}>
-                            <td style={{ padding: '0.6rem 0.75rem', textAlign: 'right', fontFamily: 'JetBrains Mono, monospace', color: row.position === 1 ? 'var(--gold)' : 'var(--muted)' }}>
-                              {row.position ?? '—'}
-                            </td>
-                            <td style={{ padding: '0.6rem 0.75rem' }}>
-                              {row.driver_slug ? (
-                                <Link href={`/drivers/${row.driver_slug}`} style={{ color: 'var(--text)', textDecoration: 'none' }}>
-                                  {row.driver_name ?? 'Unknown'}
-                                </Link>
-                              ) : (
-                                <span>{row.driver_name ?? 'Unknown'}</span>
-                              )}
-                            </td>
-                            <td style={{ padding: '0.6rem 0.75rem', color: 'var(--muted)' }}>
-                              {row.constructor_slug ? (
-                                <Link href={`/teams/${row.constructor_slug}`} style={{ color: 'var(--muted)', textDecoration: 'none' }}>
-                                  {row.constructor_name ?? '—'}
-                                </Link>
-                              ) : (
-                                <span>{row.constructor_name ?? '—'}</span>
-                              )}
-                            </td>
-                            <td style={{ padding: '0.6rem 0.75rem', textAlign: 'right', fontFamily: 'JetBrains Mono, monospace' }}>{row.grid ?? '—'}</td>
-                            <td style={{ padding: '0.6rem 0.75rem', textAlign: 'right', fontFamily: 'JetBrains Mono, monospace' }}>{row.points ?? '—'}</td>
-                            <td style={{ padding: '0.6rem 0.75rem', textAlign: 'right', color: 'var(--muted)' }}>{row.status ?? '—'}</td>
-                            <td style={{ padding: '0.6rem 0.75rem', textAlign: 'right', color: 'var(--muted)', fontFamily: 'JetBrains Mono, monospace' }}>
-                              {row.status && row.status.toUpperCase().includes('DNF') ? row.status : row.time_text ?? '—'}
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-
-                {reviewPost ? (
-                  <Link href={`/blog/${reviewPost.slug}`} className="blog-card">
-                    <div className="blog-card__eyebrow">Race Review</div>
-                    <div className="blog-card__title">{reviewPost.title}</div>
-                    {reviewPost.excerpt ? <div className="blog-card__meta">{reviewPost.excerpt}</div> : null}
-                  </Link>
-                ) : null}
-              </div>
+      <div className="pg-body">
+        <div className="pg-grid2">
+          <div>
+            {isUpcoming && startIso && (
+              <section className="pg-panel" aria-labelledby="wk-h" style={{ background: 'var(--board)', borderColor: '#2B2F34', color: '#F2F2EC' }}>
+                <h2 className="pg-h2" id="wk-h" style={{ color: '#F2F2EC', marginBottom: 14 }}>Race weekend</h2>
+                <Countdown startIso={startIso} />
+                <p className="pg-note" style={{ color: '#9AA1A8' }}>
+                  {race.sprint_date ? 'A sprint weekend. ' : ''}Qualifying {race.qualifying_date ? new Date(String(race.qualifying_date)).toLocaleDateString('en-GB', { weekday: 'long' }) : 'the day before'}, race {new Date(startIso).toLocaleDateString('en-GB', { weekday: 'long', timeZone: 'Europe/London' })}.
+                </p>
+              </section>
             )}
+
+            {raceRows.length > 0 ? (
+              <section className="pg-sec" style={{ marginTop: isUpcoming ? 36 : 0 }} aria-labelledby="res-h">
+                <div className="pb-ph"><h2 className="pg-h2" id="res-h">Race result</h2></div>
+                <ResultsTable rows={raceRows} kind="race" />
+              </section>
+            ) : !isUpcoming ? (
+              <p className="pg-empty">The result for this race isn&apos;t in yet. It usually lands within an hour of the chequered flag.</p>
+            ) : null}
+
+            {sprintRows.length > 0 && (
+              <details className="pg-fold" style={{ marginTop: 20 }}>
+                <summary><b style={{ fontSize: 26 }}>Sprint</b><span>won by {sprintRows.find((r) => r.position === 1)?.driver_name ?? '—'}</span></summary>
+                <ResultsTable rows={sprintRows} kind="sprint" />
+              </details>
+            )}
+            {qualiRows.length > 0 && (
+              <details className="pg-fold" style={{ marginTop: sprintRows.length ? 0 : 20 }} open={isUpcoming}>
+                <summary><b style={{ fontSize: 26 }}>Qualifying</b><span>pole: {pole?.driver_name ?? '—'}</span></summary>
+                <ResultsTable rows={qualiRows} kind="qualifying" />
+              </details>
+            )}
+
+            <section className="pg-sec pb-sim" style={{ borderRadius: 8, marginTop: 28 }} aria-labelledby="sim-h">
+              <div style={{ position: 'relative', padding: '24px 24px 26px' }}>
+                <span className="pb-tag">Sim Race Week</span>
+                <h2 id="sim-h" style={{ fontSize: 'clamp(30px, 4vw, 44px)' }}>Drive {circuitName.replace(/ (International )?(Grand Prix )?Circuit$/i, '') || 'this track'} yourself</h2>
+                <p className="l">Every race week, a free challenge on the same track in your own sim. Nothing paid makes you faster. Starts with round 1 of 2027.</p>
+                <p style={{ marginTop: 16 }}><Link className="btn-plate" href="/sim">How Sim Race Week works</Link></p>
+              </div>
+            </section>
           </div>
 
-          <aside className="blog-layout__sidebar">
-            <RaceSidebar
-              race={{
-                slug: String(race.slug ?? slug),
-                name: raceName,
-                season_year: seasonYear,
-                round,
-                race_date: (race.race_date as string | null) ?? null,
-                country,
-                circuit_name: circuitName || null,
-              }}
-              isUpcoming={isUpcoming}
-              pastWinners={pastWinners}
-              blogPost={reviewPost ? { slug: reviewPost.slug, title: reviewPost.title, published_at: reviewPost.published_at } : null}
-            />
+          <aside className="pg-side" aria-label="About this race">
+            {shape && (
+              <div className="pg-panel" style={{ padding: 16 }}>
+                <TrackMap shape={shape} label={`${circuitName} track map`} />
+                <div className="pg-facts" style={{ marginTop: 12 }}>
+                  {lengthKm ? <div><b>{lengthKm.toFixed(2)}</b><span>km a lap</span></div> : null}
+                  {circuit?.turns ? <div><b>{String(circuit.turns)}</b><span>corners</span></div> : null}
+                  {shape.firstGp ? <div><b>{shape.firstGp}</b><span>first Grand Prix</span></div> : null}
+                </div>
+              </div>
+            )}
+
+            {pastWins.length > 0 && (
+              <div className="pg-panel">
+                <div className="pb-ph"><h2 className="pg-h2" style={{ fontSize: 28 }}>Winners here</h2></div>
+                {king && king[1] > 1 && <p className="pg-note" style={{ marginTop: 0, marginBottom: 8 }}>{king[0]} has won here {king[1]} times, more than anyone.</p>}
+                <div className="pg-list">
+                  {pastWins.map((w) => (
+                    <div key={w.season}>
+                      <b style={{ fontWeight: 700 }}>{w.season}</b>
+                      <span>{w.winner}{w.team ? `, ${w.team}` : ''}{w.grid ? ` (from ${w.grid === 1 ? 'pole' : `P${w.grid}`})` : ''}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {(prev || next) && (
+              <nav className="pg-panel" aria-label="Other races this season">
+                <div className="pg-list">
+                  {prev && <Link href={`/races/${prev.slug}`}><b>Previous</b><span>{prev.name}</span></Link>}
+                  {next && <Link href={`/races/${next.slug}`}><b>Next</b><span>{next.name}</span></Link>}
+                  {seasonYear && <Link href={`/seasons/${seasonYear}`}><b>{seasonYear} season</b><span>Standings and every race</span></Link>}
+                </div>
+              </nav>
+            )}
           </aside>
         </div>
-      </section>
+      </div>
     </main>
   )
 }

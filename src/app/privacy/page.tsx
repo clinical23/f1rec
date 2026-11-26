@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { SITE_URL } from '@/lib/site'
+import PageHead from '@/components/page/PageHead'
 
 export const metadata: Metadata = {
   title: 'Privacy Policy — Sunday Grid',
@@ -9,12 +10,9 @@ export const metadata: Metadata = {
 
 export default function PrivacyPage() {
   return (
-    <main className="min-h-screen bg-[var(--bg)] px-6 py-12 text-[var(--text)] md:py-16">
-      <article className="mx-auto max-w-3xl">
-        <h1 className="font-display text-3xl font-black tracking-tight text-[var(--text)] md:text-4xl">
-          Privacy Policy
-        </h1>
-        <p className="mt-2 text-sm text-[var(--muted)]">Last updated: April 2026</p>
+    <main className="pg">
+      <PageHead crumbs={[{ label: 'Sunday Grid', href: '/' }, { label: 'Privacy' }]} title="Privacy" lede="What Sunday Grid collects, why, and how to ask us to delete it. Last updated April 2026." />
+      <article className="pg-body" style={{ maxWidth: 780 }}>
 
         <div className="mt-10 space-y-10 text-[15px] leading-relaxed text-[var(--text)]">
           <section>

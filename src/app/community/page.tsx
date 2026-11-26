@@ -1,10 +1,9 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
-import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 import EmailCapture from '@/components/EmailCapture'
-import { SECTIONS } from '@/lib/features'
+import PageHead from '@/components/page/PageHead'
 
 type CreatorRow = {
   id: string
@@ -149,19 +148,13 @@ export default function CommunityPage() {
   }, [creators])
 
   return (
-    <main style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--text)' }}>
-      {/* Hero */}
-      <section style={{ padding: '5rem 1.5rem 3rem', textAlign: 'center', borderBottom: '1px solid var(--border)', background: 'linear-gradient(180deg, rgba(232,0,45,0.06) 0%, transparent 100%)' }}>
-        <p style={{ fontFamily: 'var(--font-barlow-condensed, "Barlow Condensed", sans-serif)', textTransform: 'uppercase', letterSpacing: '0.2em', fontSize: '0.75rem', color: 'var(--accent)', marginBottom: '0.5rem' }}>Curated by Sunday Grid</p>
-        <h1 className="hero-title" style={{ fontFamily: 'var(--font-barlow-condensed, "Barlow Condensed", sans-serif)', fontSize: 'clamp(2.5rem, 5vw, 4rem)', fontWeight: 800, margin: 0, lineHeight: 1.1 }}>
-          The F1<br /><span style={{ color: 'var(--accent)' }}>Community</span>
-        </h1>
-        <p style={{ color: 'var(--muted, #889)', maxWidth: '500px', margin: '1rem auto 0', fontSize: '0.95rem' }}>
-          The best voices in Formula 1 — curated for real fans.
-        </p>
-      </section>
-
-      <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '4rem 1.5rem' }}>
+    <main className="pg">
+      <PageHead
+        crumbs={[{ label: 'Sunday Grid', href: '/' }, { label: 'Community' }]}
+        title="Community"
+        lede="The YouTubers, podcasts and writers worth your time between races, and the sim racers to follow."
+      />
+      <div className="pg-body">
         {/* Trending */}
         <div style={{ marginBottom: '4rem' }}>
           <div style={{ borderRadius: '10px', padding: '1px', background: 'linear-gradient(90deg, var(--accent), color-mix(in srgb, var(--green, #00d4a0) 70%, var(--accent)))' }}>

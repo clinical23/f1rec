@@ -19,5 +19,5 @@ export default async function ComparePage({
   }
 
   const resolvedSearchParams = (await searchParams) ?? {}
-  return <CompareClient drivers={(data ?? []) as any} initialD1={resolvedSearchParams.d1 ?? ''} initialD2={resolvedSearchParams.d2 ?? ''} />
+  return <CompareClient drivers={(data ?? []) as unknown as Parameters<typeof CompareClient>[0]['drivers']} initialD1={resolvedSearchParams.d1 ?? ''} initialD2={resolvedSearchParams.d2 ?? ''} />
 }

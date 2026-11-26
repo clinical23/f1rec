@@ -2,9 +2,10 @@ import type { Metadata } from 'next'
 import { createServerClient } from '@/lib/supabase/server'
 import EmailCapture from '@/components/EmailCapture'
 import LiveHubBoard from '@/components/live/LiveHubBoard'
+import PageHead from '@/components/page/PageHead'
 
 export const metadata: Metadata = {
-  title: 'F1 Live — Watchalongs & Streams | Sunday Grid',
+  title: 'F1 Watchalongs and Live Streams',
   description:
     'The best F1 watchalong streams on Twitch and Kick. Race day reactions, driver streams, and sim racing content — all in one place.',
 }
@@ -21,6 +22,8 @@ type Streamer = {
   related_driver_slug: string | null
 }
 
+export const revalidate = 21600
+
 export default async function LivePage() {
   const supabase = createServerClient()
   const { data, error } = await supabase
@@ -36,18 +39,13 @@ export default async function LivePage() {
   const streamers = (data ?? []) as Streamer[]
 
   return (
-    <main className="min-h-screen bg-[var(--bg)] text-[var(--text)]">
-      <section className="border-b border-[var(--border)] bg-gradient-to-b from-[color-mix(in_srgb,var(--accent)_10%,transparent)] to-transparent px-6 py-16 text-center">
-        <p className="font-display text-xs font-bold uppercase tracking-[0.2em] text-[var(--accent)]">Race Weekend Hub</p>
-        <h1 className="mt-2 font-display text-[clamp(2rem,5vw,3.25rem)] font-black leading-tight text-[var(--text)] hero-title">
-          F1 Live — Watchalongs, Streams &amp; Race Day Content
-        </h1>
-        <p className="mx-auto mt-4 max-w-3xl text-sm text-[var(--muted)]">
-          The best F1 and sim racing streams on Twitch, Kick, and YouTube — curated for race weekends and beyond.
-        </p>
-      </section>
-
-      <section className="mx-auto max-w-7xl px-6 py-16">
+    <main className="pg">
+      <PageHead
+        crumbs={[{ label: 'Sunday Grid', href: '/' }, { label: 'Live' }]}
+        title="Watch along"
+        lede="Streamers who watch the race live with their chat, plus sim racers worth following between race weekends."
+      />
+      <section className="pg-body">
         <LiveHubBoard streamers={streamers} />
       </section>
 
