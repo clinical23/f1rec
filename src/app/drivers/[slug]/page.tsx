@@ -7,6 +7,7 @@ import JsonLd from '@/components/JsonLd'
 import PageHead from '@/components/page/PageHead'
 import type { CSSProperties } from 'react'
 import { SITE_URL } from '@/lib/site'
+import { finishLabel } from '@/lib/results'
 
 type PageProps = {
   params: Promise<{ slug: string }>
@@ -88,6 +89,7 @@ type RaceResultRow = {
   race_slug: string | null
   grid_position: number | null
   position: number | null
+  position_text?: string | null
   status: string | null
   points: number | string | null
   constructor_name: string | null
@@ -257,7 +259,7 @@ async function loadDriverProfileData(slug: string) {
       .order('sort_order', { ascending: true }),
     supabase
       .from('results')
-      .select('id, season_year, race_name, ...races(race_slug:slug), grid_position, position, status, points, constructor_name')
+      .select('id, season_year, race_name, ...races(race_slug:slug), grid_position, position, position_text, status, points, constructor_name')
       .eq('driver_slug', slug)
       .eq('session_type', 'race')
       .order('season_year', { ascending: false })
@@ -515,7 +517,7 @@ export default async function DriverProfilePage({ params }: PageProps) {
                           </td>
                           <td className="hide-sm muted">{r.constructor_name ?? '—'}</td>
                           <td className="n hide-sm muted">{r.grid_position ?? '—'}</td>
-                          <td className={`n${r.position === 1 ? ' top' : ''}`}>{r.position ?? <span className="muted" title={r.status ?? undefined}>{r.status && r.status.length < 14 ? r.status : 'DNF'}</span>}</td>
+                          <td className={`n${r.position === 1 ? ' top' : ''}`}>{(() => { const f = finishLabel(r.position, r.position_text); return f.classified ? f.label : <span className="muted" title={r.status ?? undefined}>{f.label}</span> })()}</td>
                           <td className="n">{num(r.points) || ''}</td>
                         </tr>
                       ))}
@@ -564,7 +566,7 @@ export default async function DriverProfilePage({ params }: PageProps) {
                       <tr key={r.id} className={r.position === 1 ? 'p1' : undefined}>
                         <td>{r.race_slug ? <Link href={`/races/${r.race_slug}`}>{r.season_year} {r.race_name}</Link> : `${r.season_year} ${r.race_name}`}</td>
                         <td className="n muted">{r.grid_position ?? '—'}</td>
-                        <td className="n">{r.position ?? <span className="muted">{r.status && r.status.length < 14 ? r.status : 'DNF'}</span>}</td>
+                        <td className="n">{(() => { const f = finishLabel(r.position, r.position_text); return f.classified ? f.label : <span className="muted">{f.label}</span> })()}</td>
                         <td className="n">{num(r.points) || ''}</td>
                       </tr>
                     ))}

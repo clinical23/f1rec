@@ -8,6 +8,7 @@ import TrackMap from '@/components/weekend/TrackMap'
 import { circuitShape, getWinsAtCircuit } from '@/lib/weekend'
 import JsonLd from '@/components/JsonLd'
 import { SITE_URL } from '@/lib/site'
+import { finishLabel } from '@/lib/results'
 
 type PageProps = { params: Promise<{ slug: string }> }
 
@@ -16,6 +17,7 @@ export const revalidate = 3600
 
 type ResultRow = {
   id: string
+  position_text?: string | null
   session_type?: string | null
   position: number | null
   driver_slug: string | null
@@ -91,11 +93,12 @@ function ResultsTable({ rows, kind }: { rows: ResultRow[]; kind: 'race' | 'sprin
         <tbody>
           {rows.map((r) => {
             const finished = !r.status || /^(finished|\+\d+ laps?|lapped)$/i.test(r.status)
-            const gap = r.time_text ?? (finished ? '—' : r.status)
+            const gap = r.time_text?.trim() || (finished ? '—' : r.status)
+            const { label, classified } = finishLabel(r.position, r.position_text)
             const gained = kind !== 'qualifying' && r.grid && r.position ? r.grid - r.position : 0
             return (
               <tr key={r.id} className={r.position === 1 ? 'p1' : undefined}>
-                <td className="pos n">{r.position ?? '—'}</td>
+                <td className={`pos n${classified ? '' : ' muted'}`} style={classified ? undefined : { fontSize: 15 }}>{label}</td>
                 <td>
                   {r.driver_slug ? <Link href={`/drivers/${r.driver_slug}`}>{r.driver_name ?? 'Unknown'}</Link> : r.driver_name ?? 'Unknown'}
                   <span className="sub show-sm">{r.constructor_name ?? ''}</span>
@@ -141,7 +144,7 @@ export default async function RacePage({ params }: PageProps) {
       : Promise.resolve({ data: null, error: null }),
     supabase
       .from('results')
-      .select('id, session_type, position, driver_slug, driver_name, constructor_slug, constructor_name, grid, points, status, time_text, is_sprint')
+      .select('id, session_type, position, position_text, driver_slug, driver_name, constructor_slug, constructor_name, grid, points, status, time_text, is_sprint')
       .eq('race_id', raceId)
       .order('position', { ascending: true }),
     seasonYear
