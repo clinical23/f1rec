@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import TrackMap from '@/components/weekend/TrackMap'
 import { getNextRace } from '@/lib/weekend'
+import { lapDoctor as LD } from '@/lib/site'
 
 export const revalidate = 3600
 
@@ -12,7 +13,6 @@ export const metadata: Metadata = {
   alternates: { canonical: '/sim' },
 }
 
-const LD = (path: string) => `https://lapdoctor.gg${path}?from=f1rec`
 
 const ready = [
   { href: '/fov', title: 'Field of view calculator', body: 'Set the right FOV for your screen and seat, per sim.' },

@@ -3,6 +3,7 @@ import Link from 'next/link'
 import Countdown from '@/components/weekend/Countdown'
 import TrackMap from '@/components/weekend/TrackMap'
 import { getDriverCount, getNextRace, getStandings, getWinsAtCircuit, surname, winStreak } from '@/lib/weekend'
+import { SITE_URL, lapDoctor as LD } from '@/lib/site'
 
 /** The page follows the race weekend, so it's rebuilt every ten minutes; the countdown ticks in the browser. */
 export const revalidate = 600
@@ -11,13 +12,12 @@ export const metadata: Metadata = {
   title: { absolute: 'Sunday Grid: this weekend’s F1 race, every result since 1950, and Sim Race Week' },
   description:
     'The next Grand Prix in UK time, the championship, every result since 1950, and this week’s sim challenge on the same track.',
-  openGraph: { title: 'Sunday Grid', url: 'https://f1rec.com', siteName: 'Sunday Grid', type: 'website' },
+  openGraph: { title: 'Sunday Grid', url: SITE_URL, siteName: 'Sunday Grid', type: 'website' },
 }
 
 /** Flip to true when the first weekly challenge opens (2027 round 1). Until then the band says when it starts. */
 const CHALLENGE_LIVE = false
 
-const LD = (path: string) => `https://lapdoctor.gg${path}?from=f1rec`
 const plateName = (name: string) => name.replace(/ Grand Prix$/i, ' GP').toUpperCase()
 const uk = (iso: string, opts: Intl.DateTimeFormatOptions) => new Date(iso).toLocaleString('en-GB', { ...opts, timeZone: 'Europe/London' })
 const ordinal = (n: number) => {

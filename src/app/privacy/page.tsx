@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { SITE_URL } from '@/lib/site'
 
 export const metadata: Metadata = {
   title: 'Privacy Policy — Sunday Grid',
@@ -27,10 +28,10 @@ export default function PrivacyPage() {
               <li>
                 Website:{' '}
                 <a
-                  href="https://f1rec.com"
+                  href={SITE_URL}
                   className="text-[var(--accent)] underline decoration-transparent transition-colors hover:decoration-current"
                 >
-                  https://f1rec.com
+                  sundaygrid.co.uk
                 </a>
               </li>
               <li>

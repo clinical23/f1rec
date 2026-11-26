@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation'
 import { createServerClient } from '@/lib/supabase/server'
 import JsonLd from '@/components/JsonLd'
 import SeasonSidebar from '@/components/seasons/SeasonSidebar'
+import { SITE_URL } from '@/lib/site'
 
 type PageProps = {
   params: Promise<{ slug: string }>
@@ -205,7 +206,7 @@ export default async function SeasonDetailPage({ params }: PageProps) {
   const prevSeason = (adjacentSeasonsRes.data ?? []).find((s) => s.year === season.year - 1)
   const nextSeason = (adjacentSeasonsRes.data ?? []).find((s) => s.year === season.year + 1)
 
-  const seasonPageUrl = `https://f1rec.com/seasons/${season.slug}`
+  const seasonPageUrl = `${SITE_URL}/seasons/${season.slug}`
 
   return (
     <main style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--text)' }}>

@@ -12,11 +12,10 @@ export default async function RacesPage() {
   for (let from = 0; from < 5000; from += 1000) {
     const { data, error } = await supabase
       .from('results')
-      .select('season_year, round, race_name, race_slug, driver_name')
+      .select('season_year, round, race_name, driver_name, driver_slug, constructor_name, ...races!inner(race_slug:slug, race_date)')
       .eq('position', 1)
       .eq('session_type', 'race')
       .not('season_year', 'is', null)
-      .not('race_slug', 'is', null)
       .order('season_year', { ascending: false })
       .order('round', { ascending: false })
       .range(from, from + 999)

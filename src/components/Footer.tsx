@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { pathEnabled } from '@/lib/features'
 import Logo from '@/components/Logo'
+import { lapDoctor as LD } from '@/lib/site'
 
 const stats = [
   { label: 'This weekend', href: '/' },
@@ -20,8 +21,6 @@ const more = [
   { label: 'Privacy', href: '/privacy' },
 ].filter((l) => pathEnabled(l.href))
 
-// Lap Doctor is the sim racing side: links go to its own pages, tagged so its analytics can see they came from Sunday Grid.
-const LD = (path: string) => `https://lapdoctor.gg${path}${path.includes('?') ? '&' : '?'}from=f1rec`
 const sim = [
   { label: 'Sim Race Week', href: '/sim', internal: true },
   { label: 'Lap Doctor Discord', href: LD('/discord') },

@@ -5,6 +5,7 @@ import { createServerClient } from '@/lib/supabase/server'
 import RaceSidebar from '@/components/races/RaceSidebar'
 import { CountdownTimer } from '@/components/races/CountdownTimer'
 import JsonLd from '@/components/JsonLd'
+import { SITE_URL } from '@/lib/site'
 
 type PageProps = { params: Promise<{ slug: string }> }
 
@@ -85,7 +86,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const supabase = createServerClient()
   const { data: race } = await supabase
     .from('races')
-    .select('name, full_name, season_year, race_date, circuit_slug')
+    .select('id, name, full_name, season_year, race_date, circuit_slug')
     .eq('slug', slug)
     .maybeSingle()
   if (!race) return { title: 'Race not found' }
@@ -97,7 +98,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     : await supabase
         .from('results')
         .select('driver_name, constructor_name')
-        .eq('race_slug', slug)
+        .eq('race_id', String(race.id))
         .eq('session_type', 'race')
         .eq('position', 1)
         .maybeSingle()
@@ -135,7 +136,7 @@ export default async function RacePage({ params }: PageProps) {
     supabase
       .from('results')
       .select('id, position, driver_slug, driver_name, constructor_slug, constructor_name, grid, points, status, time_text, is_sprint')
-      .eq('race_slug', slug)
+      .eq('race_id', String(race.id))
       .eq('session_type', 'race')
       .order('position', { ascending: true }),
     supabase
@@ -206,7 +207,7 @@ export default async function RacePage({ params }: PageProps) {
       }
     : null
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://f1rec.com'
+  const siteUrl = SITE_URL
   const eventLd = {
     '@context': 'https://schema.org',
     '@type': 'SportsEvent',

@@ -1,9 +1,11 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { notFound } from 'next/navigation'
+import { notFound, permanentRedirect } from 'next/navigation'
+import { resolveDriverSlug } from '@/lib/slugs'
 import { createServerClient } from '@/lib/supabase/server'
 import JsonLd from '@/components/JsonLd'
 import EmailCapture from '@/components/EmailCapture'
+import { SITE_URL } from '@/lib/site'
 
 type PageProps = {
   params: Promise<{ slug: string }>
@@ -267,7 +269,7 @@ async function loadDriverProfileData(slug: string) {
       .order('sort_order', { ascending: true }),
     supabase
       .from('results')
-      .select('id, season_year, race_name, race_slug, grid_position, position, status, points, constructor_name')
+      .select('id, season_year, race_name, ...races(race_slug:slug), grid_position, position, status, points, constructor_name')
       .eq('driver_slug', slug)
       .eq('session_type', 'race')
       .order('season_year', { ascending: false })
@@ -311,7 +313,7 @@ async function loadDriverProfileData(slug: string) {
       : Promise.resolve({ data: [] as unknown[], error: null }),
     supabase
       .from('results')
-      .select('season_year, round, race_name, race_slug')
+      .select('season_year, round, race_name, ...races(race_slug:slug)')
       .eq('driver_slug', slug)
       .eq('session_type', 'race')
       .order('season_year', { ascending: true })
@@ -319,7 +321,7 @@ async function loadDriverProfileData(slug: string) {
       .limit(1),
     supabase
       .from('results')
-      .select('season_year, round, race_name, race_slug')
+      .select('season_year, round, race_name, ...races(race_slug:slug)')
       .eq('driver_slug', slug)
       .eq('position', 1)
       .eq('session_type', 'race')
@@ -445,7 +447,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       title: `${name} — F1 Career Stats | Sunday Grid`,
       description: desc,
       type: 'profile',
-      url: `https://f1rec.com/drivers/${slug}`,
+      url: `${SITE_URL}/drivers/${slug}`,
       siteName: 'Sunday Grid',
     },
     twitter: {
@@ -495,7 +497,11 @@ function RecordRow({ label, value }: { label: string; value: string }) {
 export default async function DriverProfilePage({ params, searchParams }: PageProps) {
   const { slug } = await params
   const data = await loadDriverProfileData(slug)
-  if (!data) notFound()
+  if (!data) {
+    const real = await resolveDriverSlug(slug)
+    if (real && real !== slug) permanentRedirect(`/drivers/${real}`)
+    notFound()
+  }
 
   const {
     driver,
@@ -531,14 +537,14 @@ export default async function DriverProfilePage({ params, searchParams }: PagePr
     '@type': 'Person',
     name,
     jobTitle: 'Formula 1 Driver',
-    url: `https://f1rec.com/drivers/${slug}`,
+    url: `${SITE_URL}/drivers/${slug}`,
     ...(nationality ? { nationality } : {}),
     ...(affiliationName
       ? {
           affiliation: {
             '@type': 'SportsTeam',
             name: affiliationName,
-            ...(currentTeamLink?.slug ? { url: `https://f1rec.com/teams/${currentTeamLink.slug}` } : {}),
+            ...(currentTeamLink?.slug ? { url: `${SITE_URL}/teams/${currentTeamLink.slug}` } : {}),
           },
         }
       : {}),

@@ -1,34 +1,38 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import Link from 'next/link'
+import PageHead from '@/components/page/PageHead'
 
 export type RaceResult = {
   season_year: number
   round: number
   race_name: string
   race_slug: string
+  race_date?: string | null
   driver_name: string
+  driver_slug?: string | null
+  constructor_name?: string | null
 }
+
+const fmt = (d?: string | null) =>
+  d ? new Date(d).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) : ''
 
 // Data comes from the server (page.tsx), so the full list is in the HTML for readers and search engines.
 export default function RacesClient({ initialRaces, raceCount }: { initialRaces: RaceResult[]; raceCount: number | null }) {
-  const races = initialRaces
-  const loading = false
-  const [expandedYears, setExpandedYears] = useState<Set<number>>(
-    () => new Set(initialRaces.length > 0 ? [initialRaces[0].season_year] : [])
-  )
   const [search, setSearch] = useState('')
 
   const filtered = useMemo(() => {
-    if (!search) return races
-    const q = search.toLowerCase()
-    return races.filter(r =>
-      r.race_name.toLowerCase().includes(q) ||
-      r.driver_name.toLowerCase().includes(q) ||
-      String(r.season_year).includes(q)
+    const q = search.trim().toLowerCase()
+    if (!q) return initialRaces
+    return initialRaces.filter(
+      (r) =>
+        r.race_name.toLowerCase().includes(q) ||
+        r.driver_name.toLowerCase().includes(q) ||
+        (r.constructor_name ?? '').toLowerCase().includes(q) ||
+        String(r.season_year) === q
     )
-  }, [races, search])
+  }, [initialRaces, search])
 
   const grouped = useMemo(() => {
     const map = new Map<number, RaceResult[]>()
@@ -37,100 +41,72 @@ export default function RacesClient({ initialRaces, raceCount }: { initialRaces:
       if (arr) arr.push(r)
       else map.set(r.season_year, [r])
     }
-    return Array.from(map.entries()).sort((a, b) => b[0] - a[0])
+    return [...map.entries()].sort((a, b) => b[0] - a[0]).map(([y, rows]) => [y, [...rows].sort((a, b) => a.round - b.round)] as const)
   }, [filtered])
 
-  function toggleYear(year: number) {
-    setExpandedYears(prev => {
-      const next = new Set(prev)
-      if (next.has(year)) next.delete(year)
-      else next.add(year)
-      return next
-    })
-  }
+  const seasons = new Set(initialRaces.map((r) => r.season_year)).size
+  const latest = initialRaces[0]
+  const searching = search.trim().length > 0
 
   return (
-    <main style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--text)' }}>
-      <section style={{ padding: '5rem 1.5rem 3rem', textAlign: 'center', borderBottom: '1px solid var(--border)', background: 'linear-gradient(180deg, rgba(232,0,45,0.06) 0%, transparent 100%)' }}>
-        <p style={{ fontFamily: 'var(--font-barlow-condensed, "Barlow Condensed", sans-serif)', textTransform: 'uppercase', letterSpacing: '0.2em', fontSize: '0.75rem', color: 'var(--accent)', marginBottom: '0.5rem' }}>F1 Database</p>
-        <h1 className="hero-title" style={{ fontFamily: 'var(--font-barlow-condensed, "Barlow Condensed", sans-serif)', fontSize: 'clamp(2.5rem, 5vw, 4rem)', fontWeight: 800, margin: 0, lineHeight: 1.1 }}>
-          Every Race.<br /><span style={{ color: 'var(--accent)' }}>Every Winner.</span>
-        </h1>
-        <p style={{ color: 'var(--muted, #889)', maxWidth: '500px', margin: '1rem auto 0', fontSize: '0.95rem' }}>
-          {raceCount != null ? `${raceCount.toLocaleString()} grands prix` : races.length > 0 ? `${races.length} grands prix` : '...'} from 1950 to today. Every race result at a glance.
-        </p>
-      </section>
-
-      <section style={{ maxWidth: '1400px', margin: '0 auto', padding: '4rem 1.5rem' }}>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', alignItems: 'center', marginBottom: '1.5rem' }}>
-          <div style={{ position: 'relative', flex: '1 1 300px', minWidth: '200px' }}>
-            <input type="text" placeholder="Search races, winners, or years..." value={search}
-              onChange={e => setSearch(e.target.value)}
-              style={{ width: '100%', padding: '0.7rem 1rem 0.7rem 2.5rem', background: 'var(--bg2, #111118)', border: '1px solid var(--border, #2a2a3a)', borderRadius: '8px', color: 'var(--text)', fontSize: '0.9rem', outline: 'none' }}
-            />
-            <svg style={{ position: 'absolute', left: '0.8rem', top: '50%', transform: 'translateY(-50%)', width: '16px', height: '16px', color: 'var(--muted)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8" strokeWidth="2" /><path d="M21 21l-4.35-4.35" strokeWidth="2" strokeLinecap="round" /></svg>
-          </div>
+    <main className="pg">
+      <PageHead
+        crumbs={[{ label: 'Sunday Grid', href: '/' }, { label: 'Results' }]}
+        title="Results"
+        lede="The winner of every Formula 1 world championship race since 1950. Open a race for the full finishing order."
+        stats={[
+          { value: (raceCount ?? initialRaces.length).toLocaleString('en-GB'), label: 'races' },
+          { value: seasons, label: 'seasons' },
+          ...(latest ? [{ value: latest.driver_name.split(' ').at(-1) ?? '', label: `won the ${latest.race_name.replace(' Grand Prix', ' GP')}`, sig: true }] : []),
+        ]}
+      />
+      <div className="pg-body">
+        <div className="pg-tools">
+          <input
+            className="pg-input"
+            type="search"
+            aria-label="Search races"
+            placeholder="Search by race, winner, team or year"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+          <span className="pg-count">{filtered.length.toLocaleString('en-GB')} races</span>
         </div>
 
-        {loading ? (
-          <div style={{ textAlign: 'center', padding: '4rem 0', color: 'var(--muted)' }}>
-            <div style={{ width: '24px', height: '24px', border: '2px solid var(--border)', borderTopColor: 'var(--accent)', borderRadius: '50%', animation: 'spin 0.8s linear infinite', margin: '0 auto 1rem' }} />
-            Loading races...
-            <style>{`@keyframes spin { to { transform: rotate(360deg) } }`}</style>
-          </div>
-        ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-            {grouped.map(([year, yearRaces]) => {
-              const expanded = expandedYears.has(year)
-              return (
-                <div key={year} style={{ border: '1px solid var(--border)', borderRadius: '8px', overflow: 'hidden' }}>
-                  <button onClick={() => toggleYear(year)}
-                    style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1rem 1.25rem', background: 'var(--bg2)', border: 'none', cursor: 'pointer', color: 'var(--text)' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                      <span style={{ fontFamily: 'var(--font-barlow-condensed)', fontSize: '1.5rem', fontWeight: 800, color: expanded ? 'var(--accent)' : 'var(--text)' }}>{year}</span>
-                      <span style={{ fontFamily: 'var(--font-barlow-condensed)', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--muted)', fontWeight: 600 }}>{yearRaces.length} race{yearRaces.length !== 1 ? 's' : ''}</span>
-                    </div>
-                    <span style={{ fontSize: '0.7rem', color: 'var(--muted)', transition: 'transform 0.2s', transform: expanded ? 'rotate(180deg)' : 'rotate(0)' }}>▼</span>
-                  </button>
-                  {expanded && (
-                    <div style={{ overflowX: 'auto' }}>
-                      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
-                        <thead>
-                          <tr style={{ background: 'var(--bg)' }}>
-                            <th style={{ padding: '0.6rem 1rem', textAlign: 'center', fontFamily: 'var(--font-barlow-condensed)', textTransform: 'uppercase', letterSpacing: '0.08em', fontSize: '0.65rem', color: 'var(--muted)', fontWeight: 600, borderBottom: '1px solid var(--border)', width: '60px' }}>Round</th>
-                            <th style={{ padding: '0.6rem 0.75rem', textAlign: 'left', fontFamily: 'var(--font-barlow-condensed)', textTransform: 'uppercase', letterSpacing: '0.08em', fontSize: '0.65rem', color: 'var(--muted)', fontWeight: 600, borderBottom: '1px solid var(--border)' }}>Race</th>
-                            <th style={{ padding: '0.6rem 0.75rem', textAlign: 'left', fontFamily: 'var(--font-barlow-condensed)', textTransform: 'uppercase', letterSpacing: '0.08em', fontSize: '0.65rem', color: 'var(--muted)', fontWeight: 600, borderBottom: '1px solid var(--border)' }}>Winner</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {yearRaces.sort((a, b) => a.round - b.round).map(race => (
-                            <tr key={`${race.season_year}-${race.round}`} style={{ borderBottom: '1px solid var(--border)' }}
-                              onMouseEnter={e => (e.currentTarget.style.background = 'var(--bg2)')}
-                              onMouseLeave={e => (e.currentTarget.style.background = 'transparent')}>
-                              <td style={{ padding: '0.75rem 1rem', textAlign: 'center', fontFamily: 'var(--font-jetbrains, monospace)', fontSize: '0.75rem', color: 'var(--muted)' }}>R{race.round}</td>
-                              <td style={{ padding: '0.75rem 0.75rem' }}>
-                                <Link href={`/races/${race.race_slug}`} style={{ color: 'var(--text)', textDecoration: 'none', fontWeight: 600 }}
-                                  onMouseEnter={e => (e.currentTarget.style.color = 'var(--accent)')}
-                                  onMouseLeave={e => (e.currentTarget.style.color = 'var(--text)')}>
-                                  {race.race_name}
-                                </Link>
-                              </td>
-                              <td style={{ padding: '0.75rem 0.75rem', color: 'var(--text)', fontWeight: 500 }}>
-                                <span style={{ color: 'var(--gold, #f5c842)', marginRight: '0.4rem', fontSize: '0.8rem' }}>P1</span>
-                                {race.driver_name}
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  )}
-                </div>
-              )
-            })}
-          </div>
-        )}
-      </section>
+        {grouped.length === 0 && <p className="pg-empty">No races match “{search}”. Try a driver&apos;s surname or a year.</p>}
+
+        {grouped.map(([year, rows], i) => (
+          <details key={year} className="pg-fold" open={searching || i === 0}>
+            <summary>
+              <b>{year}</b>
+              <span>{rows.length} {rows.length === 1 ? 'race' : 'races'}</span>
+            </summary>
+            <table className="pg-table compact">
+              <thead>
+                <tr>
+                  <th className="n">Round</th>
+                  <th>Race</th>
+                  <th className="hide-sm">Date</th>
+                  <th>Winner</th>
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map((r) => (
+                  <tr key={`${r.season_year}-${r.round}-${r.race_slug}`}>
+                    <td className="n muted">{r.round}</td>
+                    <td><Link href={`/races/${r.race_slug}`}>{r.race_name}</Link></td>
+                    <td className="hide-sm muted">{fmt(r.race_date)}</td>
+                    <td>
+                      {r.driver_slug ? <Link href={`/drivers/${r.driver_slug}`}>{r.driver_name}</Link> : r.driver_name}
+                      {r.constructor_name && <span className="sub">{r.constructor_name}</span>}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </details>
+        ))}
+      </div>
     </main>
   )
 }

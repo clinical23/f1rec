@@ -7,9 +7,10 @@ import Footer from '@/components/Footer'
 import Ticker from '@/components/Ticker'
 import JsonLd from '@/components/JsonLd'
 import CookieConsent from '@/components/CookieConsent'
+import { SITE_URL } from '@/lib/site'
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://f1rec.com'),
+  metadataBase: new URL(SITE_URL),
   title: {
     default: 'Sunday Grid: F1 results, stats and records since 1950',
     template: '%s | Sunday Grid',
@@ -20,7 +21,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     siteName: 'Sunday Grid',
-    url: process.env.NEXT_PUBLIC_SITE_URL ?? 'https://f1rec.com',
+    url: SITE_URL,
   },
   twitter: {
     card: 'summary_large_image',
@@ -71,12 +72,12 @@ export default function RootLayout({
           '@type': 'WebSite',
           name: 'Sunday Grid',
           description: 'The most complete Formula 1 statistics platform. Every stat. Every race. Every era.',
-          url: 'https://f1rec.com',
+          url: SITE_URL,
           potentialAction: {
             '@type': 'SearchAction',
             target: {
               '@type': 'EntryPoint',
-              urlTemplate: 'https://f1rec.com/drivers?q={search_term_string}',
+              urlTemplate: `${SITE_URL}/drivers?q={search_term_string}`,
             },
             'query-input': 'required name=search_term_string',
           },

@@ -1,10 +1,12 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { notFound } from 'next/navigation'
+import { notFound, permanentRedirect } from 'next/navigation'
+import { resolveTeamSlug } from '@/lib/slugs'
 import { createServerClient } from '@/lib/supabase/server'
 import JsonLd from '@/components/JsonLd'
 import EmailCapture from '@/components/EmailCapture'
 import TeamSidebar from '@/components/teams/TeamSidebar'
+import { SITE_URL } from '@/lib/site'
 
 type PageProps = {
   params: Promise<{ slug: string }>
@@ -312,7 +314,7 @@ async function loadTeamPageData(slug: string): Promise<LoadedTeam | null> {
     supabase.from('countries').select('name, flag_emoji'),
     supabase
       .from('results')
-      .select('season_year, round, race_name, race_slug')
+      .select('season_year, round, race_name, ...races(race_slug:slug)')
       .eq('constructor_slug', slug)
       .eq('position', 1)
       .eq('session_type', 'race')
@@ -569,7 +571,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       title: `${name} — F1 Constructor Stats | Sunday Grid`,
       description: desc,
       type: 'website',
-      url: `https://f1rec.com/teams/${slug}`,
+      url: `${SITE_URL}/teams/${slug}`,
       siteName: 'Sunday Grid',
     },
     twitter: {
@@ -627,7 +629,11 @@ const categoryStyles: Record<string, string> = {
 export default async function TeamDetailPage({ params }: PageProps) {
   const { slug } = await params
   const data = await loadTeamPageData(slug)
-  if (!data) notFound()
+  if (!data) {
+    const real = await resolveTeamSlug(slug)
+    if (real && real !== slug) permanentRedirect(`/teams/${real}`)
+    notFound()
+  }
 
   const {
     team,
@@ -659,7 +665,7 @@ export default async function TeamDetailPage({ params }: PageProps) {
     '@type': 'SportsTeam',
     name,
     sport: 'Formula 1',
-    url: `https://f1rec.com/teams/${slug}`,
+    url: `${SITE_URL}/teams/${slug}`,
     description:
       titleCount > 0
         ? `${name} has ${aggregates.totalWins} wins, ${aggregates.totalPodiums} podiums, and ${titleCount} constructor championships.`
