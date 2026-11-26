@@ -36,7 +36,7 @@ export default function RootLayout({
     <html lang="en-GB" suppressHydrationWarning>
       <head>
         {/* Applies the saved Night/Day theme before the first paint. */}
-        <script dangerouslySetInnerHTML={{ __html: "try{var t=localStorage.getItem('f1rec-theme');if(['day','timing','tower','ghost'].indexOf(t)>-1)document.documentElement.dataset.theme=t}catch(e){}" }} />
+        <script dangerouslySetInnerHTML={{ __html: "try{var t=localStorage.getItem('f1rec-theme');if(['day','timing','tower','ghost'].indexOf(t)>-1)document.documentElement.dataset.theme=t;var a=localStorage.getItem('f1rec-accent');if(['yellow','purple','orange','blue','green'].indexOf(a)>-1)document.documentElement.dataset.accent=a}catch(e){}" }} />
         <Script
           async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5181795059219175"

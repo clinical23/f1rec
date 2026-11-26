@@ -13,13 +13,24 @@ export const THEMES = [
 type Theme = (typeof THEMES)[number]['id']
 const IDS = THEMES.map((t) => t.id) as readonly string[]
 
+/** Colours that can replace a theme's own signal colour. Keep in step with globals.css and layout.tsx. */
+export const ACCENTS = [
+  { id: 'yellow', label: 'Yellow', c: '#FFD200' },
+  { id: 'purple', label: 'Purple', c: '#B98CFF' },
+  { id: 'orange', label: 'Orange', c: '#FF7A2E' },
+  { id: 'blue', label: 'Blue', c: '#6EC8FF' },
+  { id: 'green', label: 'Green', c: '#3EE08F' },
+] as const
+
+const readAccent = () => document.documentElement.dataset.accent ?? ''
+
 const read = (): Theme => {
   const t = document.documentElement.dataset.theme
   return (t && IDS.includes(t) ? t : 'night') as Theme
 }
 const subscribe = (cb: () => void) => {
   const mo = new MutationObserver(cb)
-  mo.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] })
+  mo.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme', 'data-accent'] })
   return () => mo.disconnect()
 }
 
@@ -28,6 +39,14 @@ const subscribe = (cb: () => void) => {
 export default function ThemeToggle() {
   const id = useId()
   const theme = useSyncExternalStore(subscribe, read, () => 'night' as Theme)
+  const accent = useSyncExternalStore(subscribe, readAccent, () => '')
+  // Picking the colour that's already on clears it, back to the theme's own colour.
+  const pickAccent = (a: string) => {
+    const next = a === accent ? '' : a
+    if (next) document.documentElement.dataset.accent = next
+    else delete document.documentElement.dataset.accent
+    try { localStorage.setItem('f1rec-accent', next) } catch {}
+  }
   const pick = (t: Theme) => {
     if (t === 'night') delete document.documentElement.dataset.theme
     else document.documentElement.dataset.theme = t
@@ -39,6 +58,12 @@ export default function ThemeToggle() {
       <select id={id} value={theme} onChange={(e) => pick(e.target.value as Theme)}>
         {THEMES.map((t) => <option key={t.id} value={t.id}>{t.label}</option>)}
       </select>
+      <div className="accent-pick" role="group" aria-label="Colour">
+        {ACCENTS.map((a) => (
+          <button key={a.id} type="button" aria-label={a.label} title={a.label} aria-pressed={accent === a.id}
+            style={{ ['--c' as string]: a.c }} onClick={() => pickAccent(a.id)} />
+        ))}
+      </div>
     </div>
   )
 }

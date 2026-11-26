@@ -69,8 +69,8 @@
   --green: #0B7A45;
   --purple: #6B3FBF;
   --ticker-bg: #151719;
-  --ticker-text: #FFD200;
-  --header-bg: #FFD200;
+  --ticker-text: var(--sig);
+  --header-bg: var(--sig);
   --header-text: #151719;
   --header-muted: #3B3F44;
   --header-active: #151719;
@@ -495,9 +495,9 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   color-scheme: dark;
 }
 :root[data-theme='timing'] :is(.pb-plate, .pb-tile b, .pb-count b, .pb-trackfacts b, .pb-trackname b, .pb-ph h2, .pb-sim h2, .pb-simpage h1, .pb-champ .pl, .pb-champ .pt, .pb-cmp td, .pb-h2h .dp b, .pb-logo, .pb-explore b, .pb-ready b, .pb-simblock h2) { font-stretch: 78%; letter-spacing: -.01em; }
-:root[data-theme='timing'] .pb-ticker b { color: #B98CFF; }
+:root[data-theme='timing'] .pb-ticker b { color: var(--sig); }
 :root[data-theme='timing'] .pb-ticker { border-bottom: 1px solid var(--border); }
-:root[data-theme='timing'] .pb-tile { border-top: 0; border-left: 4px solid #B98CFF; }
+:root[data-theme='timing'] .pb-tile { border-top: 0; border-left: 4px solid var(--sig); }
 :root[data-theme='timing'] .pb-tile:nth-child(2) { border-left-color: #3EE08F; }
 :root[data-theme='timing'] .pb-tile:nth-child(3) { border-left-color: #FFD200; }
 
@@ -530,12 +530,12 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
   color-scheme: dark;
 }
 :root[data-theme='ghost'] .pb-ticker { border-bottom: 1px solid var(--border); }
-:root[data-theme='ghost'] .pb-ticker b { color: #7FE7FF; }
+:root[data-theme='ghost'] .pb-ticker b { color: var(--sig); }
 :root[data-theme='ghost'] .pb-board { backdrop-filter: blur(6px); }
 :root[data-theme='ghost'] .pb-plate { background: rgba(234, 247, 250, .06); color: #EAF7FA; box-shadow: inset 0 0 0 2px rgba(234, 247, 250, .5); }
 :root[data-theme='ghost'] .pb-plate small { color: #93A6AE; }
-:root[data-theme='ghost'] .pb-plate.yellow { background: rgba(127, 231, 255, .12); color: #7FE7FF; box-shadow: inset 0 0 0 2px #7FE7FF, 0 0 24px rgba(127, 231, 255, .25); }
-:root[data-theme='ghost'] .pb-logo b { background: transparent; color: transparent; -webkit-text-stroke: 1.5px #7FE7FF; box-shadow: inset 0 0 0 1.5px rgba(127, 231, 255, .4); }
+:root[data-theme='ghost'] .pb-plate.yellow { background: color-mix(in srgb, var(--sig) 12%, transparent); color: var(--sig); box-shadow: inset 0 0 0 2px var(--sig), 0 0 24px color-mix(in srgb, var(--sig) 25%, transparent); }
+:root[data-theme='ghost'] .pb-logo b { background: transparent; color: transparent; -webkit-text-stroke: 1.5px var(--sig); box-shadow: inset 0 0 0 1.5px color-mix(in srgb, var(--sig) 40%, transparent); }
 
 /* Theme picker */
 .theme-pick { display: flex; align-items: center; gap: 8px; }
@@ -544,3 +544,20 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 :root[data-theme='day'] .pb-header .theme-pick select { background-color: #fff; border-color: #151719; color: #151719; }
 :root[data-theme='day'] .pb-header .theme-pick label { color: #151719; }
 .pb-menu .theme-pick select { min-height: 44px; font-size: 15px; }
+
+/* ===================== Colour =====================
+   Swaps the signal colour on any theme (data-accent on <html>, localStorage 'f1rec-accent').
+   No attribute = the theme's own colour. On Day, text accents use a darker shade so they stay readable. */
+:root[data-accent='yellow'] { --sig: #FFD200; }
+:root[data-accent='purple'] { --sig: #B98CFF; }
+:root[data-accent='orange'] { --sig: #FF7A2E; }
+:root[data-accent='blue']   { --sig: #6EC8FF; }
+:root[data-accent='green']  { --sig: #3EE08F; }
+:root[data-theme='day'][data-accent='purple'] { --accent: #6B3FBF; }
+:root[data-theme='day'][data-accent='orange'] { --accent: #B34400; }
+:root[data-theme='day'][data-accent='blue']   { --accent: #0B5C99; }
+:root[data-theme='day'][data-accent='green']  { --accent: #0B7A45; }
+.accent-pick { display: flex; gap: 6px; align-items: center; }
+.accent-pick button { width: 20px; height: 20px; border-radius: 50%; border: 2px solid transparent; background: var(--c); cursor: pointer; padding: 0; box-shadow: 0 0 0 1px rgba(0,0,0,.4); }
+.accent-pick button[aria-pressed='true'] { border-color: var(--header-text); box-shadow: 0 0 0 2px var(--header-bg), 0 0 0 4px var(--header-text); }
+.pb-menu .accent-pick button { width: 30px; height: 30px; }
