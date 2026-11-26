@@ -3,7 +3,7 @@ import { pathEnabled } from "@/lib/features";
 
 // The launch switch. Production pages sit behind a password until SITE_PUBLIC=on is set in Vercel
 // (Production) and the site is redeployed; removing it locks the site again the same way.
-// Previews are never gated here: Vercel already requires a sign-in for them.
+// Previews on *.vercel.app are not gated here: Vercel already requires a sign-in for them.
 //
 // Never touched by the gate:
 //  - /api/*            → the tweet/blog pipeline and crons (each checks its own secret)
@@ -19,8 +19,11 @@ export function middleware(req: NextRequest) {
   }
 
   // Fail closed: only a known preview or local build skips the gate; anything else is treated as production.
+  // Previews skip it only on *.vercel.app, where Vercel's own sign-in protects them. A preview on a custom
+  // domain (sundaygrid.co.uk on the redesign branch) gets no Vercel sign-in, so it is gated like production.
   const env = process.env.VERCEL_ENV;
-  if (env === "preview" || (!process.env.VERCEL && process.env.NODE_ENV === "development")) {
+  const host = (req.headers.get("host") ?? "").toLowerCase();
+  if ((env === "preview" && host.endsWith(".vercel.app")) || (!process.env.VERCEL && process.env.NODE_ENV === "development")) {
     return NextResponse.next();
   }
   if (process.env.SITE_PUBLIC === "on") return NextResponse.next();
