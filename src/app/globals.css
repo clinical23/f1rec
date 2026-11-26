@@ -30,8 +30,8 @@
   --border: #30353B;
   --text: #F2F2EC;
   --muted: #9AA1A8;
-  --sig: #FFD200;         /* the look's signal colour: plates, chips, glow, logo */
-  --sig-soft: rgba(255, 210, 0, .35);
+  --sig: #B98CFF;         /* the signal colour (fastest-lap purple): plates, chips, glow, logo */
+  --sig-soft: rgba(185, 140, 255, .35);
   --accent: var(--sig);
   --accent2: #FFE15C;
   --on-accent: #111214;
@@ -60,8 +60,8 @@
   --border: #C4C8CC;
   --text: #151719;
   --muted: #565C62;
-  --accent: #8A6A00;      /* yellow is unreadable as text on light grey, so text accents go dark gold */
-  --accent2: #6E5500;
+  --accent: #6B3FBF;      /* the light purple is too pale as text on light grey, so text accents go deep purple */
+  --accent2: #55309A;
   --on-accent: #111214;
   --link: #151719;
   --gold: #151719;
@@ -553,6 +553,7 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 :root[data-accent='orange'] { --sig: #FF7A2E; }
 :root[data-accent='blue']   { --sig: #6EC8FF; }
 :root[data-accent='green']  { --sig: #3EE08F; }
+:root[data-theme='day'][data-accent='yellow'] { --accent: #8A6A00; }
 :root[data-theme='day'][data-accent='purple'] { --accent: #6B3FBF; }
 :root[data-theme='day'][data-accent='orange'] { --accent: #B34400; }
 :root[data-theme='day'][data-accent='blue']   { --accent: #0B5C99; }
