@@ -571,3 +571,21 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 :root[data-theme='day'] .pb-header .pb-logo svg rect:first-of-type { fill: #FFFFFF; filter: none; }
 .pb-footer .pb-logo svg { color: #F2F2EC; height: 24px; }
 @media (max-width: 560px) { .pb-header .pb-logo svg { height: 21px; } }
+
+/* Header fit: one line for every nav item; the long controls give way first */
+.pb-header-in { gap: 28px; }
+.pb-nav { gap: 20px; }
+.pb-nav a { white-space: nowrap; }
+.pb-header .theme-pick label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+.pb-menu .theme-pick label { position: static; width: auto; height: auto; clip: auto; }
+@media (max-width: 1380px) { .pb-header-right > .pb-search { display: none; } }
+@media (max-width: 1180px) {
+  .pb-nav, .pb-header-right > .theme-pick { display: none; }
+  .pb-header-in { justify-content: space-between; }
+  .pb-menu-btn { display: block; }
+  .pb-menu { display: grid; padding: 8px 24px 20px; background: var(--header-bg); border-top: 1px solid var(--border); }
+  .pb-menu a { color: var(--header-text); text-decoration: none; font: 700 22px var(--font-display); padding: 10px 0; border-bottom: 1px solid var(--border); }
+  .pb-menu a[aria-current='page'] { color: var(--header-active); }
+  .pb-menu-theme { display: flex; justify-content: space-between; align-items: center; padding-top: 14px; color: var(--header-muted); font-weight: 600; }
+}
+@media (min-width: 1181px) { .pb-menu { display: none !important; } }
