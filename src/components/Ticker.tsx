@@ -15,7 +15,7 @@ export default async function Ticker() {
     if (next) items.push(['Next', `${next.name}, ${ukWhen(next.startIso, next.date)}`])
     if (standings[0]) items.push(['Leader', `${surname(standings[0].name)} ${standings[0].points} pts`])
     if (standings[1]) items.push(['Gap', `${standings[0].points - standings[1].points} pts to ${surname(standings[1].name)}`])
-    items.push(['Sim', 'Drive this week’s track with Lap Doctor'])
+    items.push(['Sim Race Week', 'opens with round 1 of 2027, with Lap Doctor'])
   } catch {
     items = []
   }

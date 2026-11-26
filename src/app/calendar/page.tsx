@@ -3,7 +3,7 @@ import { createServerClient } from '@/lib/supabase/server'
 import CalendarBoard from '@/components/calendar/CalendarBoard'
 
 export const metadata: Metadata = {
-  title: '2026 F1 Race Calendar — Schedule & Where to Watch | F1Rec',
+  title: '2026 F1 Race Calendar — Schedule & Where to Watch | Sunday Grid',
   description:
     'Complete 2026 Formula 1 race schedule with dates, circuits, results, and broadcast channels for every country.',
 }

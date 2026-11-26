@@ -85,7 +85,7 @@ export default function CommunityPage() {
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({})
 
   useEffect(() => {
-    document.title = 'F1 Community — Best YouTube, Reddit & Podcasts | F1Rec'
+    document.title = 'F1 Community — Best YouTube, Reddit & Podcasts | Sunday Grid'
 
     async function fetchCreators() {
       const { data, error } = await supabase
@@ -152,7 +152,7 @@ export default function CommunityPage() {
     <main style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--text)' }}>
       {/* Hero */}
       <section style={{ padding: '5rem 1.5rem 3rem', textAlign: 'center', borderBottom: '1px solid var(--border)', background: 'linear-gradient(180deg, rgba(232,0,45,0.06) 0%, transparent 100%)' }}>
-        <p style={{ fontFamily: 'var(--font-barlow-condensed, "Barlow Condensed", sans-serif)', textTransform: 'uppercase', letterSpacing: '0.2em', fontSize: '0.75rem', color: 'var(--accent)', marginBottom: '0.5rem' }}>Curated by F1Rec</p>
+        <p style={{ fontFamily: 'var(--font-barlow-condensed, "Barlow Condensed", sans-serif)', textTransform: 'uppercase', letterSpacing: '0.2em', fontSize: '0.75rem', color: 'var(--accent)', marginBottom: '0.5rem' }}>Curated by Sunday Grid</p>
         <h1 className="hero-title" style={{ fontFamily: 'var(--font-barlow-condensed, "Barlow Condensed", sans-serif)', fontSize: 'clamp(2.5rem, 5vw, 4rem)', fontWeight: 800, margin: 0, lineHeight: 1.1 }}>
           The F1<br /><span style={{ color: 'var(--accent)' }}>Community</span>
         </h1>

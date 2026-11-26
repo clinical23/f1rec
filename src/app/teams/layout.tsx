@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   title: '206 F1 Constructors — Complete Database',
   description: 'Complete Formula 1 constructor database with team championships, race wins, and historical records.',
   alternates: { canonical: '/teams' },
-  openGraph: { title: '206 F1 Constructors — Complete Database | F1Rec', description: 'Complete Formula 1 constructor database with team championships, race wins, and historical records.', url: '/teams' },
+  openGraph: { title: '206 F1 Constructors — Complete Database | Sunday Grid', description: 'Complete Formula 1 constructor database with team championships, race wins, and historical records.', url: '/teams' },
 }
 
 export default function Layout({ children }: { children: React.ReactNode }) {

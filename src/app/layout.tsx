@@ -11,15 +11,15 @@ import CookieConsent from '@/components/CookieConsent'
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://f1rec.com'),
   title: {
-    default: 'F1Rec — Formula 1 Statistics & Records',
-    template: '%s | F1Rec',
+    default: 'Sunday Grid: F1 results, stats and records since 1950',
+    template: '%s | Sunday Grid',
   },
   description:
     'The most complete Formula 1 statistics database. Driver records, race results, season standings and head-to-head comparisons from 1950 to today.',
   keywords: ['Formula 1', 'F1 statistics', 'F1 records', 'F1 drivers', 'F1 results'],
   openGraph: {
     type: 'website',
-    siteName: 'F1Rec',
+    siteName: 'Sunday Grid',
     url: process.env.NEXT_PUBLIC_SITE_URL ?? 'https://f1rec.com',
   },
   twitter: {
@@ -69,7 +69,7 @@ export default function RootLayout({
         <JsonLd data={{
           '@context': 'https://schema.org',
           '@type': 'WebSite',
-          name: 'F1Rec',
+          name: 'Sunday Grid',
           description: 'The most complete Formula 1 statistics platform. Every stat. Every race. Every era.',
           url: 'https://f1rec.com',
           potentialAction: {

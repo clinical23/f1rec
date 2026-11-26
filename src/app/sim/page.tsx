@@ -6,7 +6,7 @@ import { getNextRace } from '@/lib/weekend'
 export const revalidate = 3600
 
 export const metadata: Metadata = {
-  title: 'Sim challenge: drive this weekend’s track',
+  title: 'Sim Race Week: drive this weekend’s track',
   description:
     'Every race week, drive the same circuit from your own sim rig and see where your lap would line up. Free, run with Lap Doctor on Discord.',
   alternates: { canonical: '/sim' },
@@ -32,7 +32,7 @@ export default async function SimPage() {
       <section className="pb-sim" aria-labelledby="sim-h">
         <div className="pb-wrap pb-sim-in">
           <div>
-            <span className="pb-tag">Sim challenge, with Lap Doctor</span>
+            <span className="pb-tag">Sim Race Week, with Lap Doctor</span>
             <h1 id="sim-h">Drive the race track before the race</h1>
             <p className="l">
               Every race week there&apos;s one track, one sim and one car. You set laps from your own rig between Monday and
@@ -91,7 +91,7 @@ export default async function SimPage() {
         </section>
 
         <p className="pb-simfoot">
-          The real race: <Link href="/">this weekend on F1Rec</Link>. The sim challenge is run by Lap Doctor (lapdoctor.gg), a free
+          The real race: <Link href="/">this weekend on Sunday Grid</Link>. Sim Race Week is run by Lap Doctor (lapdoctor.gg), a free
           sim racing help community.
         </p>
       </div>

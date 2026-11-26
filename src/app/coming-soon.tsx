@@ -1,8 +1,8 @@
 import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'F1Rec — Coming Soon',
-  description: 'Leave me alone, I know what I am doing. F1Rec is preparing launch.',
+  title: 'Sunday Grid — Coming Soon',
+  description: 'Leave me alone, I know what I am doing. Sunday Grid is preparing launch.',
 }
 
 export default function ComingSoonPage() {
@@ -169,7 +169,7 @@ export default function ComingSoonPage() {
           color: '#555',
         }}
       >
-        © 2026 F1Rec. Not affiliated with Formula 1.
+        © 2026 Sunday Grid. Not affiliated with Formula 1.
       </div>
     </div>
   )

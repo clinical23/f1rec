@@ -114,7 +114,7 @@ export default function SetupsPage() {
   const [filter, setFilter] = useState('all')
 
   useEffect(() => {
-    document.title = 'Sim Racing Car Setups — Free Community Downloads | F1Rec'
+    document.title = 'Sim Racing Car Setups — Free Community Downloads | Sunday Grid'
   }, [])
 
   useEffect(() => {

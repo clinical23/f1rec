@@ -68,13 +68,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   if (!season) {
     return {
-      title: 'Season Not Found | F1Rec',
+      title: 'Season Not Found | Sunday Grid',
       description: 'The requested Formula 1 season could not be found.',
     }
   }
 
   return {
-    title: `${season.year} Formula 1 Season Results & Standings | F1Rec`,
+    title: `${season.year} Formula 1 Season Results & Standings | Sunday Grid`,
     description: `Complete ${season.year} Formula 1 season overview with race winners, driver standings, and constructor standings.`,
   }
 }

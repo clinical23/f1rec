@@ -18,8 +18,7 @@ export default function Icon() {
         }}
       >
         <span style={{ fontSize: '18px', fontWeight: 900, fontFamily: 'Arial, sans-serif', letterSpacing: '-1px' }}>
-          <span style={{ color: '#111214' }}>F1</span>
-          <span style={{ color: '#111214' }}>R</span>
+          <span style={{ color: '#111214' }}>SG</span>
         </span>
       </div>
     ),

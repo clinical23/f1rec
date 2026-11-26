@@ -56,19 +56,19 @@ const gameMeta: Record<string, { name: string; desc: string }> = {
 }
 
 export const metadata = {
-  title: 'Sim Racing Hardware, Reviews & Setups | F1Rec',
-  description: 'Your complete sim racing resource for hardware, reviews, setups, and buying guides on F1Rec.',
+  title: 'Sim Racing Hardware, Reviews & Setups | Sunday Grid',
+  description: 'Your complete sim racing resource for hardware, reviews, setups, and buying guides on Sunday Grid.',
   openGraph: {
-    title: 'Sim Racing Hardware, Reviews & Setups | F1Rec',
-    description: 'Your complete sim racing resource for hardware, reviews, setups, and buying guides on F1Rec.',
+    title: 'Sim Racing Hardware, Reviews & Setups | Sunday Grid',
+    description: 'Your complete sim racing resource for hardware, reviews, setups, and buying guides on Sunday Grid.',
     url: 'https://f1rec.com/sim-racing',
-    siteName: 'F1Rec',
+    siteName: 'Sunday Grid',
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Sim Racing Hardware, Reviews & Setups | F1Rec',
-    description: 'Your complete sim racing resource for hardware, reviews, setups, and buying guides on F1Rec.',
+    title: 'Sim Racing Hardware, Reviews & Setups | Sunday Grid',
+    description: 'Your complete sim racing resource for hardware, reviews, setups, and buying guides on Sunday Grid.',
   },
 }
 

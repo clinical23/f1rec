@@ -3,7 +3,7 @@ import { createServerClient } from '@/lib/supabase/server'
 import RandomStatsBoard from '@/components/random/RandomStatsBoard'
 
 export const metadata: Metadata = {
-  title: 'Random F1 Stats — Did You Know? | F1Rec',
+  title: 'Random F1 Stats — Did You Know? | Sunday Grid',
   description: 'Surprising Formula 1 statistics from 77 seasons and 25,883 results.',
 }
 

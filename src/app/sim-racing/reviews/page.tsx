@@ -51,7 +51,7 @@ export default function ReviewsPage() {
   const [filter, setFilter] = useState('all')
 
   useEffect(() => {
-    document.title = 'Sim Racing Hardware Reviews — Expert Ratings | F1Rec'
+    document.title = 'Sim Racing Hardware Reviews — Expert Ratings | Sunday Grid'
   }, [])
 
   useEffect(() => {

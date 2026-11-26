@@ -2,8 +2,8 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 
 export const metadata: Metadata = {
-  title: 'Privacy Policy — F1Rec',
-  description: 'How F1Rec collects, uses, and protects your data.',
+  title: 'Privacy Policy — Sunday Grid',
+  description: 'How Sunday Grid collects, uses, and protects your data.',
 }
 
 export default function PrivacyPage() {
@@ -21,7 +21,7 @@ export default function PrivacyPage() {
               Who we are
             </h2>
             <p className="text-[var(--text)]">
-              F1Rec is a Formula 1 statistics and sim racing platform operated from the United Kingdom.
+              Sunday Grid is a Formula 1 statistics and sim racing platform operated from the United Kingdom.
             </p>
             <ul className="mt-3 list-inside list-disc space-y-1 text-[var(--muted)]">
               <li>
@@ -112,7 +112,7 @@ export default function PrivacyPage() {
                   </tr>
                   <tr>
                     <td className="px-3 py-2 font-mono text-xs text-[var(--text)]">cookie_consent</td>
-                    <td className="px-3 py-2">F1Rec</td>
+                    <td className="px-3 py-2">Sunday Grid</td>
                     <td className="px-3 py-2">Remembers your cookie preference (stored in localStorage on your device)</td>
                     <td className="px-3 py-2">1 year</td>
                     <td className="px-3 py-2">Necessary</td>
@@ -250,7 +250,7 @@ export default function PrivacyPage() {
               Children&apos;s privacy
             </h2>
             <p className="text-[var(--muted)]">
-              F1Rec is not aimed at children under 13. We do not knowingly collect personal data from children.
+              Sunday Grid is not aimed at children under 13. We do not knowingly collect personal data from children.
             </p>
           </section>
 

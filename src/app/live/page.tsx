@@ -4,7 +4,7 @@ import EmailCapture from '@/components/EmailCapture'
 import LiveHubBoard from '@/components/live/LiveHubBoard'
 
 export const metadata: Metadata = {
-  title: 'F1 Live — Watchalongs & Streams | F1Rec',
+  title: 'F1 Live — Watchalongs & Streams | Sunday Grid',
   description:
     'The best F1 watchalong streams on Twitch and Kick. Race day reactions, driver streams, and sim racing content — all in one place.',
 }

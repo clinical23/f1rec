@@ -112,7 +112,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     title,
     description,
     alternates: { canonical: `/races/${slug}` },
-    openGraph: { title: `${title} | F1Rec`, description, url: `/races/${slug}` },
+    openGraph: { title: `${title} | Sunday Grid`, description, url: `/races/${slug}` },
   }
 }
 

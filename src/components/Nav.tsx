@@ -11,7 +11,7 @@ const main = [
   { label: 'Drivers', href: '/drivers' },
   { label: 'Teams', href: '/teams' },
   { label: 'Compare', href: '/compare' },
-  { label: 'Sim challenge', href: '/sim' },
+  { label: 'Sim Race Week', href: '/sim' },
 ]
 const more = [
   { label: 'Seasons', href: '/seasons' },
@@ -37,7 +37,7 @@ export default function Nav() {
   return (
     <header className="pb-header">
       <div className="pb-header-in">
-        <Link href="/" className="pb-logo" aria-label="F1Rec home"><b>F1</b><i>REC</i></Link>
+        <Link href="/" className="pb-logo" aria-label="Sunday Grid home"><b>SUNDAY</b><i>GRID</i></Link>
         <nav className="pb-nav" aria-label="Main">
           {main.map((l) => (
             <Link key={l.href} href={l.href} aria-current={isActive(pathname, l.href) ? 'page' : undefined}>{l.label}</Link>

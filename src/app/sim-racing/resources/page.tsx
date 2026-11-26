@@ -4,7 +4,7 @@ import { createServerClient } from '@/lib/supabase/server'
 import EmailCapture from '@/components/EmailCapture'
 
 export const metadata: Metadata = {
-  title: 'Sim Racing Resources — Tools, Mods & Communities | F1Rec',
+  title: 'Sim Racing Resources — Tools, Mods & Communities | Sunday Grid',
   description:
     'Essential sim racing software, overlays, mods, and communities. SimHub, Content Manager, CrewChief, and more.',
 }

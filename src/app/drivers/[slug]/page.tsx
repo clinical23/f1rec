@@ -432,25 +432,25 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const data = await loadDriverProfileData(slug)
   if (!data) {
     return {
-      title: 'Driver Not Found | F1Rec',
-      description: 'The requested Formula 1 driver could not be found on F1Rec.',
+      title: 'Driver Not Found | Sunday Grid',
+      description: 'The requested Formula 1 driver could not be found on Sunday Grid.',
     }
   }
   const { name, aggregates } = data
   const desc = `Complete Formula 1 career statistics for ${name}. ${aggregates.totalWins} wins, ${aggregates.totalPodiums} podiums, ${Math.round(aggregates.totalPoints).toLocaleString()} points across ${aggregates.totalRaces} races.`
   return {
-    title: `${name} — Career Stats, Results & Records | F1Rec`,
+    title: `${name} — Career Stats, Results & Records | Sunday Grid`,
     description: desc,
     openGraph: {
-      title: `${name} — F1 Career Stats | F1Rec`,
+      title: `${name} — F1 Career Stats | Sunday Grid`,
       description: desc,
       type: 'profile',
       url: `https://f1rec.com/drivers/${slug}`,
-      siteName: 'F1Rec',
+      siteName: 'Sunday Grid',
     },
     twitter: {
       card: 'summary_large_image',
-      title: `${name} — F1 Career Stats | F1Rec`,
+      title: `${name} — F1 Career Stats | Sunday Grid`,
       description: desc,
     },
   }
@@ -542,7 +542,7 @@ export default async function DriverProfilePage({ params, searchParams }: PagePr
           },
         }
       : {}),
-    description: `${name} Formula 1 career statistics, season results, and records on F1Rec.`,
+    description: `${name} Formula 1 career statistics, season results, and records on Sunday Grid.`,
   }
 
   return (

@@ -550,7 +550,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const data = await loadTeamPageData(slug)
   if (!data) {
     return {
-      title: 'Team Not Found | F1Rec',
+      title: 'Team Not Found | Sunday Grid',
       description: 'The requested Formula 1 team could not be found.',
     }
   }
@@ -563,18 +563,18 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       : `${aggregates.totalWins} wins, ${aggregates.totalPodiums} podiums across ${aggregates.seasonCount} seasons.`
   const desc = `Complete Formula 1 constructor statistics for ${name}. ${descStats}`
   return {
-    title: `${name} — Constructor Stats, History & Drivers | F1Rec`,
+    title: `${name} — Constructor Stats, History & Drivers | Sunday Grid`,
     description: desc,
     openGraph: {
-      title: `${name} — F1 Constructor Stats | F1Rec`,
+      title: `${name} — F1 Constructor Stats | Sunday Grid`,
       description: desc,
       type: 'website',
       url: `https://f1rec.com/teams/${slug}`,
-      siteName: 'F1Rec',
+      siteName: 'Sunday Grid',
     },
     twitter: {
       card: 'summary_large_image',
-      title: `${name} — F1 Constructor Stats | F1Rec`,
+      title: `${name} — F1 Constructor Stats | Sunday Grid`,
       description: desc,
     },
   }

@@ -7,19 +7,19 @@ import { builderCategoryFromRow } from '@/components/rig-builder/utils'
 import type { RigPresetRow, RigProduct, SimBrandRow } from '@/components/rig-builder/types'
 
 export const metadata: Metadata = {
-  title: 'Sim Racing Rig Builder — Build Your Dream Setup | F1Rec',
+  title: 'Sim Racing Rig Builder — Build Your Dream Setup | Sunday Grid',
   description:
     'Build your perfect sim racing rig. Choose from 57 products across 27 brands — wheel bases, pedals, cockpits, steering wheels, monitors, and more. Compare prices and buy.',
   openGraph: {
-    title: 'Sim Racing Rig Builder | F1Rec',
+    title: 'Sim Racing Rig Builder | Sunday Grid',
     description: 'Build your dream sim racing setup with our interactive configurator.',
     url: 'https://f1rec.com/sim-racing/rig-builder',
-    siteName: 'F1Rec',
+    siteName: 'Sunday Grid',
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Sim Racing Rig Builder | F1Rec',
+    title: 'Sim Racing Rig Builder | Sunday Grid',
     description: 'Build your dream sim racing setup with our interactive configurator.',
   },
 }
@@ -133,7 +133,7 @@ async function loadData() {
 const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'WebApplication',
-  name: 'F1Rec Sim Racing Rig Builder',
+  name: 'Sunday Grid Sim Racing Rig Builder',
   description: 'Interactive sim racing rig configurator',
   url: 'https://f1rec.com/sim-racing/rig-builder',
   applicationCategory: 'ShoppingApplication',

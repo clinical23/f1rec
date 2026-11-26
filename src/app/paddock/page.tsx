@@ -3,7 +3,7 @@ import { createServerClient } from '@/lib/supabase/server'
 import PaddockBoard from '@/components/paddock/PaddockBoard'
 
 export const metadata: Metadata = {
-  title: 'The Paddock — Behind the Scenes of F1 | F1Rec',
+  title: 'The Paddock — Behind the Scenes of F1 | Sunday Grid',
   description:
     'Between-race F1 content: logistics, paddock life, driver stories, and trending moments. What happens when the cameras stop rolling.',
 }

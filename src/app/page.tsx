@@ -8,10 +8,10 @@ import { getDriverCount, getNextRace, getStandings, getWinsAtCircuit, surname, w
 export const revalidate = 600
 
 export const metadata: Metadata = {
-  title: { absolute: 'F1Rec: this weekend’s race, every stat since 1950, and your sim' },
+  title: { absolute: 'Sunday Grid: this weekend’s F1 race, every result since 1950, and Sim Race Week' },
   description:
     'The next Grand Prix in UK time, the championship, every result since 1950, and this week’s sim challenge on the same track.',
-  openGraph: { title: 'F1Rec', url: 'https://f1rec.com', siteName: 'F1Rec', type: 'website' },
+  openGraph: { title: 'Sunday Grid', url: 'https://f1rec.com', siteName: 'Sunday Grid', type: 'website' },
 }
 
 /** Flip to true when the first weekly challenge opens (2027 round 1). Until then the band says when it starts. */
@@ -164,7 +164,7 @@ export default async function Home() {
       <section className="pb-sim" aria-labelledby="sim-h">
         <div className="pb-wrap pb-sim-in">
           <div>
-            <span className="pb-tag">Sim challenge</span>
+            <span className="pb-tag">Sim Race Week</span>
             {CHALLENGE_LIVE ? (
               <>
                 <h2 id="sim-h">{next?.circuitName ? `Drive ${circuitShort || next.circuitName} this week` : 'Drive the next track this week'}</h2>
@@ -196,7 +196,7 @@ export default async function Home() {
         </div>
       </section>
 
-      <nav className="pb-wrap pb-explore" aria-label="More from F1Rec">
+      <nav className="pb-wrap pb-explore" aria-label="More from Sunday Grid">
         <Link href="/races"><b>Every result</b><span>Every Grand Prix since 1950, searchable.</span></Link>
         <Link href="/seasons"><b>Every season</b><span>Champions, calendars and standings.</span></Link>
         <Link href="/leaderboards"><b>All-time records</b><span>Wins, poles and podiums across every era.</span></Link>
