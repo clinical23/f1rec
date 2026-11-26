@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { pathEnabled } from '@/lib/features'
+import Logo from '@/components/Logo'
 
 const stats = [
   { label: 'This weekend', href: '/' },
@@ -36,7 +37,7 @@ export default function Footer() {
     <footer className="pb-footer">
       <div className="pb-footer-in">
         <div className="pb-footer-brand">
-          <Link href="/" className="pb-logo"><b>SUNDAY</b><i>GRID</i></Link>
+          <Link href="/" className="pb-logo" aria-label="Sunday Grid home"><Logo /></Link>
           <p>Every race since 1950, and how to drive this weekend&apos;s track in your own sim.</p>
           {DONATE_URL && <a className="btn-plate" style={{ marginTop: 16 }} href={DONATE_URL} target="_blank" rel="noopener noreferrer">Support Sunday Grid</a>}
         </div>

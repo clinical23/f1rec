@@ -562,3 +562,12 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 .accent-pick button { width: 20px; height: 20px; border-radius: 50%; border: 2px solid transparent; background: var(--c); cursor: pointer; padding: 0; box-shadow: 0 0 0 1px rgba(0,0,0,.4); }
 .accent-pick button[aria-pressed='true'] { border-color: var(--header-text); box-shadow: 0 0 0 2px var(--header-bg), 0 0 0 4px var(--header-text); }
 .pb-menu .accent-pick button { width: 30px; height: 30px; }
+
+/* ===================== Logo (src/components/Logo.tsx) =====================
+   The starting grid + wordmark, drawn as paths. Slots and letters take currentColor; the pole takes --sig. */
+.pb-logo svg { display: block; height: 26px; width: auto; color: var(--header-text); overflow: visible; }
+.pb-logo svg rect:first-of-type { filter: drop-shadow(0 0 5px var(--sig-soft)); }
+:root[data-theme='day'] .pb-header .pb-logo svg { color: #151719; }
+:root[data-theme='day'] .pb-header .pb-logo svg rect:first-of-type { fill: #FFFFFF; filter: none; }
+.pb-footer .pb-logo svg { color: #F2F2EC; height: 24px; }
+@media (max-width: 560px) { .pb-header .pb-logo svg { height: 21px; } }

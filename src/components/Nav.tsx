@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import ThemeToggle from '@/components/ThemeToggle'
+import Logo from '@/components/Logo'
 
 const main = [
   { label: 'This weekend', href: '/' },
@@ -37,7 +38,7 @@ export default function Nav() {
   return (
     <header className="pb-header">
       <div className="pb-header-in">
-        <Link href="/" className="pb-logo" aria-label="Sunday Grid home"><b>SUNDAY</b><i>GRID</i></Link>
+        <Link href="/" className="pb-logo" aria-label="Sunday Grid home"><Logo /></Link>
         <nav className="pb-nav" aria-label="Main">
           {main.map((l) => (
             <Link key={l.href} href={l.href} aria-current={isActive(pathname, l.href) ? 'page' : undefined}>{l.label}</Link>
