@@ -1,8 +1,9 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
+import PageHead from '@/components/page/PageHead'
 
 interface DriverBasic {
   id: string
@@ -20,180 +21,122 @@ interface DriverBasic {
   last_season: number | null
 }
 
-export default function CompareClient({
-  drivers,
-  initialD1,
-  initialD2,
-}: {
-  drivers: DriverBasic[]
-  initialD1: string
-  initialD2: string
-}) {
+const MATCHUPS = [
+  { a: 'max_verstappen', b: 'hamilton' },
+  { a: 'senna', b: 'prost' },
+  { a: 'michael_schumacher', b: 'hamilton' },
+  { a: 'antonelli', b: 'russell' },
+  { a: 'leclerc', b: 'norris' },
+  { a: 'clark', b: 'fangio' },
+]
+
+const pct = (n: number, d: number) => (d ? (n / d) * 100 : 0)
+
+export default function CompareClient({ drivers, initialD1, initialD2 }: { drivers: DriverBasic[]; initialD1: string; initialD2: string }) {
   const router = useRouter()
-  const [d1Query, setD1Query] = useState('')
-  const [d2Query, setD2Query] = useState('')
-  const [d1Slug, setD1Slug] = useState('')
-  const [d2Slug, setD2Slug] = useState('')
-  const [toast, setToast] = useState('')
-  const [openList, setOpenList] = useState<'d1' | 'd2' | null>(null)
+  const pathname = usePathname()
+  const bySlug = useMemo(() => new Map(drivers.map((d) => [d.slug, d])), [drivers])
+  const byName = useMemo(() => new Map(drivers.map((d) => [d.full_name.toLowerCase(), d])), [drivers])
+  const [aSlug, setA] = useState(bySlug.has(initialD1) ? initialD1 : '')
+  const [bSlug, setB] = useState(bySlug.has(initialD2) ? initialD2 : '')
+  const [aText, setAText] = useState(bySlug.get(initialD1)?.full_name ?? '')
+  const [bText, setBText] = useState(bySlug.get(initialD2)?.full_name ?? '')
+  const [copied, setCopied] = useState(false)
 
-  useEffect(() => {
-    const isValid = (slug: string) => drivers.some((d) => d.slug === slug)
-    if (initialD1 && isValid(initialD1)) setD1Slug(initialD1)
-    if (initialD2 && isValid(initialD2)) setD2Slug(initialD2)
-  }, [drivers, initialD1, initialD2])
+  const a = bySlug.get(aSlug)
+  const b = bySlug.get(bSlug)
 
-  useEffect(() => {
-    const params = new URLSearchParams()
-    if (d1Slug) params.set('d1', d1Slug)
-    if (d2Slug) params.set('d2', d2Slug)
-    router.replace(`/compare${params.toString() ? `?${params.toString()}` : ''}`, { scroll: false })
-  }, [d1Slug, d2Slug, router])
-
-  const d1 = useMemo(() => drivers.find((d) => d.slug === d1Slug), [drivers, d1Slug])
-  const d2 = useMemo(() => drivers.find((d) => d.slug === d2Slug), [drivers, d2Slug])
-  const d1Results = useMemo(() => {
-    const q = d1Query.trim().toLowerCase()
-    return q ? drivers.filter((d) => d.full_name.toLowerCase().includes(q) || (d.code ?? '').toLowerCase().includes(q)).slice(0, 8) : drivers.slice(0, 8)
-  }, [d1Query, drivers])
-  const d2Results = useMemo(() => {
-    const q = d2Query.trim().toLowerCase()
-    return q ? drivers.filter((d) => d.full_name.toLowerCase().includes(q) || (d.code ?? '').toLowerCase().includes(q)).slice(0, 8) : drivers.slice(0, 8)
-  }, [d2Query, drivers])
-
-  const metrics = d1 && d2
-    ? [
-        { label: 'Career wins', a: d1.career_wins, b: d2.career_wins, fmt: (v: number) => v.toLocaleString() },
-        { label: 'Career podiums', a: d1.career_podiums, b: d2.career_podiums, fmt: (v: number) => v.toLocaleString() },
-        { label: 'Career poles', a: d1.career_poles, b: d2.career_poles, fmt: (v: number) => v.toLocaleString() },
-        { label: 'Career points', a: d1.career_points, b: d2.career_points, fmt: (v: number) => Number(v).toLocaleString() },
-        { label: 'Championships', a: d1.championships, b: d2.championships, fmt: (v: number) => v.toLocaleString() },
-        { label: 'Career starts', a: d1.career_starts, b: d2.career_starts, fmt: (v: number) => v.toLocaleString() },
-        { label: 'Win rate %', a: d1.career_starts ? (d1.career_wins / d1.career_starts) * 100 : 0, b: d2.career_starts ? (d2.career_wins / d2.career_starts) * 100 : 0, fmt: (v: number) => `${v.toFixed(1)}%` },
-        { label: 'Podium rate %', a: d1.career_starts ? (d1.career_podiums / d1.career_starts) * 100 : 0, b: d2.career_starts ? (d2.career_podiums / d2.career_starts) * 100 : 0, fmt: (v: number) => `${v.toFixed(1)}%` },
-        { label: 'Seasons active', a: d1.first_season && d1.last_season ? d1.last_season - d1.first_season + 1 : 0, b: d2.first_season && d2.last_season ? d2.last_season - d2.first_season + 1 : 0, fmt: (v: number) => v.toLocaleString() },
-      ]
-    : []
-
-  const selectDriver = (side: 'd1' | 'd2', slug: string, name: string) => {
-    if (side === 'd1') {
-      setD1Slug(slug)
-      setD1Query(name)
-    } else {
-      setD2Slug(slug)
-      setD2Query(name)
-    }
-    setOpenList(null)
+  const update = (na: string, nb: string) => {
+    const p = new URLSearchParams()
+    if (na) p.set('d1', na)
+    if (nb) p.set('d2', nb)
+    router.replace(`${pathname}${p.size ? `?${p}` : ''}`, { scroll: false })
   }
+  const pick = (side: 'a' | 'b', text: string) => {
+    const hit = byName.get(text.trim().toLowerCase())
+    if (side === 'a') { setAText(text); if (hit) { setA(hit.slug); update(hit.slug, bSlug) } }
+    else { setBText(text); if (hit) { setB(hit.slug); update(aSlug, hit.slug) } }
+  }
+  const choose = (x: string, y: string) => {
+    setA(x); setB(y)
+    setAText(bySlug.get(x)?.full_name ?? ''); setBText(bySlug.get(y)?.full_name ?? '')
+    update(x, y)
+  }
+
+  const rows = a && b ? [
+    { label: 'World titles', a: a.championships, b: b.championships },
+    { label: 'Race wins', a: a.career_wins, b: b.career_wins },
+    { label: 'Podiums', a: a.career_podiums, b: b.career_podiums },
+    { label: 'Pole positions', a: a.career_poles, b: b.career_poles },
+    { label: 'Race starts', a: a.career_starts, b: b.career_starts },
+    { label: 'Points', a: Math.round(a.career_points), b: Math.round(b.career_points), note: 'Points systems changed over the years' },
+    { label: 'Win rate', a: pct(a.career_wins, a.career_starts), b: pct(b.career_wins, b.career_starts), pct: true },
+    { label: 'Podium rate', a: pct(a.career_podiums, a.career_starts), b: pct(b.career_podiums, b.career_starts), pct: true },
+    { label: 'Pole rate', a: pct(a.career_poles, a.career_starts), b: pct(b.career_poles, b.career_starts), pct: true },
+  ] : []
+  const fmt = (v: number, isPct?: boolean) => (isPct ? `${v.toFixed(1)}%` : v.toLocaleString('en-GB'))
+  const span = (d: DriverBasic) => (d.first_season ? `${d.first_season}–${d.last_season && d.last_season >= new Date().getFullYear() ? 'now' : d.last_season ?? ''}` : '')
 
   const share = async () => {
-    await navigator.clipboard.writeText(window.location.href)
-    setToast('Comparison URL copied')
-    setTimeout(() => setToast(''), 1600)
+    try { await navigator.clipboard.writeText(window.location.href); setCopied(true); setTimeout(() => setCopied(false), 1800) } catch { /* clipboard blocked */ }
   }
 
-  const pickerCard = (title: string, side: 'd1' | 'd2', query: string, setQuery: (s: string) => void, results: DriverBasic[], selected?: DriverBasic) => (
-    <div style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: '8px', overflow: 'hidden', marginBottom: '16px', position: 'relative' }}>
-      <div style={{ padding: '10px 16px', borderBottom: '1px solid var(--border)', background: 'var(--bg3)', fontFamily: "'Barlow Condensed', sans-serif", fontSize: '12px', fontWeight: 800, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#fff' }}>{title}</div>
-      <div style={{ padding: '16px' }}>
-        <input
-          value={query}
-          onFocus={() => setOpenList(side)}
-          onChange={(e) => {
-            setQuery(e.target.value)
-            setOpenList(side)
-          }}
-          placeholder="Search drivers..."
-          style={{ background: 'var(--bg3)', border: '1px solid var(--border)', borderRadius: '6px', padding: '12px 16px', color: 'var(--text)', fontFamily: 'Barlow, sans-serif', fontSize: '15px', width: '100%', outlineColor: 'var(--accent)' }}
-        />
-        {openList === side ? (
-          <div style={{ marginTop: '8px', border: '1px solid var(--border)', borderRadius: '6px', background: 'var(--bg3)', maxHeight: '230px', overflowY: 'auto' }}>
-            {results.map((driver) => (
-              <button
-                key={`${side}-${driver.id}`}
-                type="button"
-                onMouseDown={(e) => e.preventDefault()}
-                onClick={() => selectDriver(side, driver.slug, driver.full_name)}
-                style={{ width: '100%', textAlign: 'left', padding: '10px 12px', border: 'none', borderBottom: '1px solid var(--border)', background: 'transparent', color: 'var(--text)', cursor: 'pointer' }}
-              >
-                {driver.full_name}
-              </button>
-            ))}
-          </div>
-        ) : null}
-        {selected ? (
-          <div style={{ marginTop: '12px', borderTop: '1px solid var(--border)', paddingTop: '12px', display: 'grid', gap: '6px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <div style={{ width: '32px', height: '32px', borderRadius: '999px', background: 'linear-gradient(135deg, var(--accent), #aa0020)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontFamily: 'JetBrains Mono, monospace', fontSize: '12px', fontWeight: 700 }}>{(selected.code ?? selected.full_name.slice(0, 3)).toUpperCase()}</div>
-              <div>
-                <Link href={`/drivers/${selected.slug}`} style={{ textDecoration: 'none', color: '#fff', fontWeight: 700 }}>{selected.full_name}</Link>
-                <div style={{ color: 'var(--muted)', fontSize: '12px' }}>{selected.nationality ?? 'Unknown'}</div>
-              </div>
-            </div>
-            <div style={{ color: 'var(--muted)', fontSize: '12px' }}>
-              Wins {selected.career_wins} · Podiums {selected.career_podiums} · Titles {selected.championships}
-            </div>
-          </div>
-        ) : null}
-      </div>
-    </div>
-  )
-
   return (
-    <main style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--text)' }}>
-      <section style={{ maxWidth: '1200px', margin: '0 auto', padding: '32px 24px 64px' }}>
-        <div style={{ marginBottom: '24px' }}>
-          <h1 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '44px', fontWeight: 900, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#fff', margin: 0 }}>Compare Drivers</h1>
-          <p style={{ color: 'var(--muted)', fontSize: '16px', marginTop: '6px' }}>Head-to-head career statistics for any two drivers across every era</p>
-        </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '16px' }}>
-          {pickerCard('Driver 1', 'd1', d1Query, setD1Query, d1Results, d1)}
-          {pickerCard('Driver 2', 'd2', d2Query, setD2Query, d2Results, d2)}
+    <main className="pg">
+      <PageHead
+        crumbs={[{ label: 'Sunday Grid', href: '/' }, { label: 'Compare' }]}
+        title="Compare"
+        lede="Put any two drivers from 1950 to now side by side: titles, wins, poles and how often they won when they started."
+      />
+      <div className="pg-body">
+        <datalist id="drivers-list">
+          {drivers.map((d) => <option key={d.id} value={d.full_name} />)}
+        </datalist>
+        <div className="pg-tools">
+          <input className="pg-input" list="drivers-list" aria-label="First driver" placeholder="First driver" value={aText} onChange={(e) => pick('a', e.target.value)} />
+          <span className="pb-h2h" style={{ margin: 0, display: 'block' }}><span className="vs">vs</span></span>
+          <input className="pg-input" list="drivers-list" aria-label="Second driver" placeholder="Second driver" value={bText} onChange={(e) => pick('b', e.target.value)} />
         </div>
 
-        {d1 && d2 ? (
-          <>
-            <div style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: '8px', overflow: 'hidden', marginBottom: '16px' }}>
-              <div style={{ padding: '10px 16px', borderBottom: '1px solid var(--border)', background: 'var(--bg3)', fontFamily: "'Barlow Condensed', sans-serif", fontSize: '12px', fontWeight: 800, letterSpacing: '0.12em', textTransform: 'uppercase', color: '#fff' }}>Head-to-Head</div>
-              <div style={{ padding: '8px 0' }}>
-                {metrics.map((metric) => {
-                  const aWin = metric.a > metric.b
-                  const bWin = metric.b > metric.a
-                  return (
-                    <div key={metric.label} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', borderBottom: '1px solid var(--border)' }}>
-                      <div style={{ padding: '12px 16px', textAlign: 'right', fontFamily: 'JetBrains Mono, monospace', color: aWin ? 'var(--gold)' : 'var(--muted)' }}>{metric.fmt(metric.a)}</div>
-                      <div style={{ padding: '12px 16px', textAlign: 'center', color: 'var(--muted)', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.08em' }}>{metric.label}</div>
-                      <div style={{ padding: '12px 16px', textAlign: 'left', fontFamily: 'JetBrains Mono, monospace', color: bWin ? 'var(--gold)' : 'var(--muted)' }}>{metric.fmt(metric.b)}</div>
-                    </div>
-                  )
-                })}
-              </div>
+        {a && b ? (
+          <div className="pg-panel">
+            <div className="pb-h2h" style={{ marginTop: 0 }}>
+              <Link href={`/drivers/${a.slug}`} className="dp" style={{ textDecoration: 'none' }}><b>{a.full_name.split(' ').at(-1)}</b><small>{[a.nationality, span(a)].filter(Boolean).join(' · ')}</small></Link>
+              <div className="vs">vs</div>
+              <Link href={`/drivers/${b.slug}`} className="dp r" style={{ textDecoration: 'none' }}><b>{b.full_name.split(' ').at(-1)}</b><small>{[b.nationality, span(b)].filter(Boolean).join(' · ')}</small></Link>
             </div>
-            <div style={{ marginTop: '12px' }}>
-              <button type="button" onClick={share} style={{ border: '1px solid var(--border)', background: 'var(--bg2)', borderRadius: '8px', padding: '12px 16px', color: '#fff', fontFamily: "'Barlow Condensed', sans-serif", fontSize: '12px', fontWeight: 800, letterSpacing: '0.1em', textTransform: 'uppercase', cursor: 'pointer' }}>
-                Share this comparison
-              </button>
-              {toast ? <span style={{ marginLeft: '10px', color: 'var(--green)', fontSize: '13px' }}>{toast}</span> : null}
-            </div>
-          </>
+            <table className="pb-cmp">
+              <caption className="sr-only" style={{ position: 'absolute', width: 1, height: 1, overflow: 'hidden', clip: 'rect(0 0 0 0)' }}>{a.full_name} compared with {b.full_name}</caption>
+              <tbody>
+                {rows.map((r) => (
+                  <tr key={r.label}>
+                    <td className={r.a > r.b ? 'lead' : undefined}>{fmt(r.a, r.pct)}</td>
+                    <td className="m">{r.label}</td>
+                    <td className={r.b > r.a ? 'lead' : undefined}>{fmt(r.b, r.pct)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <p className="pg-note">Rates are per race started. Points systems have changed many times since 1950, so older totals look smaller.</p>
+            <p style={{ marginTop: 14, display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
+              <button type="button" className="btn-plate" onClick={share}>Copy link to this comparison</button>
+              <button type="button" className="btn-ghost" onClick={() => choose(bSlug, aSlug)}>Swap sides</button>
+              <span role="status" style={{ color: 'var(--muted)', fontSize: 14 }}>{copied ? 'Link copied' : ''}</span>
+            </p>
+          </div>
         ) : (
-          <div style={{ background: 'var(--bg2)', border: '1px solid var(--border)', borderRadius: '8px', overflow: 'hidden', marginBottom: '16px' }}>
-            <div style={{ padding: '16px', color: 'var(--muted)' }}>Select two drivers above to compare their careers.</div>
-            <div style={{ padding: '0 16px 16px', display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
-              {[
-                { label: 'Hamilton vs Verstappen', href: '/compare?d1=hamilton&d2=max_verstappen' },
-                { label: 'Senna vs Prost', href: '/compare?d1=senna&d2=prost' },
-                { label: 'Schumacher vs Hamilton', href: '/compare?d1=michael_schumacher&d2=hamilton' },
-                { label: 'Hamilton vs Schumacher', href: '/compare?d1=hamilton&d2=michael_schumacher' },
-              ].map((p) => (
-                <Link key={p.label} href={p.href} style={{ textDecoration: 'none', border: '1px solid var(--border)', background: 'var(--bg3)', color: '#fff', padding: '8px 12px', borderRadius: '999px', fontFamily: "'Barlow Condensed', sans-serif", fontSize: '11px', fontWeight: 800, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
-                  {p.label}
-                </Link>
+          <section className="pg-panel" aria-labelledby="pick-h">
+            <h2 className="pg-h2" id="pick-h" style={{ fontSize: 28, marginBottom: 12 }}>Start with a classic</h2>
+            <div className="pg-chips">
+              {MATCHUPS.filter((m) => bySlug.has(m.a) && bySlug.has(m.b)).map((m) => (
+                <button key={`${m.a}-${m.b}`} type="button" className="pg-chip" onClick={() => choose(m.a, m.b)}>
+                  {bySlug.get(m.a)!.full_name.split(' ').at(-1)} vs {bySlug.get(m.b)!.full_name.split(' ').at(-1)}
+                </button>
               ))}
             </div>
-          </div>
+          </section>
         )}
-      </section>
+      </div>
     </main>
   )
 }

@@ -1,9 +1,9 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
-import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 import EmailCapture from '@/components/EmailCapture'
+import PageHead from '@/components/page/PageHead'
 
 type CreatorRow = {
   id: string
@@ -84,7 +84,7 @@ export default function CommunityPage() {
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({})
 
   useEffect(() => {
-    document.title = 'F1 Community — Best YouTube, Reddit & Podcasts | F1Rec'
+    document.title = 'F1 Community — Best YouTube, Reddit & Podcasts | Sunday Grid'
 
     async function fetchCreators() {
       const { data, error } = await supabase
@@ -148,19 +148,13 @@ export default function CommunityPage() {
   }, [creators])
 
   return (
-    <main style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--text)' }}>
-      {/* Hero */}
-      <section style={{ padding: '5rem 1.5rem 3rem', textAlign: 'center', borderBottom: '1px solid var(--border)', background: 'linear-gradient(180deg, rgba(232,0,45,0.06) 0%, transparent 100%)' }}>
-        <p style={{ fontFamily: 'var(--font-barlow-condensed, "Barlow Condensed", sans-serif)', textTransform: 'uppercase', letterSpacing: '0.2em', fontSize: '0.75rem', color: 'var(--accent, #e8002d)', marginBottom: '0.5rem' }}>Curated by F1Rec</p>
-        <h1 className="hero-title" style={{ fontFamily: 'var(--font-barlow-condensed, "Barlow Condensed", sans-serif)', fontSize: 'clamp(2.5rem, 5vw, 4rem)', fontWeight: 800, margin: 0, lineHeight: 1.1 }}>
-          The F1<br /><span style={{ color: 'var(--accent, #e8002d)' }}>Community</span>
-        </h1>
-        <p style={{ color: 'var(--muted, #889)', maxWidth: '500px', margin: '1rem auto 0', fontSize: '0.95rem' }}>
-          The best voices in Formula 1 — curated for real fans.
-        </p>
-      </section>
-
-      <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '4rem 1.5rem' }}>
+    <main className="pg">
+      <PageHead
+        crumbs={[{ label: 'Sunday Grid', href: '/' }, { label: 'Community' }]}
+        title="Community"
+        lede="The YouTubers, podcasts and writers worth your time between races, and the sim racers to follow."
+      />
+      <div className="pg-body">
         {/* Trending */}
         <div style={{ marginBottom: '4rem' }}>
           <div style={{ borderRadius: '10px', padding: '1px', background: 'linear-gradient(90deg, var(--accent), color-mix(in srgb, var(--green, #00d4a0) 70%, var(--accent)))' }}>
@@ -221,9 +215,7 @@ export default function CommunityPage() {
               Sim Racing <span style={{ color: 'var(--green, #00d4a0)' }}>Creators</span>
             </h2>
             <PlatformBadge platform="Sim Racing" />
-            <Link href="/sim-racing/reviews" style={{ marginLeft: 'auto', color: 'var(--muted)', textDecoration: 'none', fontFamily: 'var(--font-barlow-condensed)', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.08em', fontWeight: 700 }}>
-              See our hardware reviews →
-            </Link>
+            
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1.5rem' }}>
             {(expandedSections.simYoutube ? sections.simYoutube : sections.simYoutube.slice(0, 6)).map(ch => (

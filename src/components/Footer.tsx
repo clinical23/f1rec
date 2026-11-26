@@ -1,92 +1,64 @@
-'use client'
-
 import Link from 'next/link'
+import { pathEnabled } from '@/lib/features'
+import Logo from '@/components/Logo'
+import { lapDoctor as LD } from '@/lib/site'
 
-const exploreLinks = [
+const stats = [
+  { label: 'This weekend', href: '/' },
+  { label: 'Results', href: '/races' },
+  { label: 'Seasons', href: '/seasons' },
+  { label: 'Calendar', href: '/calendar' },
   { label: 'Drivers', href: '/drivers' },
   { label: 'Teams', href: '/teams' },
-  { label: 'Races', href: '/races' },
-  { label: 'Calendar', href: '/calendar' },
-  { label: 'Seasons', href: '/seasons' },
   { label: 'Compare', href: '/compare' },
-  { label: 'Leaderboards', href: '/leaderboards' },
+  { label: 'Records', href: '/leaderboards' },
 ]
 
-const moreLinks = [
-  { label: 'Live', href: '/live' },
-  { label: 'Paddock', href: '/paddock' },
-  { label: 'Sim Racing', href: '/sim-racing' },
-  { label: 'Sim Resources', href: '/sim-racing/resources' },
-  { label: 'Random Stats', href: '/random' },
+const more = [
+  { label: 'Random stats', href: '/random' },
+  { label: 'Live streams', href: '/live' },
   { label: 'Community', href: '/community' },
-  { label: 'Blog', href: '/blog' },
-  { label: 'Privacy Policy', href: '/privacy' },
+  { label: 'Privacy', href: '/privacy' },
+].filter((l) => pathEnabled(l.href))
+
+const sim = [
+  { label: 'Sim Race Week', href: '/sim', internal: true },
+  { label: 'Lap Doctor Discord', href: LD('/discord') },
+  { label: 'FOV calculator', href: LD('/fov') },
+  { label: 'Wheel setup guides', href: LD('/wheel-setup') },
+  { label: 'Official sim downloads', href: LD('/sim-racing-software') },
 ]
+
+const DONATE_URL = process.env.NEXT_PUBLIC_DONATE_URL ?? ''
 
 export default function Footer() {
   return (
-    <footer style={{ background: 'var(--bg2)', borderTop: '1px solid var(--border)', padding: '48px 24px 24px' }}>
-      <div style={{ maxWidth: '1200px', margin: '0 auto', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '40px', marginBottom: '32px' }}>
-        {/* Brand */}
-        <div>
-          <Link href="/" style={{
-            fontFamily: "'Barlow Condensed', sans-serif", fontWeight: 900, fontSize: '24px',
-            color: 'var(--text)', textDecoration: 'none', textTransform: 'uppercase', letterSpacing: '1px',
-          }}>
-            F1<span style={{ color: 'var(--accent)' }}>Rec</span>
-          </Link>
-          <p style={{ color: 'var(--muted)', fontSize: '13px', lineHeight: 1.6, marginTop: '12px', maxWidth: '280px' }}>
-            The most complete Formula 1 statistics platform.
-          </p>
+    <footer className="pb-footer">
+      <div className="pb-footer-in">
+        <div className="pb-footer-brand">
+          <Link href="/" className="pb-logo" aria-label="Sunday Grid home"><Logo /></Link>
+          <p>Every race since 1950, and how to drive this weekend&apos;s track in your own sim.</p>
+          {DONATE_URL && <a className="btn-plate" style={{ marginTop: 16 }} href={DONATE_URL} target="_blank" rel="noopener noreferrer">Support Sunday Grid</a>}
         </div>
-
-        {/* Explore */}
         <div>
-          <h4 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '13px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1.5px', color: 'var(--text)', marginBottom: '16px' }}>Explore</h4>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            {exploreLinks.map(link => (
-              <Link key={link.href} href={link.href} style={{ color: 'var(--muted)', textDecoration: 'none', fontSize: '13px', transition: 'color 0.2s' }}
-                onMouseEnter={e => (e.currentTarget.style.color = 'var(--text)')}
-                onMouseLeave={e => (e.currentTarget.style.color = 'var(--muted)')}>
-                {link.label}
-              </Link>
-            ))}
-          </div>
+          <h2>Stats</h2>
+          {stats.map((l) => <Link key={l.href} href={l.href}>{l.label}</Link>)}
         </div>
-
-        {/* More */}
         <div>
-          <h4 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '13px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1.5px', color: 'var(--text)', marginBottom: '16px' }}>More</h4>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            {moreLinks.map(link => (
-              <Link key={link.href} href={link.href} style={{ color: 'var(--muted)', textDecoration: 'none', fontSize: '13px', transition: 'color 0.2s' }}
-                onMouseEnter={e => (e.currentTarget.style.color = 'var(--text)')}
-                onMouseLeave={e => (e.currentTarget.style.color = 'var(--muted)')}>
-                {link.label}
-              </Link>
-            ))}
-          </div>
+          <h2>Sim racing</h2>
+          {sim.map((l) => l.internal
+            ? <Link key={l.href} href={l.href}>{l.label}</Link>
+            : <a key={l.href} href={l.href} rel="noopener">{l.label}</a>)}
         </div>
-
         <div>
-          <h4 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '13px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1.5px', color: 'var(--text)', marginBottom: '16px' }}>Follow us</h4>
-          <a
-            href="https://x.com/F1RecStats"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ color: 'var(--muted)', fontSize: '13px', textDecoration: 'none' }}
-          >
-            @F1RecStats on X
-          </a>
+          <h2>More</h2>
+          {more.map((l) => <Link key={l.href} href={l.href}>{l.label}</Link>)}
         </div>
       </div>
-
-      {/* Divider + copyright */}
-      <div style={{ borderTop: '1px solid var(--border)', paddingTop: '20px', textAlign: 'center' }}>
-        <p style={{ color: 'var(--muted)', fontSize: '12px' }}>
-          &copy; 2026 F1Rec. Not affiliated with Formula 1.
-        </p>
-      </div>
+      <p className="pb-footer-legal">
+        Sunday Grid is an independent stats site, not connected to Formula 1 or the FIA. Results data from the Jolpica F1 API.
+        Circuit outlines from bacinger/f1-circuits (MIT). &copy; {new Date().getFullYear()} Sunday Grid.
+      </p>
     </footer>
   )
 }

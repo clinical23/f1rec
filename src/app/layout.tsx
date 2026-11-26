@@ -1,25 +1,27 @@
-﻿import type { Metadata } from 'next'
+import type { Metadata } from 'next'
 import Script from 'next/script'
 import { GoogleAnalytics } from '@next/third-parties/google'
 import './globals.css'
 import Nav from '@/components/Nav'
 import Footer from '@/components/Footer'
-import { SoundProvider } from '@/components/SoundProvider'
+import Ticker from '@/components/Ticker'
 import JsonLd from '@/components/JsonLd'
 import CookieConsent from '@/components/CookieConsent'
+import { SITE_URL } from '@/lib/site'
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: {
-    default: 'F1Rec — Formula 1 Statistics & Records',
-    template: '%s | F1Rec',
+    default: 'Sunday Grid: F1 results, stats and records since 1950',
+    template: '%s | Sunday Grid',
   },
   description:
     'The most complete Formula 1 statistics database. Driver records, race results, season standings and head-to-head comparisons from 1950 to today.',
-  keywords: ['Formula 1', 'F1 statistics', 'F1 records', 'F1 drivers', 'F1 results', 'sim racing'],
+  keywords: ['Formula 1', 'F1 statistics', 'F1 records', 'F1 drivers', 'F1 results'],
   openGraph: {
     type: 'website',
-    siteName: 'F1Rec',
-    url: process.env.NEXT_PUBLIC_SITE_URL ?? 'https://f1rec.com',
+    siteName: 'Sunday Grid',
+    url: SITE_URL,
   },
   twitter: {
     card: 'summary_large_image',
@@ -32,8 +34,10 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
+    <html lang="en-GB" suppressHydrationWarning>
       <head>
+        {/* Applies the saved Night/Day theme before the first paint. */}
+        <script dangerouslySetInnerHTML={{ __html: "try{var t=localStorage.getItem('f1rec-theme');if(['day','timing','tower','ghost'].indexOf(t)>-1)document.documentElement.dataset.theme=t;var a=localStorage.getItem('f1rec-accent');if(['yellow','purple','orange','blue','green'].indexOf(a)>-1)document.documentElement.dataset.accent=a}catch(e){}" }} />
         <Script
           async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5181795059219175"
@@ -58,23 +62,22 @@ export default function RootLayout({
     `,
           }}
         />
-        <SoundProvider>
+          <Ticker />
           <Nav />
           {children}
           <Footer />
-        </SoundProvider>
         <CookieConsent />
         <JsonLd data={{
           '@context': 'https://schema.org',
           '@type': 'WebSite',
-          name: 'F1Rec',
+          name: 'Sunday Grid',
           description: 'The most complete Formula 1 statistics platform. Every stat. Every race. Every era.',
-          url: 'https://f1rec.com',
+          url: SITE_URL,
           potentialAction: {
             '@type': 'SearchAction',
             target: {
               '@type': 'EntryPoint',
-              urlTemplate: 'https://f1rec.com/drivers?q={search_term_string}',
+              urlTemplate: `${SITE_URL}/drivers?q={search_term_string}`,
             },
             'query-input': 'required name=search_term_string',
           },

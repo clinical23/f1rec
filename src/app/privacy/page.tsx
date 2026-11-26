@@ -1,19 +1,18 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { SITE_URL } from '@/lib/site'
+import PageHead from '@/components/page/PageHead'
 
 export const metadata: Metadata = {
-  title: 'Privacy Policy — F1Rec',
-  description: 'How F1Rec collects, uses, and protects your data.',
+  title: 'Privacy Policy — Sunday Grid',
+  description: 'How Sunday Grid collects, uses, and protects your data.',
 }
 
 export default function PrivacyPage() {
   return (
-    <main className="min-h-screen bg-[var(--bg)] px-6 py-12 text-[var(--text)] md:py-16">
-      <article className="mx-auto max-w-3xl">
-        <h1 className="font-display text-3xl font-black tracking-tight text-[var(--text)] md:text-4xl">
-          Privacy Policy
-        </h1>
-        <p className="mt-2 text-sm text-[var(--muted)]">Last updated: April 2026</p>
+    <main className="pg">
+      <PageHead crumbs={[{ label: 'Sunday Grid', href: '/' }, { label: 'Privacy' }]} title="Privacy" lede="What Sunday Grid collects, why, and how to ask us to delete it. Last updated April 2026." />
+      <article className="pg-body" style={{ maxWidth: 780 }}>
 
         <div className="mt-10 space-y-10 text-[15px] leading-relaxed text-[var(--text)]">
           <section>
@@ -21,16 +20,16 @@ export default function PrivacyPage() {
               Who we are
             </h2>
             <p className="text-[var(--text)]">
-              F1Rec is a Formula 1 statistics and sim racing platform operated from the United Kingdom.
+              Sunday Grid is a Formula 1 statistics and sim racing platform operated from the United Kingdom.
             </p>
             <ul className="mt-3 list-inside list-disc space-y-1 text-[var(--muted)]">
               <li>
                 Website:{' '}
                 <a
-                  href="https://f1rec.com"
+                  href={SITE_URL}
                   className="text-[var(--accent)] underline decoration-transparent transition-colors hover:decoration-current"
                 >
-                  https://f1rec.com
+                  sundaygrid.co.uk
                 </a>
               </li>
               <li>
@@ -112,7 +111,7 @@ export default function PrivacyPage() {
                   </tr>
                   <tr>
                     <td className="px-3 py-2 font-mono text-xs text-[var(--text)]">cookie_consent</td>
-                    <td className="px-3 py-2">F1Rec</td>
+                    <td className="px-3 py-2">Sunday Grid</td>
                     <td className="px-3 py-2">Remembers your cookie preference (stored in localStorage on your device)</td>
                     <td className="px-3 py-2">1 year</td>
                     <td className="px-3 py-2">Necessary</td>
@@ -250,7 +249,7 @@ export default function PrivacyPage() {
               Children&apos;s privacy
             </h2>
             <p className="text-[var(--muted)]">
-              F1Rec is not aimed at children under 13. We do not knowingly collect personal data from children.
+              Sunday Grid is not aimed at children under 13. We do not knowingly collect personal data from children.
             </p>
           </section>
 

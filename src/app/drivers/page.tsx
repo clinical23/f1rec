@@ -18,6 +18,9 @@ interface Driver {
   last_season: number | null
 }
 
+/** Rebuilt hourly, so results and the next race stay current. */
+export const revalidate = 3600
+
 export default async function DriversPage() {
   const supabase = createServerClient()
   const { data, error } = await supabase
@@ -30,5 +33,8 @@ export default async function DriversPage() {
   if (error) {
     console.error('[drivers-page] failed to load drivers', error)
   }
-  return <DriversClient initialDrivers={(data ?? []) as unknown as Driver[]} />
+  // drivers.is_active isn't reliable (it is set for most of the field), so "on the grid" means raced in the latest season.
+  const rows = (data ?? []) as unknown as Driver[]
+  const latest = Math.max(0, ...rows.map((d) => d.last_season ?? 0))
+  return <DriversClient initialDrivers={rows.map((d) => ({ ...d, is_active: d.last_season === latest }))} />
 }

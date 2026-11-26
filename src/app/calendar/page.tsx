@@ -1,11 +1,13 @@
 import type { Metadata } from 'next'
 import { createServerClient } from '@/lib/supabase/server'
+import Link from 'next/link'
+import PageHead from '@/components/page/PageHead'
 import CalendarBoard from '@/components/calendar/CalendarBoard'
 
 export const metadata: Metadata = {
-  title: '2026 F1 Race Calendar — Schedule & Where to Watch | F1Rec',
+  title: 'F1 Race Calendar: Dates, Results and Where to Watch',
   description:
-    'Complete 2026 Formula 1 race schedule with dates, circuits, results, and broadcast channels for every country.',
+    'Every round of the Formula 1 season with dates, circuits, winners and where to watch in your country.',
 }
 
 type RaceRow = {
@@ -14,6 +16,7 @@ type RaceRow = {
   round: number | null
   name: string | null
   race_date: string | null
+  race_time: string | null
   circuit_slug: string | null
 }
 
@@ -32,6 +35,7 @@ type WinnerRow = {
   race_slug: string | null
   driver_name: string | null
   driver_slug: string | null
+  constructor_name: string | null
 }
 
 type BroadcastRow = {
@@ -44,20 +48,27 @@ type BroadcastRow = {
   notes: string | null
 }
 
+/** Rebuilt hourly, so results and the next race stay current. */
+export const revalidate = 3600
+
 export default async function CalendarPage() {
   const supabase = createServerClient()
+  // This year's calendar until its last race is run, then the next season's once Jolpica publishes it.
+  const today = new Date().toISOString().slice(0, 10)
+  const { data: nextRow } = await supabase.from('races').select('season_year').gte('race_date', today).order('race_date', { ascending: true }).limit(1).maybeSingle()
+  const season = Number(nextRow?.season_year ?? new Date().getFullYear())
   const [racesRes, winnersRes, broadcastsRes, countriesRes] = await Promise.all([
     supabase
       .from('races')
-      .select('id, slug, round, name, race_date, circuit_slug')
-      .eq('season_year', 2026)
-      .order('round', { ascending: true }),
+      .select('id, slug, round, name, race_date, race_time, circuit_slug')
+      .eq('season_year', season)
+      .order('race_date', { ascending: true }),
     supabase
       .from('results')
-      .select('race_slug, driver_name, driver_slug')
-      .eq('season_year', 2026)
+      .select('driver_name, driver_slug, constructor_name, ...races!inner(race_slug:slug)')
+      .eq('season_year', season)
       .eq('position', 1)
-      .eq('is_sprint', false),
+      .eq('session_type', 'race'),
     supabase
       .from('broadcast_channels')
       .select('id, country, country_code, channel_name, channel_type, url, notes')
@@ -110,6 +121,7 @@ export default async function CalendarPage() {
       id: race.id,
       slug: race.slug ?? '',
       round: race.round ?? 0,
+      raceTime: race.race_time ?? null,
       name: race.name ?? 'Grand Prix',
       raceDate: race.race_date ?? null,
       dateLabel:
@@ -124,6 +136,7 @@ export default async function CalendarPage() {
       flagEmoji,
       winnerName: winner?.driver_name ?? null,
       winnerSlug: winner?.driver_slug ?? null,
+      winnerTeam: winner?.constructor_name ?? null,
     }
   })
 
@@ -133,22 +146,23 @@ export default async function CalendarPage() {
     .filter((race) => race.raceDate && new Date(race.raceDate) >= now)
     .sort((a, b) => new Date(a.raceDate ?? '').getTime() - new Date(b.raceDate ?? '').getTime())[0]
 
+  const done = cards.filter((c) => c.winnerName).length
   return (
-    <main style={{ minHeight: '100vh', background: 'var(--bg)', color: 'var(--text)' }}>
-      <section style={{ maxWidth: '1200px', margin: '0 auto', padding: '32px 24px 64px' }}>
-        <div style={{ marginBottom: '24px' }}>
-          <h1 style={{ fontFamily: "'Barlow Condensed', sans-serif", fontSize: '44px', fontWeight: 900, letterSpacing: '0.06em', textTransform: 'uppercase', color: '#fff', margin: 0 }}>
-            2026 Season Calendar
-          </h1>
-          <p style={{ color: 'var(--muted)', fontSize: '16px', marginTop: '6px' }}>22 rounds across 5 continents</p>
-          {nextRace ? (
-            <p style={{ marginTop: '8px', color: 'var(--gold)', fontFamily: "'Barlow Condensed', sans-serif", fontSize: '13px', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase' }}>
-              Next: {nextRace.name} - {nextRace.dateLabel}
-            </p>
-          ) : null}
-        </div>
-        <CalendarBoard races={cards} broadcasts={broadcasts} />
-      </section>
+    <main className="pg">
+      <PageHead
+        crumbs={[{ label: 'Sunday Grid', href: '/' }, { label: 'Calendar' }]}
+        title="Calendar"
+        small={season}
+        lede={nextRace ? <>Next up: <Link href={`/races/${nextRace.slug}`}>{nextRace.name}</Link>, {nextRace.dateLabel}. Times are UK.</> : `Every round of the ${season} season.`}
+        stats={[
+          { value: cards.length, label: 'rounds' },
+          { value: done, label: 'raced' },
+          { value: cards.length - done, label: 'to go', sig: true },
+        ]}
+      />
+      <div className="pg-body">
+        <CalendarBoard races={cards} broadcasts={broadcasts} nextId={nextRace?.id ?? null} />
+      </div>
     </main>
   )
 }
