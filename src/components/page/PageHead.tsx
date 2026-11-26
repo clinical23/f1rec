@@ -45,7 +45,7 @@ export default function PageHead({
         {stats && stats.length > 0 && (
           <div className="pg-stats">
             {stats.map((s) => (
-              <div key={s.label} className={`pg-stat${s.sig ? ' sig' : ''}`}>
+              <div key={s.label} className={`pg-stat${s.sig ? ' sig' : ''}${typeof s.value === 'string' && s.value.length > 6 ? ' long' : ''}`}>
                 <b>{s.value}</b>
                 <small>{s.label}</small>
               </div>

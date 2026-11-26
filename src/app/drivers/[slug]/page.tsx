@@ -262,6 +262,8 @@ async function loadDriverProfileData(slug: string) {
       .select('id, season_year, race_name, ...races(race_slug:slug), grid_position, position, position_text, status, points, constructor_name')
       .eq('driver_slug', slug)
       .eq('session_type', 'race')
+      .not('season_year', 'is', null)
+      .not('race_name', 'is', null)
       .order('season_year', { ascending: false })
       .order('round', { ascending: false }),
   ])
